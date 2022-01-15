@@ -1,0 +1,61 @@
+<div class="calculator">
+  <form [formGroup]="calculator" (ngSubmit)="submit()">
+    <table>
+      <tr>
+        <td>
+          <h2>
+            {{ 'calculator.module-name' | translate }}
+          </h2>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="w-100p" appearance="outline">
+            <mat-label>{{ 'calculator.sex' | translate }}</mat-label>
+            <mat-select formControlName="sex">
+              <mat-option value="male">{{ 'calculator.male' | translate }}</mat-option>
+              <mat-option value="female">{{ 'calculator.female' | translate }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="hasError('sex', 'required')">
+              {{ 'calculator.required' | translate }}</mat-error>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="w-100p" appearance="outline">
+            <mat-label>{{ 'calculator.weight' | translate }}</mat-label>
+            <input id="calculator-weight" matInput formControlName="weight"/>
+            <mat-error *ngIf="hasError('weight', 'required')">
+              {{ 'calculator.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('weight', 'maxlength')">
+              {{'calculator.maxLength' | translate: { value: 10 } }}
+            </mat-error>
+            <mat-error *ngIf="hasError('weight', 'pattern')">
+              {{'calculator.pattern' | translate}}
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="w-100p" appearance="outline">
+
+            <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+            <mat-select formControlName="champion">
+              <mat-option *ngFor="let champion of champions" [value]="champion.value">
+                {{champion.viewValue}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="hasError('champion', 'required')">
+              {{ 'calculator.required' | translate }}</mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+
+      <button mat-raised-button [disabled]="calculator.invalid">{{ 'calculator.calculate' | translate }}</button>
+
+    </table>
+  </form>
+
+</div>
+

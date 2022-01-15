@@ -1,0 +1,21 @@
+{
+  "app": "ubemed",
+  "search-bar": {
+    "calculator": "Kalkulaator",
+    "search": "Otsi",
+    "placeholder": "mehed",
+    "events": "Spordialad"
+  },
+  "calculator": {
+    "module-name": "Kalkulaator",
+    "sex": "Sugu",
+    "weight": "Kaal (Kg)",
+    "champion": "tippsportlane",
+    "required": "See on vajalik",
+    "maxLength": "Maksimaalselt {{value}} tähemärki pikk",
+    "pattern": "Ainult numbird",
+    "male": "Mees",
+    "female": "Naine",
+    "calculate": "Arvuta"
+  }
+}

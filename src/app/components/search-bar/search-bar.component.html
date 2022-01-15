@@ -1,0 +1,24 @@
+<div class="search-container">
+  <div>
+    <span class="logo-big" routerLink="/">UBEMED.EE</span>
+  </div>
+  <div>
+    <span class="logo" routerLink="/calculator">{{ 'search-bar.calculator' | translate }}</span>
+  </div>
+  <div>
+    <mat-button class="logo" [matMenuTriggerFor]="menu">{{'search-bar.events' | translate }}</mat-button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngFor="let champion of events" (click)="onClickEvent(champion.value)">{{champion.viewValue}}</button>
+    </mat-menu>
+  </div>
+  <div>
+    <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
+      <input class="search-input"
+             name="search"
+             ngModel
+             placeholder="{{ 'search-bar.placeholder' | translate }}"
+      />
+      <button class="search-button">{{ 'search-bar.search' | translate }}</button>
+    </form>
+  </div>
+</div>
