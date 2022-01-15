@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CalculatorService} from "../services/calculator.service";
@@ -58,11 +58,7 @@ export class CalculatorComponent implements OnInit {
   }
 
   clickMethod() {
-
-    confirm("Sa oled incel")
-    // if(confirm("Are you sure to delete "+name)) {
-    //   console.log("Implement delete functionality here");
-    // }
+    confirm("Sa oled x")
   }
 
   submit() {
