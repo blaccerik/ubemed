@@ -1,0 +1,25 @@
+
+<div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only" id="loading"></span>
+  </div>
+</div>
+
+<div *ngIf="post" class="post">
+  <div class="info">
+    <div class="votes">
+      <button (click)="vote($event, true, post.id)">▲</button>
+      {{post.votes}}
+      <button (click)="vote($event, false, post.id)">▼</button>
+    </div>
+    <div class="message">
+      <div>
+        {{'forum.posted'  | translate }}: {{post.author}}
+      </div>
+      <h2>
+        {{post.title}}
+      </h2>
+    </div>
+  </div>
+  <div class="text">{{post.msg}}</div>
+</div>

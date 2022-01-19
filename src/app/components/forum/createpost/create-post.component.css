@@ -1,22 +1,22 @@
-.calculator {
-  /*border-image-outset: 15px;*/
+.post {
   background-color: #f3e1d5;
   border-radius: 16px;
   padding: 16px;
   margin: 50px;
+  width: 550px;
   display: inline-block;
-
 }
 
 .w-100p {
   width: 100%;
 }
 
-td {
-  padding-right: 1em;
+.text {
+  display:inline;
+  height:400px;
+  font-size:14pt;
 }
 
-mat-divider {
-  margin-top: 1em;
-  margin-bottom: 1em;
+td {
+  padding-right: 1em;
 }

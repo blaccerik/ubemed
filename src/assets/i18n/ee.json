@@ -4,7 +4,8 @@
     "calculator": "Kalkulaator",
     "search": "Otsi",
     "placeholder": "mehed",
-    "events": "Spordialad"
+    "events": "Spordialad",
+    "forum": "Foorum"
   },
   "calculator": {
     "module-name": "Kalkulaator",
@@ -17,5 +18,17 @@
     "male": "Mees",
     "female": "Naine",
     "calculate": "Arvuta"
+  },
+  "forum": {
+    "create": "Loo postitus",
+    "posted": "Postitas",
+    "new": {
+      "author": "Autori nimi",
+      "title": "Pealkiri",
+      "msg": "Sõnum",
+      "required": "See on vajalik",
+      "maxLength": "Maksimaalselt {{value}} tähemärki pikk",
+      "create": "Loo postitus"
+    }
   }
 }

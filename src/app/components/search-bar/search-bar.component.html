@@ -12,6 +12,9 @@
     </mat-menu>
   </div>
   <div>
+    <span class="logo" routerLink="/forum">{{ 'search-bar.forum' | translate }}</span>
+  </div>
+  <div>
     <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
       <input class="search-input"
              name="search"

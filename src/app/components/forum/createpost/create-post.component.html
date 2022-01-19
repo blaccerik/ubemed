@@ -1,0 +1,53 @@
+<div class="post">
+  <form [formGroup]="post" (ngSubmit)="create()">
+    <table>
+      <tr>
+        <td>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'forum.new.author' | translate }}</mat-label>
+            <input matInput formControlName="author"/>
+            <mat-error *ngIf="hasError('author', 'required')">
+              {{ 'forum.new.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('author', 'maxlength')">
+              {{'forum.new.maxLength' | translate: { value: 20 } }}
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="w-100p" appearance="outline">
+            <mat-label>{{ 'forum.new.title' | translate }}</mat-label>
+            <input matInput formControlName="title"/>
+            <mat-error *ngIf="hasError('title', 'required')">
+              {{ 'forum.new.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('title', 'maxlength')">
+              {{'forum.new.maxLength' | translate: { value: 60 } }}
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <mat-form-field class="w-100p" appearance="outline" [style.width.px]=500>
+            <mat-label>{{ 'forum.new.msg' | translate }}</mat-label>
+            <textarea class="text" matInput formControlName="msg"></textarea>
+            <mat-error *ngIf="hasError('msg', 'required')">
+              {{ 'forum.new.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('msg', 'maxlength')">
+              {{'forum.new.maxLength' | translate: { value: 2000 } }}
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+
+      <button mat-raised-button [disabled]="post.invalid">{{ 'forum.new.create' | translate }}</button>
+
+    </table>
+
+  </form>
+
+</div>

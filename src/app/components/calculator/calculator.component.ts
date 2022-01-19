@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {CalculatorService} from "../services/calculator.service";
+import {ForumService} from "../services/forum.service";
 
 interface Champion {
   value: string;
@@ -29,7 +29,7 @@ export class CalculatorComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private buildingService: CalculatorService,
+    private buildingService: ForumService,
     private formBuilder: FormBuilder
   ) {}
 
@@ -53,26 +53,12 @@ export class CalculatorComponent implements OnInit {
     return this.calculator && this.calculator.hasError(errorCode, path);
   }
 
-  navigateToBuildingsList() {
-    this.router.navigate(['buildings']).then();
-  }
-
   clickMethod() {
-    confirm("Sa oled x")
+    confirm("Sa oled incel")
   }
 
   submit() {
     const buildingToSave = { ...this.calculator.value};
-    // this.dialog.open(DialogComponent)
     this.clickMethod();
-    this.buildingService.post(buildingToSave).subscribe(
-      result => {
-      },
-      error => {
-      },
-      () => {
-        this.navigateToBuildingsList();
-      }
-    );
   }
 }

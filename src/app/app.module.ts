@@ -22,6 +22,10 @@ import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import { SuvepyksComponent } from './components/events/suvepyks/suvepyks.component';
+import { ForumComponent } from './components/forum/forum.component';
+import { CreatePostComponent } from './components/forum/createpost/create-post.component';
+import { PostComponent } from './components/forum/post/post.component';
+import { ErrorComponent } from './components/error/error.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +33,11 @@ import { SuvepyksComponent } from './components/events/suvepyks/suvepyks.compone
     SearchBarComponent,
     HomeComponent,
     CalculatorComponent,
-    SuvepyksComponent
+    SuvepyksComponent,
+    ForumComponent,
+    CreatePostComponent,
+    PostComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -61,7 +69,7 @@ import { SuvepyksComponent } from './components/events/suvepyks/suvepyks.compone
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-
+// ng serve --host 0.0.0.0
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http);
 }
