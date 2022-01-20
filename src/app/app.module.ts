@@ -70,6 +70,13 @@ import { ErrorComponent } from './components/error/error.component';
 })
 export class AppModule { }
 // ng serve --host 0.0.0.0
+//
+
+// ng build
+// docker build -t ng-docker .
+
+// http-server dist/ubemed
+// http-server dist/ubemed -P http://localhost:8080
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http);
 }
