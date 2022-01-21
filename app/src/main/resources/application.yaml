@@ -1,0 +1,41 @@
+server:
+  servlet:
+    #    this is a prefix for all urls
+    context-path: /api
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        temp:
+          use_jdbc_metadata_defaults : false
+    #   hibernate is orm - object relational mapping; it does domagic so sql tables are accessible as java objects
+    hibernate:
+      #      this means hibernate will re-create db each time application is run
+      #      if you don't want this, remove create with other options
+      #      https://stackoverflow.com/questions/438146/what-are-the-possible-values-of-the-hibernate-hbm2ddl-auto-configuration-and-wha
+      #      if you have an option that doesn't create db, then you need scripts or a tool like flyway to create tables for yourself
+#       ddl-auto: update
+#       ddl-auto: create
+      ddl-auto: none
+    #    this is datasource configuration
+    # datasource:
+    #    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1 # this one is in memory
+    # url: jdbc:h2:./h2/users;AUTO_SERVER=TRUE # this one is on the disk, notice the h2 folder and contents it creates
+    # driverClassName: org.h2.Driver
+    # username: sa
+    # password: sa
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: sa
+    password: sa
+  sql:
+    init:
+      platform: postgres
+#  h2:
+#    console:
+#      # this enables http://localhost:8080/api/h2-console
+#      # username/password are sa (defined few lines above)
+#      enabled: true
