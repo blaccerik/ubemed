@@ -33,6 +33,25 @@ services:
       - postgres_username=sa
       - postgres_password=sa
       - postgres_url=jdbc:postgresql://postgres:5432/postgres
+  swag:
+    container_name: swag
+    image: linuxserver/swag:version-1.21.0
+    restart: unless-stopped
+    env_file:
+      - swag.env
+    ports:
+      - "80:80"
+      - "443:443"
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: "Dockerfile"
+    ports:
+      - "8081:8081"
+
+
+
 
 
 volumes:
