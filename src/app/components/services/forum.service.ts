@@ -12,6 +12,8 @@ export class ForumService {
   constructor(private http: HttpClient) {}
 
   public getAll(): Observable<Post[]> {
+    console.log(this.apiUrl)
+    console.log(this.http.get(this.apiUrl).pipe())
     return this.http
       .get<Post[]>(this.apiUrl)
       .pipe(map(data => data), catchError(this.handleError))

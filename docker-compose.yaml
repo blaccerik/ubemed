@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:13.2-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ubemed
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: sa
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  pgadmin:
+    image: chorss/docker-pgadmin4
+    container_name: pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - "5050:5050"
+  java:
+    image: openjdk:11-jdk
+    container_name: java
+    ports:
+      - "8080:8080"
+    restart: always
+    build:
+      context: app
+      dockerfile: "Dockerfile"
+    environment:
+      - jwt.secret=erik
+      - postgres_username=sa
+      - postgres_password=sa
+      - postgres_url=jdbc:postgresql://postgres:5432/postgres
+
+
+volumes:
+  postgres:

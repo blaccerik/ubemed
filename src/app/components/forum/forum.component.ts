@@ -20,6 +20,7 @@ export class ForumComponent implements OnInit {
   ngOnInit(): void {
     this.service.getAll().subscribe(
       posts => {
+        console.log(posts)
         if (posts) {
           hideloader();
         }
