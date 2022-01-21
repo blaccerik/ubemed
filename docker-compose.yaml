@@ -2,6 +2,8 @@ version: '3.7'
 services:
   postgres:
     container_name: postgres
+    networks:
+      - ubemed2
     image: postgres:13.2-alpine
     restart: always
     ports:
@@ -13,6 +15,8 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
   pgadmin:
+    networks:
+      - ubemed
     image: chorss/docker-pgadmin4
     container_name: pgadmin4
     depends_on:
@@ -20,10 +24,12 @@ services:
     ports:
       - "5050:5050"
   java:
+    networks:
+      - ubemed2
     image: openjdk:11-jdk
     container_name: java
     ports:
-      - "8080:8080"
+      - "8080:80"
     restart: always
     build:
       context: app
@@ -33,26 +39,29 @@ services:
       - postgres_username=sa
       - postgres_password=sa
       - postgres_url=jdbc:postgresql://postgres:5432/postgres
-  swag:
-    container_name: swag
-    image: linuxserver/swag:version-1.21.0
-    restart: unless-stopped
-    env_file:
-      - swag.env
-    ports:
-      - "80:80"
-      - "443:443"
+#  swag:
+#    networks:
+#      - ubemed
+#    container_name: swag
+#    image: linuxserver/swag:version-1.21.0
+#    restart: unless-stopped
+#    env_file:
+#      - swag.env
+#    ports:
+#      - "80:80"
+#      - "443:443"
   nginx:
+    networks:
+      - ubemed2
     container_name: nginx
     build:
       context: .
       dockerfile: "Dockerfile"
     ports:
-      - "8081:8081"
+      - "8081:80"
 
-
-
-
+networks:
+  ubemed2:
 
 volumes:
   postgres:
