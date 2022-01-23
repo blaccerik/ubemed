@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {catchError, map, Observable, of, throwError as observableThrowError} from 'rxjs';
 import {Post} from "../model/Post";
 
@@ -12,8 +12,6 @@ export class ForumService {
   constructor(private http: HttpClient) {}
 
   public getAll(): Observable<Post[]> {
-    console.log(this.apiUrl)
-    console.log(this.http.get(this.apiUrl).pipe())
     return this.http
       .get<Post[]>(this.apiUrl)
       .pipe(map(data => data), catchError(this.handleError))
@@ -26,8 +24,10 @@ export class ForumService {
   }
 
   post(data: Post) {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+    // const headers = new Headers();
+    // headers.append('Content-Type', 'application/json');
+    // headers.append("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2NDI4ODcxMDIsImlhdCI6MTY0Mjg2OTEwMn0.4_jJ1sjpH9BBrYimNs0SvXkj4z7faN5f4sQ5r8Pf91g9RVZCX2o_5jxbsWPqXrFJJk4ksZkKpsUK6PKSUcCCVg")
+    // { 'headers': headers }
     return this.http.post<Post>(this.apiUrl + "/new", data).pipe(catchError(this.handleError));
   }
 

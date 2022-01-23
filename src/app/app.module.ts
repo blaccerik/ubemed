@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatIconModule} from "@angular/material/icon";
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -26,6 +26,8 @@ import { ForumComponent } from './components/forum/forum.component';
 import { CreatePostComponent } from './components/forum/createpost/create-post.component';
 import { PostComponent } from './components/forum/post/post.component';
 import { ErrorComponent } from './components/error/error.component';
+import { LoginComponent } from './components/login/login.component';
+import {JWTInterceptor} from "./components/interceptor/jwt.interceptor";
 
 @NgModule({
   declarations: [
@@ -37,7 +39,8 @@ import { ErrorComponent } from './components/error/error.component';
     ForumComponent,
     CreatePostComponent,
     PostComponent,
-    ErrorComponent
+    ErrorComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +68,7 @@ import { ErrorComponent } from './components/error/error.component';
     MatMenuModule,
     MatButtonToggleModule
   ],
-  providers: [],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -4,7 +4,9 @@ import com.ubemed.app.config.JwtTokenUtil;
 import com.ubemed.app.model.JwtRequest;
 import com.ubemed.app.model.JwtResponse;
 import com.ubemed.app.service.JwtUserDetailsService;
+import com.ubemed.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,26 +26,42 @@ public class UserController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    @Autowired
+    private UserService userService;
+
 
     @GetMapping("/check")
     public String check(
-            @RequestHeader(name="Authorization") String token
+      @RequestHeader(name="Authorization") String token
     ) {
-        String jwtToken = token.substring(7);
-        String username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+        String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
         return username;
     }
 
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody JwtRequest authenticationRequest
+    @PostMapping("/create")
+    public boolean create(
+    @RequestBody JwtRequest authenticationRequest
     ) {
         String name = authenticationRequest.getUsername();
         String pass = authenticationRequest.getPassword();
-        final UserDetails userDetails;
+        if (name == null || pass == null) {
+            return false;
+        }
+        return userService.save(name, pass);
 
-        // todo check pass
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+    @RequestBody JwtRequest authenticationRequest
+    ) {
+        String name = authenticationRequest.getUsername();
+        String pass = authenticationRequest.getPassword();
+
+        if (!userService.checkPass(name, pass)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Wrong name or pass");
+        }
+        final UserDetails userDetails;
         userDetails = userDetailsService.loadUserByUsername(name);
         final String token = jwtTokenUtil.generateToken(userDetails);
         return ResponseEntity.ok(new JwtResponse(token));

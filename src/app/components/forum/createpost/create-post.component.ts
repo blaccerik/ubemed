@@ -24,9 +24,6 @@ export class CreatePostComponent implements OnInit {
 
   initForm() {
     return this.formBuilder.group({
-      author: new FormControl('',
-        [Validators.required, Validators.maxLength(20)]
-      ),
       title: new FormControl('',
         [Validators.required, Validators.maxLength(60)]
       ),
@@ -35,6 +32,7 @@ export class CreatePostComponent implements OnInit {
       ),
       id: 0,
       votes: 0,
+      author: "",
     });
   }
 

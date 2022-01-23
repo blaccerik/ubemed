@@ -3,9 +3,12 @@ services:
   postgres:
     container_name: postgres
     networks:
-      - ubemed2
+      - ubemed
     image: postgres:13.2-alpine
     restart: always
+    # use expose when "production mode"
+#    expose:
+#      - 5432
     ports:
       - "5432:5432"
     environment:
@@ -21,38 +24,29 @@ services:
     container_name: pgadmin4
     depends_on:
       - postgres
+    # remove ports when in prod mode
     ports:
       - "5050:5050"
   java:
     networks:
-      - ubemed2
+      - ubemed
     image: openjdk:11-jdk
     container_name: java
-    ports:
-      - "8080:80"
+    expose:
+      - 8080
     restart: always
     build:
       context: app
       dockerfile: "Dockerfile"
     environment:
-      - jwt.secret=erik
+      - server_ip=http://37.157.81.108:8081
+      - jwt.secret=test
       - postgres_username=sa
       - postgres_password=sa
       - postgres_url=jdbc:postgresql://postgres:5432/postgres
-#  swag:
-#    networks:
-#      - ubemed
-#    container_name: swag
-#    image: linuxserver/swag:version-1.21.0
-#    restart: unless-stopped
-#    env_file:
-#      - swag.env
-#    ports:
-#      - "80:80"
-#      - "443:443"
   nginx:
     networks:
-      - ubemed2
+      - ubemed
     container_name: nginx
     build:
       context: .
@@ -61,7 +55,7 @@ services:
       - "8081:80"
 
 networks:
-  ubemed2:
+  ubemed:
 
 volumes:
   postgres:

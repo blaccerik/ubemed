@@ -16,9 +16,9 @@ spring:
       #      if you don't want this, remove create with other options
       #      https://stackoverflow.com/questions/438146/what-are-the-possible-values-of-the-hibernate-hbm2ddl-auto-configuration-and-wha
       #      if you have an option that doesn't create db, then you need scripts or a tool like flyway to create tables for yourself
-#       ddl-auto: update
+       ddl-auto: update
 #       ddl-auto: create
-      ddl-auto: none
+#      ddl-auto: none
     #    this is datasource configuration
     # datasource:
     #    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1 # this one is in memory

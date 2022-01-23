@@ -1,6 +1,7 @@
 package com.ubemed.app.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,14 +20,17 @@ import java.util.List;
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-    //
+    @Value("${server_ip}")
+    private String ip;
+
+
+  //
 //    @Autowired
 //    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 //        // configure AuthenticationManager so that it knows from where to load
@@ -69,7 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://37.157.81.108:8081", "http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of(ip, "http://localhost:4200"));
         configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
@@ -100,7 +104,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**")
                 .hasAuthority("admin")
 
-                .antMatchers("/users/check")
+                .antMatchers(
+                    "/users/check",
+                    "/forum/new"
+                )
                 .hasAnyAuthority("user")
 
                 // no token
@@ -108,7 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger*/**",
                         "/v2/api-docs",
                         "/forum/**",
-                        "/users/login"
+                        "/users/**"
                 )
                 .permitAll()
                 .anyRequest().authenticated()

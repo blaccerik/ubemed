@@ -33,6 +33,6 @@ public class DBPost {
         this.author = post.getAuthor();
         this.title = post.getTitle();
         this.msg = post.getMsg();
-        this.votes = 0;
+        this.votes = post.getVotes();
     }
 }

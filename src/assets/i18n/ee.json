@@ -23,7 +23,6 @@
     "create": "Loo postitus",
     "posted": "Postitas",
     "new": {
-      "author": "Autori nimi",
       "title": "Pealkiri",
       "msg": "Sõnum",
       "required": "See on vajalik",

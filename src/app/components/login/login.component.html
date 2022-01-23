@@ -1,0 +1,22 @@
+<div>
+  <div *ngIf="!service.isLoggedIn()">
+    <form [formGroup]="login" (ngSubmit)="submit()">
+      <table>
+        <tr>
+          <td>
+            <input formControlName="username"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input matInput formControlName="password"/>
+          </td>
+        </tr>
+      </table>
+      <button [disabled]="login.invalid">{{ 'calculator.calculate' | translate }}</button>
+    </form>
+  </div>
+  <div *ngIf="service.isLoggedIn()">
+    Logged in as {{service.username}}
+  </div>
+</div>
