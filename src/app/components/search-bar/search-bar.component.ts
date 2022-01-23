@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router";
 import {NgForm} from "@angular/forms";
+import {MatDialog} from "@angular/material/dialog";
+import {LoginComponent} from "../login/login.component";
+import {AuthService} from "../services/auth.service";
 
 interface Event {
   value: string;
@@ -18,7 +21,11 @@ export class SearchBarComponent implements OnInit {
     {value: 'suvepyks', viewValue: 'SuvePüks 2003'},
   ];
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private dialog: MatDialog,
+    public service: AuthService,
+  ) { }
 
   ngOnInit(): void {
   }
@@ -29,6 +36,11 @@ export class SearchBarComponent implements OnInit {
 
   onClickEvent(value: string) {
     this.router.navigate([value])
+  }
+
+
+  openDialog() {
+    this.dialog.open(LoginComponent);
   }
 
 }

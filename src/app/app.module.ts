@@ -28,6 +28,7 @@ import { PostComponent } from './components/forum/post/post.component';
 import { ErrorComponent } from './components/error/error.component';
 import { LoginComponent } from './components/login/login.component';
 import {JWTInterceptor} from "./components/interceptor/jwt.interceptor";
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
@@ -42,32 +43,33 @@ import {JWTInterceptor} from "./components/interceptor/jwt.interceptor";
     ErrorComponent,
     LoginComponent
   ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpClientModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      },
-      isolate: false
-    }),
-    AppRoutingModule,
-    MatTabsModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    BrowserAnimationsModule,
-    MatDividerModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    MatInputModule,
-    MatToolbarModule,
-    MatMenuModule,
-    MatButtonToggleModule
-  ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpClientModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            },
+            isolate: false
+        }),
+        AppRoutingModule,
+        MatTabsModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        BrowserAnimationsModule,
+        MatDividerModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        MatInputModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatButtonToggleModule,
+        MatDialogModule
+    ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true },],
   bootstrap: [AppComponent]
 })

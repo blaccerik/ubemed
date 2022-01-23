@@ -14,7 +14,6 @@
   <div>
     <span class="logo" routerLink="/forum">{{ 'search-bar.forum' | translate }}</span>
   </div>
-  <app-login></app-login>
   <div>
     <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
       <input class="search-input"
@@ -24,5 +23,11 @@
       />
       <button class="search-button">{{ 'search-bar.search' | translate }}</button>
     </form>
+  </div>
+  <div *ngIf="!service.isLoggedIn()">
+    <button class="logo" (click)="openDialog()">testtttt</button>
+  </div>
+  <div *ngIf="service.isLoggedIn()">
+    <button class="logo" (click)="openDialog()">logged in</button>
   </div>
 </div>

@@ -55,17 +55,41 @@ export class AuthService {
     return localStorage.getItem("auth");
   }
 
-  post(data: Login) {
-    // const headers = new Headers();
-    // headers.append('Content-Type', 'application/json');
-    // headers.append("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2NDI4ODcxMDIsImlhdCI6MTY0Mjg2OTEwMn0.4_jJ1sjpH9BBrYimNs0SvXkj4z7faN5f4sQ5r8Pf91g9RVZCX2o_5jxbsWPqXrFJJk4ksZkKpsUK6PKSUcCCVg")
-    // { 'headers': headers }
+  login(data: Login) {
     return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
       tap((response: any) => {
-        this.loggedIn.next(true);
-        localStorage.setItem("auth", response.token);
-      }),
+        console.log(response);
+        // this.loggedIn.next(true);
+        // localStorage.setItem("auth", response.token);
+        },
+      ),
       catchError(this.handleError)
     );
   }
+
+  register(data: Login) {
+    return this.http.post<Post>(this.apiUrl + "/create", data).pipe(
+      tap((response: any) => {
+          console.log(response);
+          // this.loggedIn.next(true);
+          // localStorage.setItem("auth", response.token);
+        },
+      ),
+      catchError(this.handleError)
+    );
+  }
+
+  // post(data: Login) {
+  //   // const headers = new Headers();
+  //   // headers.append('Content-Type', 'application/json');
+  //   // headers.append("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2NDI4ODcxMDIsImlhdCI6MTY0Mjg2OTEwMn0.4_jJ1sjpH9BBrYimNs0SvXkj4z7faN5f4sQ5r8Pf91g9RVZCX2o_5jxbsWPqXrFJJk4ksZkKpsUK6PKSUcCCVg")
+  //   // { 'headers': headers }
+  //   return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
+  //     tap((response: any) => {
+  //       this.loggedIn.next(true);
+  //       localStorage.setItem("auth", response.token);
+  //     }),
+  //     catchError(this.handleError)
+  //   );
+  // }
 }

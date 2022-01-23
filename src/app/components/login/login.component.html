@@ -1,6 +1,7 @@
 <div>
-  <div *ngIf="!service.isLoggedIn()">
-    <form [formGroup]="login" (ngSubmit)="submit()">
+  <div *ngIf="showLogIn">
+    <mat-dialog-content>login</mat-dialog-content>
+    <form [formGroup]="login" (ngSubmit)="submitLogin()">
       <table>
         <tr>
           <td>
@@ -9,14 +10,39 @@
         </tr>
         <tr>
           <td>
-            <input matInput formControlName="password"/>
+            <input type="password" matInput formControlName="password"/>
           </td>
         </tr>
       </table>
-      <button [disabled]="login.invalid">{{ 'calculator.calculate' | translate }}</button>
+      <button [disabled]="login.invalid">login</button>
     </form>
+    <button (click)="showLogIn=false">register</button>
   </div>
-  <div *ngIf="service.isLoggedIn()">
-    Logged in as {{service.username}}
+  <div *ngIf="!showLogIn">
+    <mat-dialog-content>register</mat-dialog-content>
+    <form [formGroup]="register" (ngSubmit)="submitRegister()">
+      <table>
+        <tr>
+          <td>
+            <input formControlName="username"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="password" matInput formControlName="password"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="password" matInput formControlName="password2"/>
+          </td>
+        </tr>
+        <mat-error *ngIf="match()">
+          must be same
+        </mat-error>
+      </table>
+      <button [disabled]="register.invalid || match()">register</button>
+    </form>
+    <button (click)="showLogIn=true">login</button>
   </div>
 </div>
