@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {ForumService} from "./forum.service";
 import {Post} from "../model/Post";
-import {BehaviorSubject, catchError, skipWhile, take, tap, throwError as observableThrowError} from "rxjs";
+import {BehaviorSubject, catchError, map, skipWhile, take, tap, throwError as observableThrowError} from "rxjs";
 import {Login} from "../model/Login";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 
@@ -11,12 +11,10 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
   private apiUrl = '/api/users';
-  username: string
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem("auth")
     if (!!token && !this.tokenExpired(token)) {
-      this.username = this.tokenName(token);
       this.loggedIn.next(true);
     } else {
       this.loggedIn.next(false);
@@ -47,21 +45,29 @@ export class AuthService {
     return (Math.floor((new Date).getTime() / 1000)) >= expiry;
   }
 
-  private tokenName(token: string) {
+  tokenName(token: string) {
     return (JSON.parse(atob(token.split('.')[1]))).sub;
   }
 
   getToken() {
-    return localStorage.getItem("auth");
+    const a = localStorage.getItem("auth");
+    if (a) {
+      return a;
+    }
+    return "";
+  }
+
+  logout() {
+    localStorage.removeItem("auth");
+    this.loggedIn.next(false);
   }
 
   login(data: Login) {
     return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
       tap((response: any) => {
-        console.log(response);
-        // this.loggedIn.next(true);
-        // localStorage.setItem("auth", response.token);
-        },
+        this.loggedIn.next(true);
+        localStorage.setItem("auth", response.token);
+        }
       ),
       catchError(this.handleError)
     );
@@ -69,12 +75,7 @@ export class AuthService {
 
   register(data: Login) {
     return this.http.post<Post>(this.apiUrl + "/create", data).pipe(
-      tap((response: any) => {
-          console.log(response);
-          // this.loggedIn.next(true);
-          // localStorage.setItem("auth", response.token);
-        },
-      ),
+      tap((response: any) => response),
       catchError(this.handleError)
     );
   }

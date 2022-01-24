@@ -43,4 +43,8 @@ export class SearchBarComponent implements OnInit {
     this.dialog.open(LoginComponent);
   }
 
+  logout() {
+    this.service.logout();
+  }
+
 }

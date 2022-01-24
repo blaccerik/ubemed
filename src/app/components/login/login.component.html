@@ -5,15 +5,26 @@
       <table>
         <tr>
           <td>
-            <input formControlName="username"/>
+            <mat-form-field class="w-100p" appearance="outline">
+              <input matInput formControlName="username"/>
+              <mat-error *ngIf="hasError('username', 'required')">
+                {{ 'calculator.required' | translate }}
+              </mat-error>
+            </mat-form-field>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="password" matInput formControlName="password"/>
+            <mat-form-field class="w-100p" appearance="outline">
+              <input matInput type="password" formControlName="password"/>
+              <mat-error *ngIf="hasError('password', 'required')">
+                {{ 'calculator.required' | translate }}
+              </mat-error>
+            </mat-form-field>
           </td>
         </tr>
       </table>
+      <mat-error *ngIf="wrongPass">wrong name or pass</mat-error>
       <button [disabled]="login.invalid">login</button>
     </form>
     <button (click)="showLogIn=false">register</button>
@@ -24,25 +35,41 @@
       <table>
         <tr>
           <td>
-            <input formControlName="username"/>
+            <mat-form-field class="w-100p" appearance="outline">
+              <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+              <input matInput formControlName="username"/>
+              <mat-error *ngIf="hasError('username', 'required')">
+                {{ 'calculator.required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="!success">taken</mat-error>
+            </mat-form-field>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="password" matInput formControlName="password"/>
+            <mat-form-field class="w-100p" appearance="outline">
+              <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+              <input matInput type="password" formControlName="password"/>
+              <mat-error *ngIf="hasError('password', 'required')">
+                {{ 'calculator.required' | translate }}
+              </mat-error>
+            </mat-form-field>
           </td>
         </tr>
         <tr>
           <td>
-            <input type="password" matInput formControlName="password2"/>
+            <mat-form-field class="w-100p" appearance="outline">
+              <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+              <input matInput type="password" formControlName="password2"/>
+              <mat-error *ngIf="match(register)">
+                must be same
+              </mat-error>
+            </mat-form-field>
           </td>
         </tr>
-        <mat-error *ngIf="match()">
-          must be same
-        </mat-error>
       </table>
-      <button [disabled]="register.invalid || match()">register</button>
     </form>
-    <button (click)="showLogIn=true">login</button>
+    <button mat-button [disabled]="register.invalid || match(register)">register</button>
+    <button mat-button (click)="showLogIn=true">login</button>
   </div>
 </div>

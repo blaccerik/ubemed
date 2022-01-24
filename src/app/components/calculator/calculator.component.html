@@ -39,7 +39,6 @@
       <tr>
         <td>
           <mat-form-field class="w-100p" appearance="outline">
-
             <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
             <mat-select formControlName="champion">
               <mat-option *ngFor="let champion of champions" [value]="champion.value">
@@ -47,13 +46,12 @@
               </mat-option>
             </mat-select>
             <mat-error *ngIf="hasError('champion', 'required')">
-              {{ 'calculator.required' | translate }}</mat-error>
+              {{ 'calculator.required' | translate }}
+            </mat-error>
           </mat-form-field>
         </td>
       </tr>
-
       <button mat-raised-button [disabled]="calculator.invalid">{{ 'calculator.calculate' | translate }}</button>
-
     </table>
   </form>
 </div>
