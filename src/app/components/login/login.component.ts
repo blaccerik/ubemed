@@ -1,24 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
-  ValidationErrors,
-  ValidatorFn,
   Validators
 } from "@angular/forms";
-import {ActivatedRoute, Router} from "@angular/router";
-import {ForumService} from "../services/forum.service";
 import {AuthService} from "../services/auth.service";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {Login} from "../model/Login";
-
-
-interface Event {
-  value: string;
-  viewValue: string;
-}
 
 @Component({
   selector: 'app-login',
@@ -29,23 +17,16 @@ export class LoginComponent implements OnInit {
   login: FormGroup = this.initFormLogin();
   register: FormGroup = this.initFormRegister();
   showLogIn: boolean = true;
-  success: boolean = true;
+  nameTaken: boolean = false;
   wrongPass: boolean = false;
 
   constructor(
-    // private router: Router,
-    // private route: ActivatedRoute,
     public service: AuthService,
     private formBuilder: FormBuilder,
     private dialogref: MatDialogRef<LoginComponent>
-  ) {
+  ) {}
 
-  }
-
-  ngOnInit() {
-    // this.login = this.initFormLogin()
-    // this.register = this.initFormRegister();
-  }
+  ngOnInit() {}
 
   initFormLogin() {
     return this.formBuilder.group({
@@ -62,16 +43,22 @@ export class LoginComponent implements OnInit {
     return  this.formBuilder.group({
       username: new FormControl('', [Validators.required]),
       password: new FormControl('', [Validators.required]),
-      // todo proper validator for pass2
       password2: new FormControl('', [Validators.required]),
-    });
+    },{validator: this.checkIfMatchingPasswords('password', 'password2')}
+    );
   }
 
-
-  match(form: FormGroup) {
-    const pass1 = form.get("password")?.value;
-    const pass2 = form.get("password2")?.value;
-    return pass1 === pass2
+  checkIfMatchingPasswords(passwordKey: string, passwordConfirmationKey: string) {
+    return (group: FormGroup) => {
+      let passwordInput = group.controls[passwordKey],
+        passwordConfirmationInput = group.controls[passwordConfirmationKey];
+      if (passwordInput.value !== passwordConfirmationInput.value) {
+        return passwordConfirmationInput.setErrors({notEquivalent: true})
+      }
+      else {
+        return passwordConfirmationInput.setErrors(null);
+      }
+    }
   }
 
   hasError(path: string, errorCode: string) {
@@ -89,7 +76,6 @@ export class LoginComponent implements OnInit {
         this.wrongPass = true;
       }
     );
-    // this.clickMethod();
   }
 
   submitRegister() {
@@ -97,18 +83,12 @@ export class LoginComponent implements OnInit {
     this.service.register(register).subscribe(
       result => {
         if (result) {
-          this.success = true;
+          this.nameTaken = false;
           this.showLogIn = true;
         } else {
-          this.success = false;
+          this.nameTaken = true;
         }
       }
     );
-    // this.clickMethod();
   }
-
-  onClickEvent(value: string) {
-    // this.router.navigate([value])
-  }
-
 }

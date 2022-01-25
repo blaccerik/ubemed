@@ -70,7 +70,9 @@ import {MatDialogModule} from "@angular/material/dialog";
         MatButtonToggleModule,
         MatDialogModule
     ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true },],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true, },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

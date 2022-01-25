@@ -35,19 +35,19 @@
       <table>
         <tr>
           <td>
-            <mat-form-field class="w-100p" appearance="outline">
+            <mat-form-field appearance="outline">
               <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
               <input matInput formControlName="username"/>
               <mat-error *ngIf="hasError('username', 'required')">
                 {{ 'calculator.required' | translate }}
               </mat-error>
-              <mat-error *ngIf="!success">taken</mat-error>
+              <mat-error *ngIf="nameTaken">taken</mat-error>
             </mat-form-field>
           </td>
         </tr>
         <tr>
           <td>
-            <mat-form-field class="w-100p" appearance="outline">
+            <mat-form-field appearance="outline">
               <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
               <input matInput type="password" formControlName="password"/>
               <mat-error *ngIf="hasError('password', 'required')">
@@ -58,18 +58,16 @@
         </tr>
         <tr>
           <td>
-            <mat-form-field class="w-100p" appearance="outline">
+            <mat-form-field appearance="outline">
               <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
               <input matInput type="password" formControlName="password2"/>
-              <mat-error *ngIf="match(register)">
-                must be same
-              </mat-error>
             </mat-form-field>
           </td>
         </tr>
       </table>
     </form>
-    <button mat-button [disabled]="register.invalid || match(register)">register</button>
+    <mat-error *ngIf="wrongPass">wrong name or pass</mat-error>
+    <button mat-button [disabled]="register.invalid">register</button>
     <button mat-button (click)="showLogIn=true">login</button>
   </div>
 </div>
