@@ -65,9 +65,9 @@
           </td>
         </tr>
       </table>
+      <mat-error *ngIf="nameTaken">name is taken</mat-error>
+      <button mat-button [disabled]="register.invalid">register</button>
+      <button mat-button (click)="showLogIn=true">back</button>
     </form>
-    <mat-error *ngIf="wrongPass">wrong name or pass</mat-error>
-    <button mat-button [disabled]="register.invalid">register</button>
-    <button mat-button (click)="showLogIn=true">login</button>
   </div>
 </div>

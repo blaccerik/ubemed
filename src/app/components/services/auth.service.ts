@@ -74,6 +74,7 @@ export class AuthService {
   }
 
   register(data: Login) {
+    console.log(data)
     return this.http.post<Post>(this.apiUrl + "/create", data).pipe(
       tap((response: any) => response),
       catchError(this.handleError)
