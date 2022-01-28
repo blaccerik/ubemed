@@ -26,7 +26,7 @@ public class ForumService {
     private UserRepository userRepository;
 
     private Stream<DBPost> getFromRepo() {
-        return forumRepository.findAll().stream().sorted(Comparator.comparing(DBPost::getId));
+        return forumRepository.findAllSorted().stream();
     }
 
     public List<Post> findAll() {
