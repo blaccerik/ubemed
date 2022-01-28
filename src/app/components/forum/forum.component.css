@@ -1,3 +1,14 @@
+.options {
+  display: flex;
+  /*flex-direction: row;*/
+}
+
+.filters {
+  /*max-width: 1200px;*/
+  /*margin: 20px auto;*/
+  /*padding: 20px;*/
+}
+
 .post {
   border: 1px solid #f3e1d5;
   background-color: #f3e1d5;
@@ -35,6 +46,14 @@
   display: flex;
   /*fill: inherit;*/
   flex-direction: column;
+}
+
+.create-post {
+  background-color: #73AD21;
+  width: fit-content;
+  margin-right: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .posts {

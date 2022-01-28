@@ -1,14 +1,15 @@
 <div>
   <div *ngIf="showLogIn">
-    <mat-dialog-content>login</mat-dialog-content>
+    <mat-dialog-content>{{ 'login.login'| translate }}</mat-dialog-content>
     <form [formGroup]="login" (ngSubmit)="submitLogin()">
       <table>
         <tr>
           <td>
             <mat-form-field class="w-100p" appearance="outline">
+              <mat-label>{{ 'login.name' | translate }}</mat-label>
               <input matInput formControlName="username"/>
               <mat-error *ngIf="hasError('username', 'required')">
-                {{ 'calculator.required' | translate }}
+                {{ 'login.required' | translate }}
               </mat-error>
             </mat-form-field>
           </td>
@@ -16,42 +17,42 @@
         <tr>
           <td>
             <mat-form-field class="w-100p" appearance="outline">
+              <mat-label>{{ 'login.pass' | translate }}</mat-label>
               <input matInput type="password" formControlName="password"/>
               <mat-error *ngIf="hasError('password', 'required')">
-                {{ 'calculator.required' | translate }}
+                {{ 'login.required' | translate }}
               </mat-error>
             </mat-form-field>
           </td>
         </tr>
       </table>
-      <mat-error *ngIf="wrongPass">wrong name or pass</mat-error>
-      <button [disabled]="login.invalid">login</button>
+      <mat-error *ngIf="wrongPass">{{ 'login.wrong' | translate }}</mat-error>
+      <button mat-button [disabled]="login.invalid">{{ 'login.login'| translate }}</button>
+      <button mat-button (click)="showLogIn=false">{{ 'login.register'| translate }}</button>
     </form>
-    <button (click)="showLogIn=false">register</button>
   </div>
   <div *ngIf="!showLogIn">
-    <mat-dialog-content>register</mat-dialog-content>
+    <mat-dialog-content>{{ 'login.register' | translate }}</mat-dialog-content>
     <form [formGroup]="register" (ngSubmit)="submitRegister()">
       <table>
         <tr>
           <td>
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+              <mat-label>{{ 'login.name' | translate }}</mat-label>
               <input matInput formControlName="username"/>
               <mat-error *ngIf="hasError('username', 'required')">
-                {{ 'calculator.required' | translate }}
+                {{ 'login.required' | translate }}
               </mat-error>
-              <mat-error *ngIf="nameTaken">taken</mat-error>
             </mat-form-field>
           </td>
         </tr>
         <tr>
           <td>
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+              <mat-label>{{ 'login.pass' | translate }}</mat-label>
               <input matInput type="password" formControlName="password"/>
               <mat-error *ngIf="hasError('password', 'required')">
-                {{ 'calculator.required' | translate }}
+                {{ 'login.required' | translate }}
               </mat-error>
             </mat-form-field>
           </td>
@@ -59,15 +60,15 @@
         <tr>
           <td>
             <mat-form-field appearance="outline">
-              <mat-label>{{ 'calculator.champion' | translate }}</mat-label>
+              <mat-label>{{ 'login.pass' | translate }}</mat-label>
               <input matInput type="password" formControlName="password2"/>
             </mat-form-field>
           </td>
         </tr>
       </table>
-      <mat-error *ngIf="nameTaken">name is taken</mat-error>
-      <button mat-button [disabled]="register.invalid">register</button>
-      <button mat-button (click)="showLogIn=true">back</button>
+      <mat-error *ngIf="nameTaken">{{ 'login.taken'| translate }}</mat-error>
+      <button mat-button [disabled]="register.invalid">{{ 'login.register'| translate }}</button>
+      <button mat-button (click)="showLogIn=true">{{ 'login.back'| translate }}</button>
     </form>
   </div>
 </div>

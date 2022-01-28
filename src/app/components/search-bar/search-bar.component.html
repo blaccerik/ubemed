@@ -25,9 +25,14 @@
     </form>
   </div>
   <div *ngIf="!service.isLoggedIn()">
-    <button class="logo" (click)="openDialog()">Log in</button>
+    <button mat-button
+            class="login"
+            (click)="openDialog()">{{ 'search-bar.login'| translate }}</button>
   </div>
   <div *ngIf="service.isLoggedIn()">
-    <button class="logo" (click)="logout()">logged in as {{service.tokenName(service.getToken())}}</button>
+    <button mat-button
+            class="login"
+            (click)="logout()">
+      {{ 'search-bar.logged-in-as'| translate }} {{service.tokenName(service.getToken())}}</button>
   </div>
 </div>

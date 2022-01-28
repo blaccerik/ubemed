@@ -1,37 +1,46 @@
 <div class="posts">
-  <div>
-    <button (click)="create()" mat-button style="background-color: #73AD21; width: fit-content; margin-right: 15px;">
+  <div class="options">
+    <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button class="create-post">
       {{ 'forum.create'| translate }}
     </button>
-<!--    <button (click)="create()" mat-button style="background-color: #73AD21; width: fit-content; margin-right: 15px;">-->
-<!--      {{ 'forum.create'| translate }}-->
-<!--    </button>-->
-<!--    <button (click)="create()" mat-button style="background-color: #73AD21; width: fit-content">-->
-<!--      {{ 'forum.create'| translate }}-->
-<!--    </button>-->
+    <div class="filters">
+      <mat-form-field>
+        <mat-label>{{ 'forum.sort'| translate }}</mat-label>
+        <mat-select
+          panelClass="sort-select"
+          [(ngModel)]="sort"
+          (selectionChange)="sortForum(sort)">
+          <mat-option value="votes">{{ 'forum.sort1'| translate }}</mat-option>
+          <mat-option value="new">{{ 'forum.sort2'| translate }}</mat-option>
+          <mat-option value="old">{{ 'forum.sort3'| translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
-
   <div class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
       <span class="sr-only" id="loading"></span>
     </div>
   </div>
-
-  <div (click)="click(post.id)" class="post" *ngFor="let post of posts">
-    <div class="votes">
-      <button [ngStyle]="{'color': post.myVote === 'upvote' ? 'red' : 'black'}"
-              (click)="vote($event, true, post.id, post.myVote)" [disabled]="!authService.isLoggedIn()">▲</button>
-      {{post.votes}}
-      <button [ngStyle]="{'color': post.myVote === 'downvote' ? 'blue' : 'black'}"
-              (click)="vote($event, false, post.id, post.myVote)" [disabled]="!authService.isLoggedIn()">▼</button>
-    </div>
-    <div class="message">
-      <div>
-        {{'forum.posted' | translate }}: {{post.author}}
+  <ul>
+    <li (click)="click(post.id)" class="post" *ngFor="let post of posts">
+      <div class="votes">
+        <button [ngStyle]="{'color': post.myVote === 'upvote' ? 'red' : 'black'}"
+                (click)="vote($event, true, post.id, post.myVote)"
+                [disabled]="!authService.isLoggedIn()">▲</button>
+        {{post.votes}}
+        <button [ngStyle]="{'color': post.myVote === 'downvote' ? 'blue' : 'black'}"
+                (click)="vote($event, false, post.id, post.myVote)"
+                [disabled]="!authService.isLoggedIn()">▼</button>
       </div>
-      <h2>
-        {{post.title}}
-      </h2>
-    </div>
-  </div>
+      <div class="message">
+        <div>
+          {{'forum.posted' | translate }}: {{post.author}}
+        </div>
+        <h2>
+          {{post.title}}
+        </h2>
+      </div>
+    </li>
+  </ul>
 </div>

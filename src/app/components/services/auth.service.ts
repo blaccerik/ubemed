@@ -60,6 +60,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem("auth");
     this.loggedIn.next(false);
+    location.reload();
   }
 
   login(data: Login) {
@@ -74,7 +75,6 @@ export class AuthService {
   }
 
   register(data: Login) {
-    console.log(data)
     return this.http.post<Post>(this.apiUrl + "/create", data).pipe(
       tap((response: any) => response),
       catchError(this.handleError)

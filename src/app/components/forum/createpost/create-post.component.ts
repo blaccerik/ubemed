@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ForumService} from "../../services/forum.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-createpost',
@@ -16,10 +17,14 @@ export class CreatePostComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private service: ForumService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(["forum"]).then();
+    }
   }
 
   initForm() {

@@ -11,7 +11,7 @@ import {AuthService} from "../services/auth.service";
   styleUrls: ['./forum.component.css']
 })
 export class ForumComponent implements OnInit {
-
+  public sort: string;
   posts: Post[] = [];
 
   constructor(
@@ -29,10 +29,19 @@ export class ForumComponent implements OnInit {
         this.posts = posts
       });
 
-
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
+    }
+  }
+
+  sortForum(sort: string) {
+    if (sort == "votes") {
+      this.posts.sort((a, b) => (a.votes < b.votes) ? 1 : -1)
+    } else if (sort == "new") {
+      this.posts.sort((a, b) => (a.id < b.id) ? 1 : -1)
+    } else {
+      this.posts.sort((a, b) => (a.id > b.id) ? 1 : -1)
     }
   }
 
@@ -77,5 +86,4 @@ export class ForumComponent implements OnInit {
       post.myVote = "downvote";
     }
   }
-
 }

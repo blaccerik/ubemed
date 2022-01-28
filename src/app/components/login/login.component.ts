@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit {
       result => {
         this.wrongPass = false;
         this.dialogref.close();
+        location.reload();
       },
       error => {
         this.wrongPass = true;
@@ -80,10 +81,8 @@ export class LoginComponent implements OnInit {
 
   submitRegister() {
     const register = { username: this.register.value.username, password: this.register.value.password};
-    console.log(register)
     this.service.register(register).subscribe(
       result => {
-        console.log(result);
         if (result) {
           this.nameTaken = false;
           this.showLogIn = true;

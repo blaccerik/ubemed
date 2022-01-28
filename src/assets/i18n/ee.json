@@ -5,7 +5,9 @@
     "search": "Otsi",
     "placeholder": "mehed",
     "events": "Spordialad",
-    "forum": "Foorum"
+    "forum": "Foorum",
+    "login": "Logi sisse",
+    "logged-in-as": "Logitud sisse kasuajaga"
   },
   "calculator": {
     "module-name": "Kalkulaator",
@@ -21,6 +23,10 @@
   },
   "forum": {
     "create": "Loo postitus",
+    "sort": "Sorteeri",
+    "sort1": "Hääled",
+    "sort2": "Uued",
+    "sort3": "Vanad",
     "posted": "Postitas",
     "new": {
       "title": "Pealkiri",
@@ -29,5 +35,15 @@
       "maxLength": "Maksimaalselt {{value}} tähemärki pikk",
       "create": "Loo postitus"
     }
+  },
+  "login": {
+    "name": "Nimi",
+    "pass": "Salasõna",
+    "login": "Logi sisse",
+    "register": "Registreeri",
+    "required": "See on vajalik",
+    "wrong": "Vale nimi või salasõna",
+    "taken": "Keegi krabas selle nime endale",
+    "back": "Tagasi"
   }
 }

@@ -30,9 +30,9 @@
  }
 
 &-button {
-   border: none;
    outline: none;
    background: #b53f3f;
+   border: 1px solid #b53f3f;
    padding: 10px;
    border-left: 1px solid rgba(0, 0, 0, 0.3);
    border-top-right-radius: 5px;
@@ -48,6 +48,18 @@
    border: 1px solid #b53f3f;
  }
 }
+}
+
+.login {
+  margin: 10px;
+  background-color: #73AD21;
+  color: black;
+  //border: 1px solid #73AD21;
+}
+
+.login:hover {
+  color: #f3e1d5;
+  //border: 1px solid #b53f3f;
 }
 
 .logo {
