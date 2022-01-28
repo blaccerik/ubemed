@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {catchError, map, Observable, of, throwError as observableThrowError} from 'rxjs';
 import {Post} from "../model/Post";
+import {Vote} from "../model/Vote";
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,9 @@ export class ForumService {
     return this.http.post<Post>(this.apiUrl + "/new", data).pipe(catchError(this.handleError));
   }
 
-  // put(data: ForumPost) {
-  //   const headers = new Headers();
-  //   headers.append('Content-Type', 'application/json');
-  //   return this.http.put<ForumPost>(this.apiUrl, data).pipe(catchError(this.handleError));
-  // }
+  put(vote: Vote, id: number) {
+    return this.http.put<Vote>(`${this.apiUrl}/${id}`, vote).pipe(map(data => data), catchError(this.handleError))
+  }
 
   private handleError(res: HttpErrorResponse | any) {
     console.error(res.error || res.body.error);

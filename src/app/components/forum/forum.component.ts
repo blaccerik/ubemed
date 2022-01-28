@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router";
 import {ForumService} from "../services/forum.service";
 import {Post} from "../model/Post";
+import {Vote} from "../model/Vote";
+import {AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-forum',
@@ -15,16 +17,19 @@ export class ForumComponent implements OnInit {
   constructor(
     private router: Router,
     private service: ForumService,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.service.getAll().subscribe(
       posts => {
-        console.log(posts)
         if (posts) {
           hideloader();
         }
-        this.posts = posts});
+        this.posts = posts
+      });
+
+
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
@@ -39,13 +44,37 @@ export class ForumComponent implements OnInit {
     this.router.navigate(["forum/new"])
   }
 
-  vote(event: Event, upvote : boolean, id: number) {
-    // todo add logic to vote
+  vote(event: Event, upvote : boolean, id: number, vote: string) {
     event.stopPropagation();
-    if (upvote) {
-      console.log("bbb")
+    this.service.put(new Vote(upvote), id).subscribe();
+    let post = this.posts.find(element => element.id == id);
+    if (post) {
+      this.changePostVote(post, upvote, vote);
+    }
+  }
+
+  changePostVote(post: Post, upvote: boolean, vote: string) {
+    if ((upvote && vote == "upvote") || (!upvote && vote == "downvote")) {
+      post.myVote = "neutral";
+      if (upvote) {
+        post.votes = post.votes - 1;
+      } else {
+        post.votes = post.votes + 1;
+      }
+    } else if (upvote) {
+      if (post.myVote == "downvote") {
+        post.votes = post.votes + 2
+      } else {
+        post.votes = post.votes + 1
+      }
+      post.myVote = "upvote";
     } else {
-      console.log("cc")
+      if (post.myVote == "upvote") {
+        post.votes = post.votes - 2
+      } else {
+        post.votes = post.votes - 1
+      }
+      post.myVote = "downvote";
     }
   }
 

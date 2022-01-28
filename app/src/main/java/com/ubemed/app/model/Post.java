@@ -15,6 +15,13 @@ public class Post {
     private int votes;
     private String author;
     private String title;
+    private vote myVote;
+
+    public enum vote {
+        upvote,
+        neutral,
+        downvote
+    }
 
     public Post(DBPost dbPost) {
         this.msg = dbPost.getMsg();
@@ -22,5 +29,15 @@ public class Post {
         this.author = dbPost.getAuthor();
         this.title = dbPost.getTitle();
         this.votes = dbPost.getVotes();
+        this.myVote = vote.neutral;
+    }
+
+    public Post(DBPost dbPost, vote action) {
+        this.msg = dbPost.getMsg();
+        this.id = dbPost.getId();
+        this.author = dbPost.getAuthor();
+        this.title = dbPost.getTitle();
+        this.votes = dbPost.getVotes();
+        this.myVote = action;
     }
 }

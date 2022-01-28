@@ -31,8 +31,13 @@ public class ForumController {
 
     @GetMapping()
     public List<Post> findAll(
+            @RequestHeader(name="Authorization", required = false) String token
     ) {
-        return forumService.findAll();
+        if (token == null) {
+            return forumService.findAll();
+        }
+        String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
+        return forumService.findAllAuth(username);
     }
 
     @PostMapping("/new")
@@ -58,7 +63,14 @@ public class ForumController {
     }
 
     @GetMapping("/{id}")
-    public Post find(@PathVariable Long id) {
-        return forumService.find(id);
+    public Post find(
+            @PathVariable Long id,
+            @RequestHeader(name="Authorization", required = false) String token
+    ) {
+        if (token == null) {
+            return forumService.find(id);
+        }
+        String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
+        return forumService.findAuth(id, username);
     }
 }

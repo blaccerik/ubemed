@@ -8,9 +8,11 @@
 <div *ngIf="post" class="post">
   <div class="info">
     <div class="votes">
-      <button (click)="vote($event, true, post.id)">▲</button>
+      <button [ngStyle]="{'color': post.myVote === 'upvote' ? 'red' : 'black'}"
+              (click)="vote($event, true, post.id, post.myVote)" [disabled]="!authService.isLoggedIn()">▲</button>
       {{post.votes}}
-      <button (click)="vote($event, false, post.id)">▼</button>
+      <button [ngStyle]="{'color': post.myVote === 'downvote' ? 'blue' : 'black'}"
+              (click)="vote($event, false, post.id, post.myVote)" [disabled]="!authService.isLoggedIn()">▼</button>
     </div>
     <div class="message">
       <div>

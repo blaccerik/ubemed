@@ -4,6 +4,7 @@ export class Post {
   title: string;
   votes: number;
   id: number;
+  myVote: string;
 
   // constructor(title: string, message: string, name: string) {
   //   this.message = message;
