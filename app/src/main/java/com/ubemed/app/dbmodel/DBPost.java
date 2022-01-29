@@ -5,11 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,15 +21,13 @@ public class DBPost {
     private String msg;
     @Column(name = "title")
     private String title;
-    @Column(name = "author")
-    private String author;
-    @Column(name = "votes")
-    private int votes;
+    @Column(name = "totalVotes")
+    private int totalVotes;
 
-    public DBPost(Post post) {
-        this.author = post.getAuthor();
-        this.title = post.getTitle();
-        this.msg = post.getMsg();
-        this.votes = post.getVotes();
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DBUser dbUser;
+
+    @OneToMany(targetEntity = DBVote.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "votes", referencedColumnName = "id")
+    private List<DBVote> votes;
 }

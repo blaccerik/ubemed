@@ -26,7 +26,7 @@ public class ForumService {
     private UserRepository userRepository;
 
     private Stream<DBPost> getFromRepo() {
-        return forumRepository.findAllSorted().stream();
+        return forumRepository.findAll().stream();
     }
 
     public List<Post> findAll() {
@@ -38,17 +38,20 @@ public class ForumService {
         if (optionalDBUser.isEmpty()) {
             return findAll();
         }
-        long userId = optionalDBUser.get().getId();
+        DBUser dbUser = optionalDBUser.get();
         return getFromRepo().map(
-                dbPost -> this.map(dbPost, userId)
+                dbPost -> this.map(dbPost, dbUser)
         ).collect(Collectors.toList());
     }
 
-    private Post map(DBPost dbPost, long userId) {
-        Optional<DBVote> optionalDBVote = voteRepository.findBy(dbPost.getId(), userId);
+    private Post map(DBPost dbPost, DBUser dbUser) {
+        Optional<DBVote> optionalDBVote = dbPost.getVotes().stream()
+                .filter(p -> p.getDbUser().getId() == dbUser.getId()).findFirst();
+
         if (optionalDBVote.isEmpty()) {
             return new Post(dbPost);
         }
+
         int action = optionalDBVote.get().getAction();
         if (action > 0) {
             return new Post(dbPost, Post.vote.upvote);
@@ -57,7 +60,19 @@ public class ForumService {
     }
 
     public void add(Post post) {
-        forumRepository.save(new DBPost(post));
+        Optional<DBUser> optionalDBUser = userRepository.findByName(post.getAuthor());
+        if (optionalDBUser.isPresent()) {
+            DBUser dbUser = optionalDBUser.get();
+
+            DBPost dbPost = new DBPost();
+            dbPost.setTotalVotes(0);
+            dbPost.setMsg(post.getMsg());
+            dbPost.setTitle(post.getTitle());
+            dbPost.setDbUser(dbUser);
+
+            dbUser.getPosts().add(dbPost);
+            userRepository.save(dbUser);
+        }
     }
 
     public Post find(Long id) {
@@ -69,9 +84,9 @@ public class ForumService {
         if (optionalDBUser.isEmpty()) {
             return find(id);
         }
-        long userId = optionalDBUser.get().getId();
+        DBUser dbUser = optionalDBUser.get();
         return forumRepository.findById(id).map(
-                dbPost -> this.map(dbPost, userId)
+                dbPost -> this.map(dbPost, dbUser)
         ).orElse(null);
     }
 

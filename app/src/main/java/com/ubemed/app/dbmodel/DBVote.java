@@ -6,15 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.tomcat.jni.Address;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
@@ -25,18 +17,26 @@ public class DBVote {
 
 //
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private long id;
-    @Column(name = "user_id")
-    private long user_id;
     @Column(name = "action")
     private int action;
-    @Column(name = "post_id")
-    private long post_id;
+//    @Column(name = "user_id")
+//    private long user_id;
 
-    public DBVote(long user_id, long post_id, int action) {
-        this.user_id = user_id;
-        this.post_id = post_id;
-        this.action = action;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DBUser dbUser;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private DBPost dbPost;
+
+
+//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private DBUser dbUser;
+//
+//    public DBVote(long user_id, long post_id, int action) {
+////        this.user_id = user_id;
+////        this.post_id = post_id;
+//        this.action = action;
+//    }
 }

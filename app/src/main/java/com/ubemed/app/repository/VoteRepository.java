@@ -9,10 +9,4 @@ import java.util.Optional;
 
 @org.springframework.stereotype.Repository
 public interface VoteRepository extends JpaRepository<DBVote, Long> {
-
-    @Query(value = "select * from public.dbvote where user_id=:user and post_id=:post", nativeQuery = true)
-    Optional<DBVote> findBy(long post, long user);
-
-
-
 }

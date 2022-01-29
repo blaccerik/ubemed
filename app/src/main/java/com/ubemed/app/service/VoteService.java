@@ -28,38 +28,39 @@ public class VoteService {
             return false;
         }
         DBUser dbUser = optionalDBUser.get();
+
         Optional<DBPost> optionalDBPost = forumRepository.findById(postId);
         if (optionalDBPost.isEmpty()) {
             return false;
         }
         DBPost dbPost = optionalDBPost.get();
 
-        // find if has already voted
-        Optional<DBVote> optionalDBVote = voteRepository.findBy(dbPost.getId(), dbUser.getId());
+        Optional<DBVote> optionalDBVote = dbPost.getVotes().stream()
+                .filter(p -> p.getDbUser().getId() == dbUser.getId()).findFirst();
         DBVote dbVote;
         if (optionalDBVote.isEmpty()) {
+            dbVote = new DBVote();
             if (isUpvote) {
-                dbVote = new DBVote(dbUser.getId(), dbPost.getId(), 1);
-                dbPost.setVotes(dbPost.getVotes() + 1);
+                dbVote.setAction(1);
+                dbPost.setTotalVotes(dbPost.getTotalVotes() + 1);
             } else {
-                dbVote = new DBVote(dbUser.getId(), dbPost.getId(), -1);
-                dbPost.setVotes(dbPost.getVotes() - 1);
+                dbVote.setAction(-1);
+                dbPost.setTotalVotes(dbPost.getTotalVotes() - 1);
             }
-            forumRepository.save(dbPost);
-            voteRepository.save(dbVote);
+            dbVote.setDbUser(dbUser);
+            dbPost.getVotes().add(dbVote);
         } else {
             dbVote = optionalDBVote.get();
             int action = dbVote.getAction();
             if ((isUpvote && action == 1) || (!isUpvote && action == -1)) {
-                voteRepository.delete(dbVote);
-                dbPost.setVotes(dbPost.getVotes() - action);
+                dbPost.setTotalVotes(dbPost.getTotalVotes() - action);
+                dbPost.getVotes().remove(dbVote);
             } else {
                 dbVote.setAction(-action);
-                voteRepository.save(dbVote);
-                dbPost.setVotes(dbPost.getVotes() - 2 * action);
+                dbPost.setTotalVotes(dbPost.getTotalVotes()- 2 * action);
             }
-            forumRepository.save(dbPost);
         }
+        forumRepository.save(dbPost);
         return true;
     }
 }

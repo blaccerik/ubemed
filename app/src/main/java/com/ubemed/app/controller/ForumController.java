@@ -4,7 +4,6 @@ import com.ubemed.app.config.JwtTokenUtil;
 import com.ubemed.app.model.Post;
 import com.ubemed.app.model.Vote;
 import com.ubemed.app.service.ForumService;
-import com.ubemed.app.service.UserService;
 import com.ubemed.app.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +56,6 @@ public class ForumController {
             @RequestHeader(name="Authorization") String token,
             @RequestBody Vote vote
             ) {
-
         String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
         return voteService.vote(postId, username, vote.isUpvote());
     }

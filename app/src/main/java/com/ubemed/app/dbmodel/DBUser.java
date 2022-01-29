@@ -5,13 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,7 +21,8 @@ public class DBUser {
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue
+  @Column(name = "id")
   private long id;
   @Column(name = "name")
   private String name;
@@ -33,6 +30,20 @@ public class DBUser {
   private String pass;
   @Column(name = "role")
   private String role;
+
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "coin_id")
+  private DBCoin dbCoin;
+
+//   votes made by user
+//  @OneToMany(targetEntity = DBVote.class, cascade = CascadeType.ALL)
+//  @JoinColumn(name = "user_vote", referencedColumnName = "id")
+//  private List<DBVote> votes;
+
+  // posts made by user
+  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
+//  @JoinColumn(name = "user_post", referencedColumnName = "id")
+  private List<DBPost> posts;
 
   public DBUser(String name, String pass, roles role) {
     this.role = role.toString();

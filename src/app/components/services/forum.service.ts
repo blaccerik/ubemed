@@ -25,10 +25,6 @@ export class ForumService {
   }
 
   post(data: Post) {
-    // const headers = new Headers();
-    // headers.append('Content-Type', 'application/json');
-    // headers.append("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2NDI4ODcxMDIsImlhdCI6MTY0Mjg2OTEwMn0.4_jJ1sjpH9BBrYimNs0SvXkj4z7faN5f4sQ5r8Pf91g9RVZCX2o_5jxbsWPqXrFJJk4ksZkKpsUK6PKSUcCCVg")
-    // { 'headers': headers }
     return this.http.post<Post>(this.apiUrl + "/new", data).pipe(catchError(this.handleError));
   }
 
