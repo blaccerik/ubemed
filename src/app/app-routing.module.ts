@@ -7,6 +7,7 @@ import {ForumComponent} from "./components/forum/forum.component";
 import {CreatePostComponent} from "./components/forum/createpost/create-post.component";
 import {PostComponent} from "./components/forum/post/post.component";
 import {ErrorComponent} from "./components/error/error.component";
+import {StoreComponent} from "./components/store/store.component";
 
 const routes: Routes = [
   { path: '', component: HomeComponent,},
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'forum/new', component: CreatePostComponent},
   { path: 'forum/:id', component: PostComponent},
   { path: 'error', component: ErrorComponent},
+  { path: 'store', component: StoreComponent}
 ];
 
 @NgModule({

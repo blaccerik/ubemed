@@ -13,7 +13,6 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     CoinRepository coinRepository;
 
@@ -24,7 +23,6 @@ public class UserService {
             DBCoin dbCoin = new DBCoin();
             dbCoin.setDbUser(dbUser);
             dbCoin.setCoins(0);
-            dbUser.setDbCoin(dbCoin);
             userRepository.save(dbUser);
             coinRepository.save(dbCoin);
             return true;

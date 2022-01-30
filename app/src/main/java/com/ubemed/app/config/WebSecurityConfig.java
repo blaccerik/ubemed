@@ -74,6 +74,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger*/**",
                         "/v2/api-docs",
                         "/forum/**",
+                        "/store/**",
                         "/users/**"
                 )
                 .permitAll()

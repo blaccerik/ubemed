@@ -19,6 +19,6 @@ public class DBCoin {
     private long id;
     private long coins;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dbCoin")
+    @OneToOne(fetch = FetchType.LAZY)
     private DBUser dbUser;
 }

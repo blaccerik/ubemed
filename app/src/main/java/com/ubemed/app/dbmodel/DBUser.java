@@ -31,19 +31,11 @@ public class DBUser {
   @Column(name = "role")
   private String role;
 
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "coin_id")
-  private DBCoin dbCoin;
-
-//   votes made by user
-//  @OneToMany(targetEntity = DBVote.class, cascade = CascadeType.ALL)
-//  @JoinColumn(name = "user_vote", referencedColumnName = "id")
-//  private List<DBVote> votes;
-
-  // posts made by user
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
-//  @JoinColumn(name = "user_post", referencedColumnName = "id")
   private List<DBPost> posts;
+
+  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<DBProduct> products;
 
   public DBUser(String name, String pass, roles role) {
     this.role = role.toString();

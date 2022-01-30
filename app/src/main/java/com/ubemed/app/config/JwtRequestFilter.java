@@ -73,8 +73,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         try {
             chain.doFilter(request, response);
-        } catch (IOException | ServletException ioException) {
+        } catch (ServletException servletException) {
             System.out.println("invalid auth");
+        } catch (IOException ioException) {
             ioException.printStackTrace();
         }
     }

@@ -29,6 +29,7 @@ import { ErrorComponent } from './components/error/error.component';
 import { LoginComponent } from './components/login/login.component';
 import {JWTInterceptor} from "./components/interceptor/jwt.interceptor";
 import {MatDialogModule} from "@angular/material/dialog";
+import { StoreComponent } from './components/store/store.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import {MatDialogModule} from "@angular/material/dialog";
     CreatePostComponent,
     PostComponent,
     ErrorComponent,
-    LoginComponent
+    LoginComponent,
+    StoreComponent
   ],
     imports: [
         BrowserModule,
