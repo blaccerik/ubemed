@@ -7,7 +7,8 @@
     "events": "Spordialad",
     "forum": "Foorum",
     "login": "Logi sisse",
-    "logged-in-as": "Logitud sisse kasuajaga"
+    "logged-in-as": "Logitud sisse kasuajaga",
+    "store": "Pood"
   },
   "calculator": {
     "module-name": "Kalkulaator",
@@ -45,5 +46,18 @@
     "wrong": "Vale nimi või salasõna",
     "taken": "Keegi krabas selle nime endale",
     "back": "Tagasi"
+  },
+  "store": {
+    "new":{
+      "maxLength": "Maksimaalselt {{value}} tähemärki pikk",
+      "required": "See on vajalik",
+      "title": "Pealkiri",
+      "desc": "Seletus",
+      "cost": {
+        "name": "Hind",
+        "min": "Suurem kui 0",
+        "max": "Väiksem kui {{value}}"
+      }
+    }
   }
 }

@@ -1,3 +1,12 @@
+<div>
+  <div>
+    <button [disabled]="!!authService.isLoggedIn()" (click)="create()" mat-button class="create">
+      create
+    </button>
+  </div>
+</div>
+
+
 <div class="container row">
   <div class="col-md-12">
     <h1>Upload Image</h1>
@@ -7,13 +16,11 @@
 <div class="container row">
   <div class="col-md-6">
     <input type="file" (change)="onFileChanged($event)">
-
   </div>
   <div class="col-md-6">
     <input type="button" (click)="onUpload()" value="upload">
   </div>
 </div>
-<hr />
 <div class="container row">
   <div class="col-md-12">
     <div *ngIf=message>{{message}}</div>
@@ -27,14 +34,13 @@
   </div>
   <div class="col-md-6">
     <input type="button" (click)="getImage()" value="Get Image">
-
   </div>
 </div>
 
 <div class="container row">
   <div class="col-md-12">
     <div *ngIf=retrievedImage>
-      <img [src]="retrievedImage">
+      <img [src]="retrievedImage" alt="image">
     </div>
   </div>
 </div>

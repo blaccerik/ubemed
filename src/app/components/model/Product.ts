@@ -3,6 +3,5 @@ export class Product {
   seller: string;
   title: string;
   id: number;
-  description: string;
   picByte: any;
 }

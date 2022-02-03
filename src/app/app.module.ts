@@ -30,6 +30,8 @@ import { LoginComponent } from './components/login/login.component';
 import {JWTInterceptor} from "./components/interceptor/jwt.interceptor";
 import {MatDialogModule} from "@angular/material/dialog";
 import { StoreComponent } from './components/store/store.component';
+import { StoreNewComponent } from './components/store/store-new/store-new.component';
+import {MatChipsModule} from "@angular/material/chips";
 
 @NgModule({
   declarations: [
@@ -43,7 +45,8 @@ import { StoreComponent } from './components/store/store.component';
     PostComponent,
     ErrorComponent,
     LoginComponent,
-    StoreComponent
+    StoreComponent,
+    StoreNewComponent
   ],
     imports: [
         BrowserModule,
@@ -70,7 +73,8 @@ import { StoreComponent } from './components/store/store.component';
         MatToolbarModule,
         MatMenuModule,
         MatButtonToggleModule,
-        MatDialogModule
+        MatDialogModule,
+        MatChipsModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true, },

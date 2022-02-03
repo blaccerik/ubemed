@@ -1,0 +1,9 @@
+.create {
+  background-color: #73AD21;
+  width: fit-content;
+}
+
+.create:hover {
+  color: #f3e1d5;
+}
+

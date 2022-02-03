@@ -15,6 +15,9 @@
     <span class="logo" routerLink="/forum">{{ 'search-bar.forum' | translate }}</span>
   </div>
   <div>
+    <span class="logo" routerLink="/store">{{ 'search-bar.store' | translate }}</span>
+  </div>
+  <div>
     <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
       <input class="search-input"
              name="search"

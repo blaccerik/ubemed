@@ -4,6 +4,7 @@ import {StoreService} from "../services/store.service";
 import {Post} from "../model/Post";
 import {HttpClient} from "@angular/common/http";
 import {Product} from "../model/Product";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-store',
@@ -15,8 +16,10 @@ export class StoreComponent implements OnInit {
   products: Product[] = [];
 
   constructor(
+    private router: Router,
     private storeService: StoreService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +43,10 @@ export class StoreComponent implements OnInit {
   imageName: any;
 
   private apiUrl = '/api/store';
+
+  create() {
+    this.router.navigate(["store/new"])
+  }
 
   //Gets called when the user selects an image
   public onFileChanged(event: any) {
