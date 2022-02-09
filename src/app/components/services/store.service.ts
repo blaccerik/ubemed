@@ -15,7 +15,7 @@ export class StoreService {
     return this.http.get<Product[]>(this.apiUrl).pipe()
   }
 
-  upload(form: FormData) {
+  upload(form: Product) {
     return this.http.post<boolean>(this.apiUrl + "/add", form).pipe(catchError(this.handleError))
   }
 

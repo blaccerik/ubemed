@@ -43,7 +43,7 @@ public class StoreController {
             @RequestHeader(name="Authorization") String token,
             @RequestPart(value = "file") MultipartFile file,
             @RequestPart(value = "title") String title,
-            @RequestPart(value = "desc") String desc,
+            @RequestPart(value = "cats") List<String> cats,
             // All numbers must be strings or else it wont work
             @RequestPart(value = "cost") String cost_string
     ) {
@@ -55,7 +55,8 @@ public class StoreController {
         } catch (NumberFormatException exception) {
            return false;
         }
-        return storeService.save(username, title, desc, cost, file);
+        System.out.println(cats);
+        return storeService.save(username, title, "e", cost, file);
     }
 
     @GetMapping("/get")

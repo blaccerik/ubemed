@@ -1,7 +1,8 @@
 export class Product {
+  cats: [];
   cost: number;
   seller: string;
   title: string;
   id: number;
-  picByte: any;
+  img: any;
 }

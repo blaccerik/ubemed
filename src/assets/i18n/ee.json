@@ -49,6 +49,12 @@
   },
   "store": {
     "new":{
+      "cat1": "1",
+      "cat2": "2",
+      "cat3": "3",
+      "cat4": "4",
+      "cat5": "5",
+      "cat6": "6",
       "maxLength": "Maksimaalselt {{value}} tähemärki pikk",
       "required": "See on vajalik",
       "title": "Pealkiri",

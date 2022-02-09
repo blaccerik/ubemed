@@ -1,0 +1,35 @@
+.create {
+  background-color: #f3e1d5;
+  border-radius: 5px;
+  padding: 16px;
+  margin: 50px;
+  width: 700px;
+  display: inline-block;
+}
+
+.cat-options {
+  border: 2px solid #000000;
+  border-radius: 15px;
+  padding: 5px;
+  display: inline-block;
+}
+
+.title {
+  width: 500px;
+}
+
+.cost{
+  width: 150px;
+}
+
+.image-container {
+  /*background-color: #4CAF50;*/
+  border: 1px solid #000000;
+  width: 200px;
+  height: 200px;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}

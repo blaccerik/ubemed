@@ -14,14 +14,6 @@
 </div>
 
 <div class="container row">
-  <div class="col-md-6">
-    <input type="file" (change)="onFileChanged($event)">
-  </div>
-  <div class="col-md-6">
-    <input type="button" (click)="onUpload()" value="upload">
-  </div>
-</div>
-<div class="container row">
   <div class="col-md-12">
     <div *ngIf=message>{{message}}</div>
   </div>
@@ -49,7 +41,7 @@
   <li *ngFor="let product of products">
     <div *ngIf="product">
       <div>{{product.title}}</div>
-      <img [src]="image(product.picByte)">
+      <img [src]="image(product.img)">
     </div>
   </li>
 </ul>

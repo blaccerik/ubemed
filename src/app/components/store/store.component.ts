@@ -54,29 +54,6 @@ export class StoreComponent implements OnInit {
     this.selectedFile = event.target.files[0];
   }
 
-
-  //Gets called when the user clicks on submit to upload the image
-  onUpload() {
-    const product = new Product();
-    product.id = 1
-    // product.file = this.selectedFile;
-    const uploadImageData = new FormData();
-    uploadImageData.append('file', this.selectedFile, this.selectedFile.name);
-
-    // @ts-ignore
-    uploadImageData.append('title', "test");
-    uploadImageData.append('desc', "desc");
-    // @ts-ignore
-    uploadImageData.append('cost', 7);
-
-    // product.multipartFile = uploadImageData
-    this.storeService.upload(uploadImageData).subscribe(
-      res => {
-        console.log(res);
-      }
-    );
-  }
-
   image(array: any) {
     return  'data:image/jpeg;base64,' + array;
   }

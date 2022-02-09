@@ -1,0 +1,52 @@
+<div class="create">
+  <form [formGroup]="shop" (ngSubmit)="submit()">
+    <mat-chip-list [multiple]="true" [selectable]="true">
+      <mat-chip *ngFor="let category of categories" #chip="matChip"
+                (click)="category.selected ? chip.deselect() : chip.selectViaInteraction()"
+                [selected]="category.selected" [selectable]="true"
+                (selectionChange)="changeSelected($event, category)">
+        {{category.name | translate}}
+      </mat-chip>
+    </mat-chip-list>
+    <table>
+      <tr>
+        <td>
+          <mat-form-field class="title" appearance="outline">
+            <mat-label>{{ 'store.new.title' | translate }}</mat-label>
+            <input matInput formControlName="title"/>
+            <mat-error *ngIf="hasError('title', 'required')">
+              {{ 'store.new.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('title', 'maxlength')">
+              {{ 'store.new.maxLength' | translate: { value: title } }}
+            </mat-error>
+          </mat-form-field>
+        </td>
+        <td>
+          <mat-form-field class="cost" appearance="outline">
+            <mat-label>{{ 'store.new.cost.name' | translate }}</mat-label>
+            <input type="number" matInput formControlName="cost"/>
+            <mat-error *ngIf="hasError('cost', 'required')">
+              {{ 'store.new.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('cost', 'min')">
+              {{ 'store.new.cost.min' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('cost', 'max')">
+              {{ 'store.new.cost.max' | translate: { value: max } }}
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <div class="image-container" *ngIf="filePath && filePath !== '' && shop.get('img')!.value">
+          <img [src]="filePath" [alt]="shop.value.name">
+        </div>
+        <input type="file" accept="image/*" (change)="imagePreview($event)" />
+      </tr>
+    </table>
+    <button mat-raised-button [disabled]="shop.invalid">{{ 'forum.new.create' | translate }}</button>
+  </form>
+  <div>
+  </div>
+</div>
