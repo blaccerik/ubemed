@@ -18,7 +18,6 @@ export class StoreComponent implements OnInit {
   constructor(
     private router: Router,
     private storeService: StoreService,
-    private httpClient: HttpClient,
     public authService: AuthService
   ) {}
 
@@ -29,46 +28,16 @@ export class StoreComponent implements OnInit {
         //   hideloader();
         // }
         console.log(next)
-        // console.log(next)
         this.products = next
       }
       );
   }
 
-  selectedFile: File;
-  retrievedImage: any;
-  base64Data: any;
-  retrieveResonse: any;
-  message: string;
-  imageName: any;
-
-  private apiUrl = '/api/store';
-
   create() {
     this.router.navigate(["store/new"])
-  }
-
-  //Gets called when the user selects an image
-  public onFileChanged(event: any) {
-    //Select File
-    this.selectedFile = event.target.files[0];
   }
 
   image(array: any) {
     return  'data:image/jpeg;base64,' + array;
   }
-
-  //Gets called when the user clicks on retieve image button to get the image from back end
-  getImage() {
-    //Make a call to Sprinf Boot to get the Image Bytes.
-    this.httpClient.get(this.apiUrl + "/get/")
-      .subscribe(
-        res => {
-          this.retrieveResonse = res;
-          this.base64Data = this.retrieveResonse.picByte;
-          this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
-        }
-      );
-  }
-
 }

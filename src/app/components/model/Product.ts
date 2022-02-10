@@ -1,8 +1,8 @@
 export class Product {
-  cats: [];
+  cats: string[];
   cost: number;
   seller: string;
   title: string;
   id: number;
-  img: any;
+  file: any;
 }

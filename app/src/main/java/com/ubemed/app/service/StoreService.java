@@ -1,9 +1,11 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBProduct;
+import com.ubemed.app.dbmodel.DBStoreCats;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.model.Product;
+import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,15 +29,18 @@ import java.util.zip.Inflater;
 @org.springframework.stereotype.Service
 public class StoreService {
 
-    private final int height = 100;
-    private final int width = 100;
+    private final int height = 200;
+    private final int width = 200;
     private final String imageName = "image";
 
     @Autowired
     private ProductRepository productRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private CatRepository catRepository;
 
     public List<Product> getAll() {
         return productRepository.findAll().stream().map(dbProduct -> new Product(dbProduct)).collect(Collectors.toList());
@@ -47,7 +53,7 @@ public class StoreService {
         return outputImage;
     }
 
-    public boolean save(String username, String title, String desc, long cost, MultipartFile file) {
+    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
 
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         DBUser dbUser;
@@ -58,11 +64,20 @@ public class StoreService {
         if (file.getContentType() == null || !file.getContentType().equals("image/png") && !file.getContentType().equals("image/jpeg")) {
             return false;
         }
-
         try {
+            List<DBStoreCats> catsList = new ArrayList<>();
+            for (Long aLong : cats) {
+                Optional<DBStoreCats> optionalDBStoreCats = catRepository.findByCode(aLong);
+                if (optionalDBStoreCats.isEmpty()) {
+                    return false;
+                }
+                catsList.add(optionalDBStoreCats.get());
+            }
+
+
             System.out.println(file.getBytes().length);
             DBStoreImage dbStoreImage = modifyFile(file);
-            System.out.println(dbStoreImage.getPicByte().length);
+            System.out.println(dbStoreImage.getFile().length);
 
             DBProduct dbProduct = new DBProduct();
             dbProduct.setDbUser(dbUser);
@@ -71,10 +86,9 @@ public class StoreService {
 
             dbProduct.setCost(cost);
             dbProduct.setTitle(title);
-            dbProduct.setDescription(desc);
+            dbProduct.setDbStoreCats(catsList);
 
             dbUser.getProducts().add(dbProduct);
-
             userRepository.save(dbUser);
             return true;
         } catch (IOException ioException) {
@@ -136,17 +150,12 @@ public class StoreService {
         return outputStream.toByteArray();
     }
 
-//    public DBStoreImage get(String name) {
-//        Optional<DBStoreImage> optionalDBStoreImage = productRepository.findByName(name);
-//        if (optionalDBStoreImage.isPresent()) {
-//            DBStoreImage dbStoreImage = optionalDBStoreImage.get();
-//
-//            // decompress
-//            DBStoreImage img = new DBStoreImage(dbStoreImage.getName(), dbStoreImage.getType(), decompressBytes(dbStoreImage.getPicByte()));
-//
-//
-//            return img;
-//        }
-//        return null;
-//    }
+    public Product get(long id) {
+        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
+        if (optionalDBProduct.isPresent()) {
+            DBProduct dbProduct = optionalDBProduct.get();
+            return new Product(dbProduct);
+        }
+        return null;
+    }
 }

@@ -1,39 +1,8 @@
 <div>
   <div>
-    <button [disabled]="!!authService.isLoggedIn()" (click)="create()" mat-button class="create">
+    <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button class="create">
       create
     </button>
-  </div>
-</div>
-
-
-<div class="container row">
-  <div class="col-md-12">
-    <h1>Upload Image</h1>
-  </div>
-</div>
-
-<div class="container row">
-  <div class="col-md-12">
-    <div *ngIf=message>{{message}}</div>
-  </div>
-</div>
-
-<div class="container row">
-  <div class="col-md-6">
-    <input type="text" class="form-control" id="name" placeholder="image name" [(ngModel)]="imageName"
-           name="name" />
-  </div>
-  <div class="col-md-6">
-    <input type="button" (click)="getImage()" value="Get Image">
-  </div>
-</div>
-
-<div class="container row">
-  <div class="col-md-12">
-    <div *ngIf=retrievedImage>
-      <img [src]="retrievedImage" alt="image">
-    </div>
   </div>
 </div>
 
@@ -41,7 +10,7 @@
   <li *ngFor="let product of products">
     <div *ngIf="product">
       <div>{{product.title}}</div>
-      <img [src]="image(product.img)">
+      <img [src]="image(product.file)">
     </div>
   </li>
 </ul>

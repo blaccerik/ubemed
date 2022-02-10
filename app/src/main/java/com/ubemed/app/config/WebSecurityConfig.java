@@ -66,7 +66,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/forum/{id}").hasAnyAuthority("user")
                 .antMatchers(
                         "/users/check",
-                        "/forum/new")
+                        "/forum/new",
+                        "/store/add")
                 .hasAnyAuthority("user")
 
                 // no token

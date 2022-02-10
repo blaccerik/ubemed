@@ -33,19 +33,36 @@
               {{ 'store.new.cost.min' | translate }}
             </mat-error>
             <mat-error *ngIf="hasError('cost', 'max')">
-              {{ 'store.new.cost.max' | translate: { value: max } }}
+              {{ 'store.new.cost.max' | translate: { value: maxCost } }}
             </mat-error>
           </mat-form-field>
         </td>
       </tr>
       <tr>
-        <div class="image-container" *ngIf="filePath && filePath !== '' && shop.get('img')!.value">
+        <div class="image-container" *ngIf="filePath && filePath !== '' && shop.get('file')!.value">
           <img [src]="filePath" [alt]="shop.value.name">
         </div>
-        <input type="file" accept="image/*" (change)="imagePreview($event)" />
+      </tr>
+      <tr>
+        <td style="display: flex">
+          <label for="files" class="mat-raised-button btn">
+            {{ 'store.new.select' | translate }}
+          </label>
+          <div class="image-warning">
+            {{ 'store.new.warning' | translate: { value: imageMaxSize } }}
+          </div>
+        </td>
+        <td>
+          <input id="files" style="background-color: #73AD21; visibility:hidden;" type="file" accept="image/*" (change)="imagePreview($event)" />
+        </td>
       </tr>
     </table>
-    <button mat-raised-button [disabled]="shop.invalid">{{ 'forum.new.create' | translate }}</button>
+    <div style="margin-top: 10px; margin-left: 2px">
+      <button mat-raised-button [disabled]="shop.invalid">{{ 'store.new.create' | translate }}</button>
+      <mat-error *ngIf="showError">
+        {{ 'store.new.error' | translate }}
+      </mat-error>
+    </div>
   </form>
   <div>
   </div>

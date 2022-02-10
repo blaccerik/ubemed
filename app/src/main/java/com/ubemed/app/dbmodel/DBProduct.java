@@ -5,15 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -28,10 +21,11 @@ public class DBProduct {
     @ManyToOne(fetch = FetchType.LAZY)
     private DBUser dbUser;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<DBStoreCats> dbStoreCats;
+
     private long cost;
     private String title;
-    @Column(length = 1000)
-    private String description;
 
     @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private DBStoreImage dbStoreImage;

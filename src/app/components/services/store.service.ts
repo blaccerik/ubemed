@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {catchError, map, Observable, throwError as observableThrowError} from "rxjs";
 import {Product} from "../model/Product";
+import {FormGroup} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class StoreService {
     return this.http.get<Product[]>(this.apiUrl).pipe()
   }
 
-  upload(form: Product) {
+  upload(form: FormData) {
     return this.http.post<boolean>(this.apiUrl + "/add", form).pipe(catchError(this.handleError))
   }
 

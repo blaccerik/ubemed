@@ -1,7 +1,6 @@
 package com.ubemed.app.dbmodel;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -23,8 +22,8 @@ public class DBStoreImage {
 
     //image bytes can have large lengths so we specify a value
     //which is more than the default length for picByte column
-    @Column(name = "picByte", length = 1000)
-    private byte[] picByte;
+    @Column(name = "file", length = 1000)
+    private byte[] file;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -34,9 +33,9 @@ public class DBStoreImage {
         super();
     }
 
-    public DBStoreImage(String name, String type, byte[] picByte) {
+    public DBStoreImage(String name, String type, byte[] file) {
         this.name = name;
         this.type = type;
-        this.picByte = picByte;
+        this.file = file;
     }
 }
