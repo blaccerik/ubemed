@@ -1,16 +1,35 @@
-<div>
-  <div>
+
+<div class="container">
+  <div class="options">
     <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button class="create">
       create
     </button>
   </div>
-</div>
-
-<ul>
-  <li *ngFor="let product of products">
-    <div *ngIf="product">
-      <div>{{product.title}}</div>
-      <img [src]="image(product.file)">
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only" id="loading"></span>
     </div>
-  </li>
-</ul>
+  </div>
+  <div class="grid">
+    <div class="grid-item" *ngFor="let product of products">
+      <div class="grid-item-title">
+        {{product.title}}
+      </div>
+      <div>
+        {{ 'store.seller' | translate}}: {{product.seller}}
+      </div>
+      <div>
+        {{ 'store.cost' | translate}}: {{product.cost}}
+      </div>
+      <div class="grid-item-img">
+        <img [src]="image(product.file)" alt="image">
+      </div>
+      <button>
+        bid
+      </button>
+      <button>
+        buy
+      </button>
+    </div>
+  </div>
+</div>

@@ -7,7 +7,7 @@
     "events": "Spordialad",
     "forum": "Foorum",
     "login": "Logi sisse",
-    "logged-in-as": "Logitud sisse kasuajaga",
+    "logged-in-as": "Logitud sisse kasutajaga",
     "store": "Pood"
   },
   "calculator": {
@@ -48,6 +48,8 @@
     "back": "Tagasi"
   },
   "store": {
+    "seller": "Omanik",
+    "cost": "Hind",
     "new":{
       "cat1": "sport",
       "cat2": "mehed",

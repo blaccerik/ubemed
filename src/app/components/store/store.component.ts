@@ -9,7 +9,7 @@ import {Router} from "@angular/router";
 @Component({
   selector: 'app-store',
   templateUrl: './store.component.html',
-  styleUrls: ['./store.component.css']
+  styleUrls: ['./store.component.scss']
 })
 export class StoreComponent implements OnInit {
 
@@ -24,13 +24,17 @@ export class StoreComponent implements OnInit {
   ngOnInit(): void {
     this.storeService.getAll().subscribe(
       next => {
-        // if (posts) {
-        //   hideloader();
-        // }
-        console.log(next)
+        if (next) {
+          hideloader();
+        }
+        // console.log(next)
         this.products = next
       }
       );
+    function hideloader() {
+      // @ts-ignore
+      document.getElementById('loading').style.display = "none";
+    }
   }
 
   create() {
