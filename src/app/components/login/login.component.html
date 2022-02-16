@@ -8,7 +8,7 @@
             <mat-form-field class="w-100p" appearance="outline">
               <mat-label>{{ 'login.name' | translate }}</mat-label>
               <input matInput formControlName="username"/>
-              <mat-error *ngIf="hasError('username', 'required')">
+              <mat-error *ngIf="hasErrorLogin('username', 'required')">
                 {{ 'login.required' | translate }}
               </mat-error>
             </mat-form-field>
@@ -19,7 +19,7 @@
             <mat-form-field class="w-100p" appearance="outline">
               <mat-label>{{ 'login.pass' | translate }}</mat-label>
               <input matInput type="password" formControlName="password"/>
-              <mat-error *ngIf="hasError('password', 'required')">
+              <mat-error *ngIf="hasErrorLogin('password', 'required')">
                 {{ 'login.required' | translate }}
               </mat-error>
             </mat-form-field>
@@ -40,8 +40,11 @@
             <mat-form-field appearance="outline">
               <mat-label>{{ 'login.name' | translate }}</mat-label>
               <input matInput formControlName="username"/>
-              <mat-error *ngIf="hasError('username', 'required')">
+              <mat-error *ngIf="hasErrorRegister('username', 'required')">
                 {{ 'login.required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="hasErrorRegister('username', 'maxlength')">
+                {{ 'login.max' | translate }}
               </mat-error>
             </mat-form-field>
           </td>
@@ -51,7 +54,7 @@
             <mat-form-field appearance="outline">
               <mat-label>{{ 'login.pass' | translate }}</mat-label>
               <input matInput type="password" formControlName="password"/>
-              <mat-error *ngIf="hasError('password', 'required')">
+              <mat-error *ngIf="hasErrorRegister('password', 'required')">
                 {{ 'login.required' | translate }}
               </mat-error>
             </mat-form-field>
@@ -62,6 +65,9 @@
             <mat-form-field appearance="outline">
               <mat-label>{{ 'login.pass' | translate }}</mat-label>
               <input matInput type="password" formControlName="password2"/>
+              <mat-error *ngIf="hasErrorRegister('password2', 'notEquivalent')">
+                {{ 'login.pass-same' | translate }}
+              </mat-error>
             </mat-form-field>
           </td>
         </tr>

@@ -5,6 +5,9 @@ import {Post} from "../model/Post";
 import {HttpClient} from "@angular/common/http";
 import {Product} from "../model/Product";
 import {Router} from "@angular/router";
+import {LoginComponent} from "../login/login.component";
+import {MatDialog} from "@angular/material/dialog";
+import {StoreOfferComponent} from "./store-offer/store-offer.component";
 
 @Component({
   selector: 'app-store',
@@ -18,8 +21,13 @@ export class StoreComponent implements OnInit {
   constructor(
     private router: Router,
     private storeService: StoreService,
-    public authService: AuthService
+    public authService: AuthService,
+    private dialog: MatDialog,
   ) {}
+
+  ran() {
+    return Math.random() < 0.5;
+  }
 
   ngOnInit(): void {
     this.storeService.getAll().subscribe(
@@ -39,6 +47,15 @@ export class StoreComponent implements OnInit {
 
   create() {
     this.router.navigate(["store/new"])
+  }
+
+  makeOffer(id: number, offer: number) {
+    this.dialog.open(StoreOfferComponent, {
+      data: {
+        id: id,
+        cost: offer
+      }
+    });
   }
 
   image(array: any) {

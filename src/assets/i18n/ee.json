@@ -38,7 +38,9 @@
     }
   },
   "login": {
+    "max": "Liiga pikk nimi",
     "name": "Nimi",
+    "pass-same": "Salasõnad pole samad",
     "pass": "Salasõna",
     "login": "Logi sisse",
     "register": "Registreeri",
@@ -50,6 +52,13 @@
   "store": {
     "seller": "Omanik",
     "cost": "Hind",
+    "bid": "Loo Pakkumine",
+    "offer": {
+      "offer": "Pakkumine",
+      "title": "Loo pakkumine",
+      "bid": "Paku",
+      "max": "Rohkem kui {{value}}"
+    },
     "new":{
       "cat1": "sport",
       "cat2": "mehed",

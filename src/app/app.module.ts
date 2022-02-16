@@ -32,6 +32,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import { StoreComponent } from './components/store/store.component';
 import { StoreNewComponent } from './components/store/store-new/store-new.component';
 import {MatChipsModule} from "@angular/material/chips";
+import { StoreOfferComponent } from './components/store/store-offer/store-offer.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import {MatChipsModule} from "@angular/material/chips";
     ErrorComponent,
     LoginComponent,
     StoreComponent,
-    StoreNewComponent
+    StoreNewComponent,
+    StoreOfferComponent
   ],
     imports: [
         BrowserModule,

@@ -11,25 +11,44 @@
     </div>
   </div>
   <div class="grid">
-    <div class="grid-item" *ngFor="let product of products">
-      <div class="grid-item-title">
-        {{product.title}}
+    <div class="grid-item"
+         *ngFor="let product of products"
+         [ngStyle]="
+         product.cost < 10 ? { background: 'var(--normal)' } :
+         product.cost < 50 ? { background: 'var(--rare)' } :
+         { background: 'var(--epic)' }">
+      <div class="grid-item-data rarity-normal">
+        <div class="grid-item-title"
+             [ngStyle]="
+         product.cost < 10 ? { background: 'var(--title-normal)' } :
+         product.cost < 50 ? { background: 'var(--title-rare)' } :
+         { background: 'var(--title-epic)' }"
+        >
+          {{product.title}}
+        </div>
+        <div class="grid-item-owner">
+          {{ 'store.seller' | translate}}: {{product.seller}}
+        </div>
+        <div style="margin-left: 5px">
+          {{ 'store.cost' | translate}}: {{product.cost}}
+        </div>
+        <div style="display: flex">
+          <button [disabled]="!authService.isLoggedIn()"
+                  (click)="makeOffer(product.id, product.cost)"
+                  class="grid-item-button" mat-flat-button>
+            {{ 'store.bid' | translate}}
+          </button>
+<!--          <span class="fa fa-star checked"></span>-->
+          <div *ngIf="ran()" class="grid-item-top">
+<!--            <p>-->
+              <i class="star"></i>
+<!--            </p>-->
+          </div>
+        </div>
+        <div class="grid-item-img">
+          <img [src]="image(product.file)" alt="image">
+        </div>
       </div>
-      <div>
-        {{ 'store.seller' | translate}}: {{product.seller}}
-      </div>
-      <div>
-        {{ 'store.cost' | translate}}: {{product.cost}}
-      </div>
-      <div class="grid-item-img">
-        <img [src]="image(product.file)" alt="image">
-      </div>
-      <button>
-        bid
-      </button>
-      <button>
-        buy
-      </button>
     </div>
   </div>
 </div>

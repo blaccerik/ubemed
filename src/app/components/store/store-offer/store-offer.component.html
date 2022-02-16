@@ -1,0 +1,22 @@
+<div>
+  <mat-dialog-content>{{ 'store.offer.title' | translate }}</mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <table>
+      <tr>
+        <td>
+          <mat-form-field class="w-100p" appearance="outline">
+            <mat-label>{{ 'store.offer.offer' | translate }}</mat-label>
+            <input type="number" matInput formControlName="offer"/>
+            <mat-error *ngIf="hasError('offer', 'required')">
+              {{ 'login.required' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('offer', 'min')">
+              {{ 'store.offer.max' | translate: { value: cost } }}
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+    </table>
+    <button mat-raised-button [disabled]="form.invalid">{{ 'store.offer.bid'| translate }}</button>
+  </form>
+</div>

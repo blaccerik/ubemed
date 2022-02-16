@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
 
   initFormRegister() {
     return  this.formBuilder.group({
-      username: new FormControl('', [Validators.required]),
+      username: new FormControl('', [Validators.required, Validators.maxLength(20)]),
       password: new FormControl('', [Validators.required]),
       password2: new FormControl('', [Validators.required]),
     },{validator: this.checkIfMatchingPasswords('password', 'password2')}
@@ -61,8 +61,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  hasError(path: string, errorCode: string) {
+  hasErrorLogin(path: string, errorCode: string) {
     return this.login && this.login.hasError(errorCode, path);
+  }
+
+  hasErrorRegister(path: string, errorCode: string) {
+    return this.register && this.register.hasError(errorCode, path);
   }
 
   submitLogin() {

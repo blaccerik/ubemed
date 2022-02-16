@@ -12,3 +12,15 @@ body * {
   box-sizing: border-box;
 }
 
+:root {
+  --green: #73AD21;
+  --white: #f3e1d5;
+
+  --title-epic: #eea5d9;
+  --title-rare: #7bd38b;
+  --title-normal: #ebebf8;
+  --normal: #afa9a9;
+  --rare: #4aa84c;
+  --epic: #e84ee8;
+}
+
