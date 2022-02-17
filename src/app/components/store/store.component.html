@@ -38,15 +38,14 @@
                   class="grid-item-button" mat-flat-button>
             {{ 'store.bid' | translate}}
           </button>
-<!--          <span class="fa fa-star checked"></span>-->
-          <div *ngIf="ran()" class="grid-item-top">
-<!--            <p>-->
-              <i class="star"></i>
-<!--            </p>-->
-          </div>
+<!--          <div *ngIf="ran()" class="grid-item-top">-->
+<!--&lt;!&ndash;            <p>&ndash;&gt;-->
+<!--              <i class="star"></i>-->
+<!--&lt;!&ndash;            </p>&ndash;&gt;-->
+<!--          </div>-->
         </div>
         <div class="grid-item-img">
-          <img [src]="image(product.file)" alt="image">
+          <img *ngIf="product.file" [src]="image(product.file)" alt="image">
         </div>
       </div>
     </div>

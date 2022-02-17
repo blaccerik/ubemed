@@ -29,4 +29,8 @@ public class DBProduct {
 
     @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private DBStoreImage dbStoreImage;
+
+    @OneToMany(targetEntity = DBBid.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "bids", referencedColumnName = "id")
+    private List<DBBid> bids;
 }

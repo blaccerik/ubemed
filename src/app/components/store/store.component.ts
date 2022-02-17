@@ -35,8 +35,24 @@ export class StoreComponent implements OnInit {
         if (next) {
           hideloader();
         }
-        // console.log(next)
         this.products = next
+
+        // get images
+        for (let i = 0; i < this.products.length; i++) {
+          let product = this.products[i];
+          const value = localStorage.getItem("image-" + i)
+
+          // save to localstorage
+          if (!value) {
+            this.storeService.getImg(product.id).subscribe(
+              (next: any) => {
+                product.file = next.file;
+                localStorage.setItem("image-" + i, product.file);
+              }
+            )
+          }
+          product.file = value;
+        }
       }
       );
     function hideloader() {
@@ -59,6 +75,7 @@ export class StoreComponent implements OnInit {
   }
 
   image(array: any) {
+    // console.log(array)
     return  'data:image/jpeg;base64,' + array;
   }
 }

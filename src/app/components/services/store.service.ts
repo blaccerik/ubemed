@@ -16,6 +16,10 @@ export class StoreService {
     return this.http.get<Product[]>(this.apiUrl).pipe()
   }
 
+  public getImg(id: number): any {
+    return this.http.get(this.apiUrl + "/" + id).pipe(catchError(this.handleError))
+  }
+
   upload(form: FormData) {
     return this.http.post<boolean>(this.apiUrl + "/add", form).pipe(catchError(this.handleError))
   }

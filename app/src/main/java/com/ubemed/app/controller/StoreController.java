@@ -3,6 +3,9 @@ package com.ubemed.app.controller;
 import com.ubemed.app.config.JwtTokenUtil;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.model.Product;
+import com.ubemed.app.model.ProductImage;
+import com.ubemed.app.repository.ImageRepository;
+import com.ubemed.app.service.ImageService;
 import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequestMapping("/store")
 @RestController
@@ -21,18 +25,19 @@ public class StoreController {
     private final long maxCost = 10000;
 
     @Autowired
-    StoreService storeService;
+    private StoreService storeService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private ImageService imageService;
+
     @GetMapping()
     public List<Product> getAll(
-        @RequestParam(value = "page", required = false) Integer page,
-        @RequestParam(value = "filter", required = false) String filter
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "filter", required = false) String filter
     ) {
-//        System.out.println(page);
-//        System.out.println(filter);
         return storeService.getAll();
     }
 //
@@ -83,19 +88,9 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
-    public Product getImage(
+    public ProductImage getImage(
             @PathVariable Long id
-    ) {
-        return storeService.get(id);
-//        DBStoreImage dbStoreImage = new DBStoreImage();
-//        dbStoreImage.setFile(storeService.getAll().get(0).getFile());
-//        return dbStoreImage;
-
-//        ByteArrayInputStream bis = new ByteArrayInputStream(decompressBytes(image.getPicByte()));
-//        BufferedImage bImage2 = ImageIO.read(bis);
-//        ImageIO.write(bImage2, "jpg", new File("output.jpg") );
-//        System.out.println("image created");
-
-//        return storeService.get(imageName);
+    ) throws InterruptedException {
+        return imageService.get(id);
     }
 }

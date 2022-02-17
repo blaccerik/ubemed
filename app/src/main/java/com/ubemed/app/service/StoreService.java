@@ -1,10 +1,15 @@
 package com.ubemed.app.service;
 
+import com.ubemed.app.dbmodel.DBBid;
+import com.ubemed.app.dbmodel.DBPost;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBStoreCats;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
+import com.ubemed.app.dbmodel.DBVote;
+import com.ubemed.app.model.Post;
 import com.ubemed.app.model.Product;
+import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
@@ -41,6 +46,9 @@ public class StoreService {
 
     @Autowired
     private CatRepository catRepository;
+
+    @Autowired
+    private BidRepository bidRepository;
 
     public List<Product> getAll() {
         return productRepository.findAll().stream().map(dbProduct -> new Product(dbProduct)).collect(Collectors.toList());
@@ -148,14 +156,5 @@ public class StoreService {
             outputStream.close();
         } catch (IOException | DataFormatException ignored) {}
         return outputStream.toByteArray();
-    }
-
-    public Product get(long id) {
-        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isPresent()) {
-            DBProduct dbProduct = optionalDBProduct.get();
-            return new Product(dbProduct);
-        }
-        return null;
     }
 }
