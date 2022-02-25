@@ -1,20 +1,32 @@
 package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
-import com.ubemed.app.dbmodel.DBStoreImage;
+import com.ubemed.app.model.Bid;
+import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.Product;
 import com.ubemed.app.model.ProductImage;
-import com.ubemed.app.repository.ImageRepository;
+import com.ubemed.app.model.User;
+import com.ubemed.app.model.UserResponse;
 import com.ubemed.app.service.ImageService;
 import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @RequestMapping("/store")
 @RestController
@@ -33,6 +45,9 @@ public class StoreController {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    SimpMessagingTemplate template;
+
     @GetMapping()
     public List<Product> getAll(
             @RequestParam(value = "page", required = false) Integer page,
@@ -40,12 +55,6 @@ public class StoreController {
     ) {
         return storeService.getAll();
     }
-//
-//    @GetMapping()
-//    public List<>
-//
-
-
 
 
     @PostMapping("/add")
@@ -90,7 +99,25 @@ public class StoreController {
     @GetMapping("/{id}")
     public ProductImage getImage(
             @PathVariable Long id
-    ) throws InterruptedException {
+    ) {
         return imageService.get(id);
+    }
+
+    @PostMapping("/{id}")
+    public boolean makeBid(
+            @RequestHeader(name="Authorization") String token,
+            @PathVariable long id,
+            @RequestBody Bid bid
+    ) {
+        String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
+        boolean value = storeService.makeBid(username, id, bid.getAmount());
+        if (value) {
+            updateBids(username, id, bid.getAmount());
+        }
+        return value;
+    }
+
+    private void updateBids(String username, long id, long amount) {
+        template.convertAndSend("/bids/" + id, new BidResponse(username, amount));
     }
 }

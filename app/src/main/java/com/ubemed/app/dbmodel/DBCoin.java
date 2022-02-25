@@ -15,10 +15,11 @@ import java.util.Collection;
 public class DBCoin {
 
     @Id
-    @GeneratedValue
     private long id;
+
     private long coins;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
     private DBUser dbUser;
 }

@@ -1,6 +1,7 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBBid;
+import com.ubemed.app.dbmodel.DBCoin;
 import com.ubemed.app.dbmodel.DBPost;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBStoreCats;
@@ -61,8 +62,44 @@ public class StoreService {
         return outputImage;
     }
 
-    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
+    public boolean makeBid(String username, long id, long amount) {
+        Optional<DBUser> optionalDBUser = userRepository.findByName(username);
+        if (optionalDBUser.isEmpty()) {
+            return false;
+        }
+        DBUser dbUser = optionalDBUser.get();
+        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
+        if (optionalDBProduct.isEmpty()) {
+            return false;
+        }
+        DBProduct dbProduct = optionalDBProduct.get();
+        // find if has already bid on it
+        Optional<DBBid> optionalDBBid = dbProduct.getBids().stream().filter(
+                p -> p.getDbUser().getId() == dbUser.getId()).findFirst();
 
+        DBBid dbBid;
+        if (optionalDBBid.isPresent()) {
+            dbBid = optionalDBBid.get();
+            long total = dbBid.getAmount() + dbUser.getDbCoin().getCoins();
+            if (amount > total || amount <= dbBid.getAmount()) {
+                return false;
+            }
+            dbUser.getDbCoin().setCoins(total - amount);
+//            bidRepository.delete(dbBid);
+            dbBid.setAmount(amount);
+        } else {
+            dbUser.getDbCoin().setCoins(dbUser.getDbCoin().getCoins() - amount);
+            dbBid = new DBBid();
+            dbBid.setAmount(amount);
+            dbBid.setDbUser(dbUser);
+            dbProduct.getBids().add(dbBid);
+        }
+        productRepository.save(dbProduct);
+        userRepository.save(dbUser);
+        return true;
+    }
+
+    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         DBUser dbUser;
         if (optionalDBUser.isEmpty()) {

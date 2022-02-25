@@ -60,15 +60,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 // token + admin only
                 .authorizeRequests()
-                .antMatchers("/admin/**")
-                .hasAuthority("admin")
-                // token + user
-                .antMatchers(HttpMethod.PUT, "/forum/{id}").hasAnyAuthority("user")
-                .antMatchers(
-                        "/users/check",
-                        "/forum/new",
-                        "/store/add")
-                .hasAnyAuthority("user")
+//                .antMatchers("/admin/**")
+//                .hasAuthority("admin")
+//                // token + user
+//                .antMatchers(HttpMethod.PUT, "/forum/{id}").hasAnyAuthority("user")
+//                .antMatchers(
+//                        "/users/check",
+//                        "/forum/new",
+//                        "/store/add")
+//                .hasAnyAuthority("user")
 
                 // no token
                 .antMatchers(
@@ -76,7 +76,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/api-docs",
                         "/forum/**",
                         "/store/**",
-                        "/users/**"
+                        "/users/**",
+                        "/**"
                 )
                 .permitAll()
                 .anyRequest().authenticated()

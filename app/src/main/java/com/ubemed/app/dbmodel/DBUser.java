@@ -31,6 +31,9 @@ public class DBUser {
   @Column(name = "role")
   private String role;
 
+  @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private DBCoin dbCoin;
+
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DBPost> posts;
 
