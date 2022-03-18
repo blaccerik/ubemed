@@ -24,15 +24,10 @@ public class DBUser {
   @GeneratedValue
   @Column(name = "id")
   private long id;
-  @Column(name = "name")
   private String name;
-  @Column(name = "pass")
   private String pass;
-  @Column(name = "role")
   private String role;
-
-  @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private DBCoin dbCoin;
+  private long coins;
 
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DBPost> posts;
@@ -40,9 +35,10 @@ public class DBUser {
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DBProduct> products;
 
-  public DBUser(String name, String pass, roles role) {
+  public DBUser(String name, String pass, roles role, long coins) {
     this.role = role.toString();
     this.name = name;
     this.pass = pass;
+    this.coins = coins;
   }
 }

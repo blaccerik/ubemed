@@ -1,23 +1,26 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBBid;
-import com.ubemed.app.dbmodel.DBCoin;
 import com.ubemed.app.dbmodel.DBPost;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBStoreCats;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBVote;
+import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.Post;
 import com.ubemed.app.model.Product;
 import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
+import org.apache.logging.log4j.util.PropertySource;
+import org.hibernate.mapping.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -25,6 +28,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,7 +58,22 @@ public class StoreService {
     private BidRepository bidRepository;
 
     public List<Product> getAll() {
-        return productRepository.findAll().stream().map(dbProduct -> new Product(dbProduct)).collect(Collectors.toList());
+        List<Product> list = new ArrayList<>();
+        for (DBProduct dbProduct : productRepository.findAll()) {
+            if (dbProduct.isOnSale()) {
+                list.add(new Product(dbProduct));
+            }
+        }
+        return list;
+    }
+
+    public List<BidResponse> getBids(long id) {
+        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
+        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().isOnSale()) {
+            return Collections.emptyList();
+        }
+        DBProduct dbProduct = optionalDBProduct.get();
+        return dbProduct.getBids().stream().map(dbBid -> new BidResponse(dbBid.getDbUser().getName(), dbBid.getAmount())).collect(Collectors.toList());
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage) throws IOException {
@@ -69,10 +90,14 @@ public class StoreService {
         }
         DBUser dbUser = optionalDBUser.get();
         Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isEmpty()) {
+        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().isOnSale()) {
             return false;
         }
         DBProduct dbProduct = optionalDBProduct.get();
+        if (amount <= dbProduct.getCost() || dbProduct.getDbUser().getId() == dbUser.getId()) {
+            return false;
+        }
+
         // find if has already bid on it
         Optional<DBBid> optionalDBBid = dbProduct.getBids().stream().filter(
                 p -> p.getDbUser().getId() == dbUser.getId()).findFirst();
@@ -80,29 +105,82 @@ public class StoreService {
         DBBid dbBid;
         if (optionalDBBid.isPresent()) {
             dbBid = optionalDBBid.get();
-            long total = dbBid.getAmount() + dbUser.getDbCoin().getCoins();
+            long total = dbBid.getAmount() + dbUser.getCoins();
             if (amount > total || amount <= dbBid.getAmount()) {
                 return false;
             }
-            dbUser.getDbCoin().setCoins(total - amount);
+            dbUser.setCoins(total - amount);
 //            bidRepository.delete(dbBid);
             dbBid.setAmount(amount);
         } else {
-            dbUser.getDbCoin().setCoins(dbUser.getDbCoin().getCoins() - amount);
+            dbUser.setCoins(dbUser.getCoins() - amount);
             dbBid = new DBBid();
             dbBid.setAmount(amount);
             dbBid.setDbUser(dbUser);
             dbProduct.getBids().add(dbBid);
         }
+        dbProduct.setCost(dbBid.getAmount());
         productRepository.save(dbProduct);
         userRepository.save(dbUser);
         return true;
     }
 
+    @Transactional
+    public void endBids() {
+
+        Date date = new Date();
+        List<DBProduct> list = productRepository.findAll();
+        for (DBProduct dbProduct : list) {
+            if (dbProduct.isOnSale()) {
+                long secs = (date.getTime() -  dbProduct.getDate().getTime()) / 1000;
+                long hours = secs / 3600;
+                System.out.println(hours);
+                if (hours >= 24 || hours == 0) {
+                    // get top bid
+                    System.out.println(dbProduct.getBids());
+                    Optional<DBBid> optionalDBBid = dbProduct.getBids().stream().max(Comparator.comparingLong(DBBid::getAmount));
+
+                    DBUser oldUser = dbProduct.getDbUser();
+                    if (optionalDBBid.isPresent()) {
+
+                        DBBid dbBid = optionalDBBid.get();
+                        DBUser newUser = dbBid.getDbUser();
+
+                        // clear bids
+                        for (DBBid dbBid1 : dbProduct.getBids()) {
+                            DBUser dbUser = dbBid1.getDbUser();
+                            if (dbUser.getId() != newUser.getId()) {
+                                dbUser.setCoins(dbUser.getCoins() + dbBid1.getAmount());
+                                userRepository.save(dbUser);
+                                bidRepository.delete(dbBid1);
+                            }
+                        }
+//                        dbProduct.setBids(new ArrayList<>());
+                        dbProduct.setDbUser(newUser);
+                        dbProduct.setOnSale(false);
+
+                        oldUser.setCoins(oldUser.getCoins() + dbProduct.getCost());
+                        oldUser.getProducts().remove(dbProduct);
+
+                        newUser.getProducts().add(dbProduct);
+
+                        userRepository.save(oldUser);
+                        userRepository.save(newUser);
+                    }
+                    else  {
+                        oldUser.setCoins(oldUser.getCoins() + (dbProduct.getCost() / 2));
+                        oldUser.getProducts().remove(dbProduct);
+                        userRepository.save(oldUser);
+                    }
+                }
+            }
+        }
+    }
+
     public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         DBUser dbUser;
-        if (optionalDBUser.isEmpty()) {
+        if (optionalDBUser.isEmpty() || optionalDBUser.get().getCoins() < cost) {
             return false;
         }
         dbUser = optionalDBUser.get();
@@ -132,8 +210,12 @@ public class StoreService {
             dbProduct.setCost(cost);
             dbProduct.setTitle(title);
             dbProduct.setDbStoreCats(catsList);
+            dbProduct.setDate(new Date());
+            dbProduct.setOnSale(true);
+            dbProduct.setBids(new ArrayList<>());
 
             dbUser.getProducts().add(dbProduct);
+            dbUser.setCoins(dbUser.getCoins() - cost);
             userRepository.save(dbUser);
             return true;
         } catch (IOException ioException) {

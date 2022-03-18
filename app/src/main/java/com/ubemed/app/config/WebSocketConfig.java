@@ -15,9 +15,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         stompEndpointRegistry.addEndpoint("/websocket").withSockJS();
     }
 
-//    @Override
-//    public void configureMessageBroker(MessageBrokerRegistry registry) {
-//        registry.enableSimpleBroker("/topic");
-////        registry.setApplicationDestinationPrefixes("/app");
-//    }
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/bids");
+//        registry.setApplicationDestinationPrefixes("/app");
+    }
 }

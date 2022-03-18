@@ -4,6 +4,8 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {Stomp} from "@stomp/stompjs";
 import * as SockJS from 'sockjs-client';
 import {BidResponse} from "../../model/BidResponse";
+import {ForumService} from "../../services/forum.service";
+import {StoreService} from "../../services/store.service";
 
 @Component({
   selector: 'app-store-offer',
@@ -13,20 +15,23 @@ import {BidResponse} from "../../model/BidResponse";
 export class StoreOfferComponent implements OnInit {
 
   id: number
-  cost: number;
   form: FormGroup;
   stompClient: any;
   bids: BidResponse[];
+  showLoader: boolean;
+  error: boolean;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: {id: number, cost: number},
+    @Inject(MAT_DIALOG_DATA) public data: {id: number},
     private formBuilder: FormBuilder,
+    private storeService: StoreService,
     private dialogRef: MatDialogRef<StoreOfferComponent>
   ) {
     this.id = data.id;
-    this.cost = data.cost;
+    this.error = false;
     this.form = this.initForm();
     this.bids = [];
+    this.showLoader = true;
   }
 
   ngOnInit(): void {
@@ -34,6 +39,7 @@ export class StoreOfferComponent implements OnInit {
     // const socket = new SockJS('/api/websocket');
     // this.stompClient = Stomp.over(socket);
     // this.stompClient.connect();
+
     this.connect();
     this.dialogRef.afterClosed().subscribe(result => {
       this.disconnect();
@@ -49,15 +55,33 @@ export class StoreOfferComponent implements OnInit {
     this.stompClient.connect(
       headers,
       (next: any) => {
-        this.stompClient.subscribe('/bids/' + this.id, (res: any) => {
-          // console.log("res", res);
-          const value = JSON.parse(res.body)
-          const bidResponse: BidResponse = new BidResponse(value.username, value.amount)
-          this.bids.push(bidResponse);
+
+        this.storeService.getBids(this.id).subscribe(res => {
+          res.sort(compare)
+          this.bids = res;
         })
-        console.log(this.id)
+        this.showLoader = false;
+        this.stompClient.subscribe('/bids/' + this.id, (res: any) => {
+          const value = JSON.parse(res.body)
+          // this.cost = value.amount;
+          this.form.setControl("amount",
+            new FormControl(' ', [Validators.required])
+          )
+          const bidResponse: BidResponse = new BidResponse(value.username, value.amount)
+          this.bids.unshift(bidResponse);
+        })
       }
     );
+
+    function compare( a: BidResponse, b: BidResponse ) {
+      if ( a.amount < b.amount ){
+        return 1;
+      }
+      if ( a.amount > b.amount ){
+        return -1;
+      }
+      return 0;
+    }
   }
 
   disconnect() {
@@ -68,8 +92,8 @@ export class StoreOfferComponent implements OnInit {
 
   initForm() {
     return this.formBuilder.group({
-      offer: new FormControl('',
-        [Validators.required, Validators.min(this.cost + 1)]
+      amount: new FormControl('',
+        [Validators.required]
       ),
     });
   }
@@ -79,6 +103,15 @@ export class StoreOfferComponent implements OnInit {
   }
 
   submit() {
-    // this.dialogRef.close();
+    // update Validator
+    const post = { ...this.form.value}
+    // const a = new FormData();
+    // a.append("amount", this.form.value.amount);
+    this.storeService.makeBid(this.id, post).subscribe(
+      (next: any)=> {
+        this.error = !next;
+        // console.log(next)
+      }
+    )
   }
 }

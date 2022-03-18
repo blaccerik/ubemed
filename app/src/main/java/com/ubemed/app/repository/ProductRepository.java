@@ -1,6 +1,5 @@
 package com.ubemed.app.repository;
 
-import com.ubemed.app.dbmodel.DBCoin;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import org.springframework.data.jpa.repository.JpaRepository;

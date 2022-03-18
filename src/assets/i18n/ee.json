@@ -57,7 +57,7 @@
       "offer": "Pakkumine",
       "title": "Loo pakkumine",
       "bid": "Paku",
-      "max": "Rohkem kui {{value}}"
+      "error": "Midagi läks valesti"
     },
     "new":{
       "cat1": "sport",

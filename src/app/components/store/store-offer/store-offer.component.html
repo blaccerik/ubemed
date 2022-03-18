@@ -1,6 +1,14 @@
 <div>
   <div class="bids">
-
+    <div *ngIf="showLoader">
+      <span id="loading"></span>
+    </div>
+    <div *ngFor="let bid of bids">
+      <div class="bid">
+        <div class="bid-user">{{bid.username}}</div>
+        <div class="bid-bid">{{bid.amount}}</div>
+      </div>
+    </div>
   </div>
   <mat-dialog-content>{{ 'store.offer.title' | translate }}</mat-dialog-content>
   <form [formGroup]="form" (ngSubmit)="submit()">
@@ -9,17 +17,15 @@
         <td>
           <mat-form-field class="w-100p" appearance="outline">
             <mat-label>{{ 'store.offer.offer' | translate }}</mat-label>
-            <input type="number" matInput formControlName="offer"/>
-            <mat-error *ngIf="hasError('offer', 'required')">
+            <input type="number" matInput formControlName="amount"/>
+            <mat-error *ngIf="hasError('amount', 'required')">
               {{ 'login.required' | translate }}
-            </mat-error>
-            <mat-error *ngIf="hasError('offer', 'min')">
-              {{ 'store.offer.max' | translate: { value: cost } }}
             </mat-error>
           </mat-form-field>
         </td>
       </tr>
     </table>
+    <mat-error *ngIf="error">{{ 'store.offer.error'| translate }}</mat-error>
     <button mat-raised-button [disabled]="form.invalid">{{ 'store.offer.bid'| translate }}</button>
   </form>
 </div>

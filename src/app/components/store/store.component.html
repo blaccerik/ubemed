@@ -14,14 +14,14 @@
     <div class="grid-item"
          *ngFor="let product of products"
          [ngStyle]="
-         product.cost < 10 ? { background: 'var(--normal)' } :
-         product.cost < 50 ? { background: 'var(--rare)' } :
+         product.cost < 100 ? { background: 'var(--normal)' } :
+         product.cost < 500 ? { background: 'var(--rare)' } :
          { background: 'var(--epic)' }">
       <div class="grid-item-data rarity-normal">
         <div class="grid-item-title"
              [ngStyle]="
-         product.cost < 10 ? { background: 'var(--title-normal)' } :
-         product.cost < 50 ? { background: 'var(--title-rare)' } :
+         product.cost < 100 ? { background: 'var(--title-normal)' } :
+         product.cost < 500 ? { background: 'var(--title-rare)' } :
          { background: 'var(--title-epic)' }"
         >
           {{product.title}}

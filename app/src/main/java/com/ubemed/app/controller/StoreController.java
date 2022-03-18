@@ -96,11 +96,18 @@ public class StoreController {
         return storeService.save(username, title, cats, cost, file);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/image")
     public ProductImage getImage(
             @PathVariable Long id
     ) {
         return imageService.get(id);
+    }
+
+    @GetMapping("/{id}/bids")
+    public List<BidResponse> getBids(
+            @PathVariable Long id
+    ) {
+        return storeService.getBids(id);
     }
 
     @PostMapping("/{id}")
