@@ -26,6 +26,7 @@ public class DBProduct {
     private List<DBStoreCats> dbStoreCats;
 
     private long cost;
+    private long startPrice;
     private String title;
     private Date date;
     private boolean onSale;

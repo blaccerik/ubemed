@@ -103,22 +103,25 @@ public class StoreService {
                 p -> p.getDbUser().getId() == dbUser.getId()).findFirst();
 
         DBBid dbBid;
+        long more;
         if (optionalDBBid.isPresent()) {
             dbBid = optionalDBBid.get();
             long total = dbBid.getAmount() + dbUser.getCoins();
             if (amount > total || amount <= dbBid.getAmount()) {
                 return false;
             }
+            more = amount - dbBid.getAmount();
             dbUser.setCoins(total - amount);
-//            bidRepository.delete(dbBid);
-            dbBid.setAmount(amount);
         } else {
+            more = amount;
             dbUser.setCoins(dbUser.getCoins() - amount);
-            dbBid = new DBBid();
-            dbBid.setAmount(amount);
-            dbBid.setDbUser(dbUser);
-            dbProduct.getBids().add(dbBid);
+
         }
+        dbBid = new DBBid();
+        dbBid.setAmount(amount);
+        dbBid.setDbUser(dbUser);
+        dbBid.setAmountMore(more);
+        dbProduct.getBids().add(dbBid);
         dbProduct.setCost(dbBid.getAmount());
         productRepository.save(dbProduct);
         userRepository.save(dbUser);
@@ -134,38 +137,36 @@ public class StoreService {
             if (dbProduct.isOnSale()) {
                 long secs = (date.getTime() -  dbProduct.getDate().getTime()) / 1000;
                 long hours = secs / 3600;
-                System.out.println(hours);
                 if (hours >= 24 || hours == 0) {
                     // get top bid
-                    System.out.println(dbProduct.getBids());
                     Optional<DBBid> optionalDBBid = dbProduct.getBids().stream().max(Comparator.comparingLong(DBBid::getAmount));
-
                     DBUser oldUser = dbProduct.getDbUser();
+
                     if (optionalDBBid.isPresent()) {
 
-                        DBBid dbBid = optionalDBBid.get();
-                        DBUser newUser = dbBid.getDbUser();
+                        DBBid topBid = optionalDBBid.get();
+                        DBUser newUser = topBid.getDbUser();
 
-                        // clear bids
-                        for (DBBid dbBid1 : dbProduct.getBids()) {
-                            DBUser dbUser = dbBid1.getDbUser();
+                        // refund bids
+                        for (DBBid dbBid : dbProduct.getBids()) {
+                            DBUser dbUser = dbBid.getDbUser();
                             if (dbUser.getId() != newUser.getId()) {
-                                dbUser.setCoins(dbUser.getCoins() + dbBid1.getAmount());
+                                dbUser.setCoins(dbUser.getCoins() + dbBid.getAmountMore());
                                 userRepository.save(dbUser);
-                                bidRepository.delete(dbBid1);
                             }
                         }
-//                        dbProduct.setBids(new ArrayList<>());
                         dbProduct.setDbUser(newUser);
                         dbProduct.setOnSale(false);
 
-                        oldUser.setCoins(oldUser.getCoins() + dbProduct.getCost());
+                        oldUser.setCoins(oldUser.getCoins() + (topBid.getAmount() / 2) + dbProduct.getStartPrice());
                         oldUser.getProducts().remove(dbProduct);
 
                         newUser.getProducts().add(dbProduct);
 
                         userRepository.save(oldUser);
                         userRepository.save(newUser);
+
+//                        bidRepository.
                     }
                     else  {
                         oldUser.setCoins(oldUser.getCoins() + (dbProduct.getCost() / 2));
@@ -213,6 +214,7 @@ public class StoreService {
             dbProduct.setDate(new Date());
             dbProduct.setOnSale(true);
             dbProduct.setBids(new ArrayList<>());
+            dbProduct.setStartPrice(cost);
 
             dbUser.getProducts().add(dbProduct);
             dbUser.setCoins(dbUser.getCoins() - cost);

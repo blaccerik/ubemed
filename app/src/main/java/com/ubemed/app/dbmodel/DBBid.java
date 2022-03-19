@@ -24,4 +24,6 @@ public class DBBid {
     private DBUser dbUser;
 
     private long amount;
+
+    private long amountMore;
 }

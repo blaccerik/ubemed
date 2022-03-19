@@ -40,18 +40,19 @@ export class StoreComponent implements OnInit {
         // get images
         for (let i = 0; i < this.products.length; i++) {
           let product = this.products[i];
-          const value = localStorage.getItem("image-" + i)
+          const value = localStorage.getItem("image-" + product.id)
 
           // save to localstorage
           if (!value) {
             this.storeService.getImg(product.id).subscribe(
               (next: any) => {
                 product.file = next.file;
-                localStorage.setItem("image-" + i, product.file);
+                localStorage.setItem("image-" + product.id, product.file);
               }
             )
+          } else {
+            product.file = value;
           }
-          product.file = value;
         }
       }
       );
