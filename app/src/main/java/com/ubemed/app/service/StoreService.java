@@ -94,7 +94,7 @@ public class StoreService {
             return false;
         }
         DBProduct dbProduct = optionalDBProduct.get();
-        if (amount <= dbProduct.getCost() || dbProduct.getDbUser().getId() == dbUser.getId()) {
+        if (amount <= dbProduct.getHighestBid() || dbProduct.getDbUser().getId() == dbUser.getId()) {
             return false;
         }
 
@@ -122,7 +122,7 @@ public class StoreService {
         dbBid.setDbUser(dbUser);
         dbBid.setAmountMore(more);
         dbProduct.getBids().add(dbBid);
-        dbProduct.setCost(dbBid.getAmount());
+        dbProduct.setHighestBid(dbBid.getAmount());
         productRepository.save(dbProduct);
         userRepository.save(dbUser);
         return true;
@@ -137,7 +137,7 @@ public class StoreService {
             if (dbProduct.isOnSale()) {
                 long secs = (date.getTime() -  dbProduct.getDate().getTime()) / 1000;
                 long hours = secs / 3600;
-                if (hours >= 24 || hours == 0) {
+                if (hours >= 24) {
                     // get top bid
                     Optional<DBBid> optionalDBBid = dbProduct.getBids().stream().max(Comparator.comparingLong(DBBid::getAmount));
                     DBUser oldUser = dbProduct.getDbUser();
@@ -158,7 +158,7 @@ public class StoreService {
                         dbProduct.setDbUser(newUser);
                         dbProduct.setOnSale(false);
 
-                        oldUser.setCoins(oldUser.getCoins() + (topBid.getAmount() / 2) + dbProduct.getStartPrice());
+                        oldUser.setCoins(oldUser.getCoins() + (topBid.getAmount() / 2) + dbProduct.getPrice());
                         oldUser.getProducts().remove(dbProduct);
 
                         newUser.getProducts().add(dbProduct);
@@ -169,7 +169,7 @@ public class StoreService {
 //                        bidRepository.
                     }
                     else  {
-                        oldUser.setCoins(oldUser.getCoins() + (dbProduct.getCost() / 2));
+                        oldUser.setCoins(oldUser.getCoins() + (dbProduct.getPrice() / 2));
                         oldUser.getProducts().remove(dbProduct);
                         userRepository.save(oldUser);
                     }
@@ -208,13 +208,13 @@ public class StoreService {
             dbProduct.setDbStoreImage(dbStoreImage);
             dbStoreImage.setDbProduct(dbProduct);
 
-            dbProduct.setCost(cost);
+            dbProduct.setPrice(cost);
             dbProduct.setTitle(title);
             dbProduct.setDbStoreCats(catsList);
             dbProduct.setDate(new Date());
             dbProduct.setOnSale(true);
             dbProduct.setBids(new ArrayList<>());
-            dbProduct.setStartPrice(cost);
+            dbProduct.setHighestBid(cost);
 
             dbUser.getProducts().add(dbProduct);
             dbUser.setCoins(dbUser.getCoins() - cost);

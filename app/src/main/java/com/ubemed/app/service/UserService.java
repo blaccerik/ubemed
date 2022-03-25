@@ -12,6 +12,14 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    public long getCoins(String name) {
+        Optional<DBUser> optional = userRepository.findByName(name);
+        if (optional.isEmpty()) {
+            return -1;
+        }
+        return optional.get().getCoins();
+    }
+
     public boolean save(String name, String pass) {
         Optional<DBUser> optional = userRepository.findByName(name);
         if (optional.isEmpty()) {

@@ -10,10 +10,12 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 })
 export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
+  private coins: number;
   private apiUrl = '/api/users';
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem("auth")
+    this.coins = -1;
     if (!!token && !this.tokenExpired(token)) {
       this.loggedIn.next(true);
     } else {
@@ -30,9 +32,26 @@ export class AuthService {
     }
   }
 
+  private checkCoins() {
+    if (this.coins === -1) {
+      this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
+        result => {
+          this.coins = result;
+        }
+      )
+    }
+  }
+
   isLoggedIn() {
-    this.checkToken()
+    this.checkToken();
     return this.loggedIn.getValue();
+  }
+
+  getCoins() {
+    if (this.loggedIn.getValue()) {
+      this.checkCoins();
+    }
+    return this.coins;
   }
 
   private handleError(res: HttpErrorResponse | any) {

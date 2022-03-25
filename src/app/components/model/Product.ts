@@ -1,6 +1,7 @@
 export class Product {
   cats: string[];
-  cost: number;
+  price: number;
+  bid: number;
   seller: string;
   title: string;
   id: number;

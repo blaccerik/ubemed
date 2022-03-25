@@ -25,8 +25,8 @@ public class DBProduct {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<DBStoreCats> dbStoreCats;
 
-    private long cost;
-    private long startPrice;
+    private long price;
+    private long highestBid;
     private String title;
     private Date date;
     private boolean onSale;

@@ -38,6 +38,14 @@ public class UserController {
         return username;
     }
 
+    @GetMapping("/coins")
+    public long coins(
+            @RequestHeader(name="Authorization") String token
+    ) {
+        String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
+        return userService.getCoins(username);
+    }
+
     @PostMapping("/create")
     public boolean create(
     @RequestBody JwtRequest authenticationRequest

@@ -8,7 +8,8 @@
     "forum": "Foorum",
     "login": "Logi sisse",
     "logged-in-as": "Logitud sisse kasutajaga",
-    "store": "Pood"
+    "store": "Pood",
+    "inventory": "Seljakott"
   },
   "calculator": {
     "module-name": "Kalkulaator",

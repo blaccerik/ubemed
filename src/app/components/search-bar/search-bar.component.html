@@ -17,6 +17,9 @@
   <div>
     <span class="logo" routerLink="/store">{{ 'search-bar.store' | translate }}</span>
   </div>
+  <div *ngIf="service.isLoggedIn()">
+    <span class="logo" routerLink="/inventory">{{ 'search-bar.inventory' | translate }}</span>
+  </div>
   <div>
     <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
       <input class="search-input"
@@ -37,5 +40,8 @@
             class="login"
             (click)="logout()">
       {{ 'search-bar.logged-in-as'| translate }} {{service.tokenName(service.getToken())}}</button>
+  </div>
+  <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1">
+    {{service.getCoins()}}
   </div>
 </div>
