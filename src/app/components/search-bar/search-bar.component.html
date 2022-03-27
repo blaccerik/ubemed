@@ -1,63 +1,58 @@
-<div class="search-container">
-  <div>
-    <span class="logo-big" routerLink="/">UBEMED.EE</span>
-  </div>
-  <div>
-    <span class="logo" routerLink="/calculator">{{ 'search-bar.calculator' | translate }}</span>
-  </div>
-  <div>
-    <mat-button class="logo" [matMenuTriggerFor]="menu">{{'search-bar.events' | translate }}</mat-button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item *ngFor="let champion of events" (click)="onClickEvent(champion.value)">{{champion.viewValue}}</button>
-    </mat-menu>
-  </div>
-  <div>
-    <span class="logo" routerLink="/forum">{{ 'search-bar.forum' | translate }}</span>
-  </div>
-  <div>
-    <span class="logo" routerLink="/store">{{ 'search-bar.store' | translate }}</span>
-  </div>
-  <div *ngIf="service.isLoggedIn()">
-    <span class="logo" routerLink="/inventory">{{ 'search-bar.inventory' | translate }}</span>
-  </div>
-  <div>
-    <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
-      <input class="search-input"
-             name="search"
-             ngModel
-             placeholder="{{ 'search-bar.placeholder' | translate }}"
-      />
-      <button class="search-button">{{ 'search-bar.search' | translate }}</button>
-    </form>
-  </div>
-  <div *ngIf="!service.isLoggedIn()">
-    <button mat-button
-            class="login"
-            (click)="openDialog()">{{ 'search-bar.login'| translate }}</button>
-  </div>
-  <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1"
-       class="user-info"
-       [matMenuTriggerFor]="settings"
-  >
-    <div class="user-info-picture"></div>
-    <div class="user-info-name">
-      <div class="user-info-username">
-        {{service.tokenName(service.getToken())}}
-      </div>
-      <div class="user-info-coins">
-        Coins: {{service.getCoins()}}
-      </div>
+<div class="navbar">
+  <div class="navbar-left">
+    <div>
+      <span class="logo-big" routerLink="/">UBEMED.EE</span>
+    </div>
+    <div class="navbar-item">
+      <span class="logo" routerLink="/calculator">{{ 'search-bar.calculator' | translate }}</span>
+    </div>
+    <div class="navbar-item">
+      <mat-button class="logo" [matMenuTriggerFor]="menu">{{'search-bar.events' | translate }}</mat-button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item *ngFor="let champion of events" (click)="onClickEvent(champion.value)">{{champion.viewValue}}</button>
+      </mat-menu>
+    </div>
+    <div class="navbar-item">
+      <span class="logo" routerLink="/forum">{{ 'search-bar.forum' | translate }}</span>
+    </div>
+    <div class="navbar-item">
+      <span class="logo" routerLink="/store">{{ 'search-bar.store' | translate }}</span>
+    </div>
+    <div *ngIf="service.isLoggedIn()" class="navbar-item">
+      <span class="logo" routerLink="/inventory">{{ 'search-bar.inventory' | translate }}</span>
+    </div>
+    <div>
+      <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
+        <input class="search-input"
+               name="search"
+               ngModel
+               placeholder="{{ 'search-bar.placeholder' | translate }}"
+        />
+        <button class="search-button">{{ 'search-bar.search' | translate }}</button>
+      </form>
     </div>
   </div>
-  <mat-menu #settings="matMenu">
-    <button (click)="logout()" mat-menu-item>Logout</button>
-  </mat-menu>
-<!--  <div *ngIf="service.isLoggedIn()">-->
-<!--    <button mat-button [matMenuTriggerFor]="settings">Settings-->
-<!--      <i>⮟</i>-->
-<!--    </button>-->
-<!--  </div>-->
-<!--  <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1">-->
-<!--    {{service.getCoins()}}-->
-<!--  </div>-->
+  <div class="navbar-right">
+    <div *ngIf="!service.isLoggedIn()">
+      <button mat-button
+              class="login"
+              (click)="openDialog()">{{ 'search-bar.login'| translate }}</button>
+    </div>
+    <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1"
+         class="user-info"
+         [matMenuTriggerFor]="settings">
+      <div class="user-info-picture"></div>
+      <div class="user-info-name">
+        <div class="user-info-username">
+          {{service.tokenName(service.getToken())}}
+        </div>
+        <div class="user-info-coins">
+          Coins: {{service.getCoins()}}
+        </div>
+      </div>
+    </div>
+    <mat-menu #settings="matMenu">
+      <button (click)="logout()" mat-menu-item>Logout</button>
+    </mat-menu>
+  </div>
 </div>
