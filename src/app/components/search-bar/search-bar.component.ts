@@ -38,6 +38,12 @@ export class SearchBarComponent implements OnInit {
     this.router.navigate([value])
   }
 
+  myFunction() {
+
+    // @ts-ignore
+    document.getElementById("dropdown").classList.toggle("show");
+  }
+
 
   openDialog() {
     this.dialog.open(LoginComponent);

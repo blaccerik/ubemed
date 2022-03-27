@@ -50,6 +50,55 @@
 }
 }
 
+.user-info {
+  border-radius: 5px;
+  border: 2px solid #73AD21;
+  display: flex;
+
+
+  position: absolute; /*or fixed*/
+  right: 20px;
+
+  background-color: #73AD21;
+  transition-duration: 0.3s;
+  cursor: pointer;
+  color: #000000;
+  font-weight: 400;
+
+  &:hover {
+    background-color: white;;
+    color: #73AD21;
+  }
+
+  &-picture {
+    border-radius: 3px;
+    width: 35px;
+    height: 35px;
+    //display: inline-block;
+    background-color: #ffffff;
+  }
+
+  &-name {
+    text-align: center;
+    margin-left: 15px;
+    margin-right: 15px;
+    //background-color: #4aa84c;
+    //display: inline-block;
+  }
+
+  &-username {
+    height: 15px;
+    font-size: 17px;
+  }
+
+  &-coins {
+    height: 5px;
+    //padding-bottom: 2px;
+    //background-color: #4aa84c;
+    font-size: 11px;
+  }
+}
+
 .login {
   margin: 10px;
   background-color: #73AD21;

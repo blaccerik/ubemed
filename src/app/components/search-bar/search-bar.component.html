@@ -35,13 +35,29 @@
             class="login"
             (click)="openDialog()">{{ 'search-bar.login'| translate }}</button>
   </div>
-  <div *ngIf="service.isLoggedIn()">
-    <button mat-button
-            class="login"
-            (click)="logout()">
-      {{ 'search-bar.logged-in-as'| translate }} {{service.tokenName(service.getToken())}}</button>
+  <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1"
+       class="user-info"
+       [matMenuTriggerFor]="settings"
+  >
+    <div class="user-info-picture"></div>
+    <div class="user-info-name">
+      <div class="user-info-username">
+        {{service.tokenName(service.getToken())}}
+      </div>
+      <div class="user-info-coins">
+        Coins: {{service.getCoins()}}
+      </div>
+    </div>
   </div>
-  <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1">
-    {{service.getCoins()}}
-  </div>
+  <mat-menu #settings="matMenu">
+    <button (click)="logout()" mat-menu-item>Logout</button>
+  </mat-menu>
+<!--  <div *ngIf="service.isLoggedIn()">-->
+<!--    <button mat-button [matMenuTriggerFor]="settings">Settings-->
+<!--      <i>⮟</i>-->
+<!--    </button>-->
+<!--  </div>-->
+<!--  <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1">-->
+<!--    {{service.getCoins()}}-->
+<!--  </div>-->
 </div>
