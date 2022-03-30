@@ -6,6 +6,7 @@ import * as SockJS from 'sockjs-client';
 import {BidResponse} from "../../model/BidResponse";
 import {ForumService} from "../../services/forum.service";
 import {StoreService} from "../../services/store.service";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-store-offer',
@@ -14,7 +15,8 @@ import {StoreService} from "../../services/store.service";
 })
 export class StoreOfferComponent implements OnInit {
 
-  id: number
+  id: number;
+  cost: number;
   form: FormGroup;
   stompClient: any;
   bids: BidResponse[];
@@ -22,12 +24,14 @@ export class StoreOfferComponent implements OnInit {
   error: boolean;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: {id: number},
+    @Inject(MAT_DIALOG_DATA) public data: {id: number, cost: number},
     private formBuilder: FormBuilder,
     private storeService: StoreService,
+    private authService: AuthService,
     private dialogRef: MatDialogRef<StoreOfferComponent>
   ) {
     this.id = data.id;
+    this.cost = data.cost;
     this.error = false;
     this.form = this.initForm();
     this.bids = [];
@@ -59,13 +63,27 @@ export class StoreOfferComponent implements OnInit {
         this.storeService.getBids(this.id).subscribe(res => {
           res.sort(compare)
           this.bids = res;
+          if (this.bids.length > 0) {
+            this.cost = this.bids[0].amount
+            this.form.setControl("amount",
+              new FormControl(' ', [
+                Validators.required,
+                Validators.max(this.authService.getCoins()),
+                Validators.min(this.cost + 1)
+              ])
+            )
+          }
         })
         this.showLoader = false;
         this.stompClient.subscribe('/bids/' + this.id, (res: any) => {
           const value = JSON.parse(res.body)
-          // this.cost = value.amount;
+          this.cost = value.amount;
           this.form.setControl("amount",
-            new FormControl(' ', [Validators.required])
+            new FormControl(' ', [
+              Validators.required,
+              Validators.max(this.authService.getCoins()),
+              Validators.min(this.cost + 1)
+            ])
           )
           const bidResponse: BidResponse = new BidResponse(value.username, value.amount)
           this.bids.unshift(bidResponse);
@@ -93,7 +111,11 @@ export class StoreOfferComponent implements OnInit {
   initForm() {
     return this.formBuilder.group({
       amount: new FormControl('',
-        [Validators.required]
+        [
+          Validators.required,
+          Validators.max(this.authService.getCoins()),
+          Validators.min(this.cost + 1)
+        ]
       ),
     });
   }
@@ -107,10 +129,13 @@ export class StoreOfferComponent implements OnInit {
     const post = { ...this.form.value}
     // const a = new FormData();
     // a.append("amount", this.form.value.amount);
+
     this.storeService.makeBid(this.id, post).subscribe(
       (next: any)=> {
         this.error = !next;
-        // console.log(next)
+        if (next) {
+          this.authService.updateCoins();
+        }
       }
     )
   }

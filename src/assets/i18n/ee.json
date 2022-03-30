@@ -57,6 +57,8 @@
     "offer": {
       "offer": "Pakkumine",
       "title": "Loo pakkumine",
+      "min": "Liiga vähe",
+      "max": "Pole piisavalt münte",
       "bid": "Paku",
       "error": "Midagi läks valesti"
     },

@@ -54,6 +54,14 @@ export class AuthService {
     return this.coins;
   }
 
+  updateCoins() {
+    this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
+      result => {
+        this.coins = result;
+      }
+    )
+  }
+
   private handleError(res: HttpErrorResponse | any) {
     console.error(res.error || res.body.error);
     return observableThrowError(res.error || 'Server error');

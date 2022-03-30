@@ -21,6 +21,12 @@
             <mat-error *ngIf="hasError('amount', 'required')">
               {{ 'login.required' | translate }}
             </mat-error>
+            <mat-error *ngIf="hasError('amount', 'max')">
+              {{ 'store.offer.max' | translate }}
+            </mat-error>
+            <mat-error *ngIf="hasError('amount', 'min')">
+              {{ 'store.offer.min' | translate }}
+            </mat-error>
           </mat-form-field>
         </td>
       </tr>

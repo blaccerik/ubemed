@@ -98,14 +98,18 @@ public class StoreService {
             return false;
         }
 
-        // find if has already bid on it
-        Optional<DBBid> optionalDBBid = dbProduct.getBids().stream().filter(
-                p -> p.getDbUser().getId() == dbUser.getId()).findFirst();
-
-        DBBid dbBid;
+        DBBid dbBid = null;
         long more;
-        if (optionalDBBid.isPresent()) {
-            dbBid = optionalDBBid.get();
+        long max = -1;
+        for (DBBid dbBid1 : dbProduct.getBids()) {
+            if (dbBid1.getDbUser().getId() == dbUser.getId() && dbBid1.getAmount() > max) {
+                max = dbBid1.getAmount();
+                dbBid = dbBid1;
+            }
+        }
+
+        if (dbBid != null) {
+
             long total = dbBid.getAmount() + dbUser.getCoins();
             if (amount > total || amount <= dbBid.getAmount()) {
                 return false;
@@ -113,6 +117,9 @@ public class StoreService {
             more = amount - dbBid.getAmount();
             dbUser.setCoins(total - amount);
         } else {
+            if (amount > dbUser.getCoins()) {
+                return false;
+            }
             more = amount;
             dbUser.setCoins(dbUser.getCoins() - amount);
 
@@ -123,6 +130,7 @@ public class StoreService {
         dbBid.setAmountMore(more);
         dbProduct.getBids().add(dbBid);
         dbProduct.setHighestBid(dbBid.getAmount());
+
         productRepository.save(dbProduct);
         userRepository.save(dbUser);
         return true;
