@@ -18,9 +18,6 @@
     <div class="navbar-item">
       <span class="logo" routerLink="/store">{{ 'search-bar.store' | translate }}</span>
     </div>
-    <div *ngIf="service.isLoggedIn()" class="navbar-item">
-      <span class="logo" routerLink="/inventory">{{ 'search-bar.inventory' | translate }}</span>
-    </div>
     <div>
       <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
         <input class="search-input"
@@ -53,6 +50,7 @@
     </div>
     <mat-menu #settings="matMenu">
       <button (click)="logout()" mat-menu-item>Logout</button>
+      <button routerLink="/inventory" mat-menu-item>{{ 'search-bar.inventory' | translate }}</button>
     </mat-menu>
   </div>
 </div>

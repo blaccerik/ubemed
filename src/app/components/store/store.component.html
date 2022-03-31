@@ -14,14 +14,14 @@
     <div class="grid-item"
          *ngFor="let product of products"
          [ngStyle]="
-         product.price < 100 ? { background: 'var(--normal)' } :
-         product.price < 500 ? { background: 'var(--rare)' } :
+         product.bid < 100 ? { background: 'var(--normal)' } :
+         product.bid < 500 ? { background: 'var(--rare)' } :
          { background: 'var(--epic)' }">
       <div class="grid-item-data rarity-normal">
         <div class="grid-item-title"
              [ngStyle]="
-         product.price < 100 ? { background: 'var(--title-normal)' } :
-         product.price < 500 ? { background: 'var(--title-rare)' } :
+         product.bid < 100 ? { background: 'var(--title-normal)' } :
+         product.bid < 500 ? { background: 'var(--title-rare)' } :
          { background: 'var(--title-epic)' }"
         >
           {{product.title}}
@@ -30,7 +30,7 @@
           {{ 'store.seller' | translate}}: {{product.seller}}
         </div>
         <div style="margin-left: 5px">
-          {{ 'store.cost' | translate}}: {{product.price}}
+          {{ 'store.cost' | translate}}: {{product.bid}}
         </div>
         <div style="display: flex">
           <button [disabled]="!authService.isLoggedIn()"
@@ -38,11 +38,6 @@
                   class="grid-item-button" mat-flat-button>
             {{ 'store.bid' | translate}}
           </button>
-<!--          <div *ngIf="ran()" class="grid-item-top">-->
-<!--&lt;!&ndash;            <p>&ndash;&gt;-->
-<!--              <i class="star"></i>-->
-<!--&lt;!&ndash;            </p>&ndash;&gt;-->
-<!--          </div>-->
         </div>
         <div class="grid-item-img">
           <img *ngIf="product.file" [src]="image(product.file)" alt="image">

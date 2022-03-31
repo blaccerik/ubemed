@@ -1,5 +1,6 @@
 package com.ubemed.app.service;
 
+import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.Product;
@@ -26,7 +27,15 @@ public class ProductService {
         if (optionalDBUser.isEmpty()) {
             return new ArrayList<>();
         }
+
         DBUser dbUser = optionalDBUser.get();
-        return productRepository.findAllById(dbUser.getId()).stream().map(dbProduct -> new Product(dbProduct)).collect(Collectors.toList());
+
+        List<Product> list = new ArrayList<>();
+        for (DBProduct dbProduct : productRepository.findAll()) {
+            if (dbProduct.getDbUser().getId() == dbUser.getId() && !dbProduct.isOnSale()) {
+                list.add(new Product(dbProduct));
+            }
+        }
+        return list;
     }
 }

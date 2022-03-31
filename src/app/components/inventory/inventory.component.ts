@@ -8,7 +8,7 @@ import {Router} from "@angular/router";
 @Component({
   selector: 'app-inventory',
   templateUrl: './inventory.component.html',
-  styleUrls: ['./inventory.component.css']
+  styleUrls: ['./inventory.component.scss']
 })
 export class InventoryComponent implements OnInit {
 
@@ -29,9 +29,6 @@ export class InventoryComponent implements OnInit {
 
     this.inventoryService.getAll().subscribe(
       next => {
-        if (next) {
-          hideloader();
-        }
         this.products = next
 
         // get images
@@ -57,6 +54,11 @@ export class InventoryComponent implements OnInit {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
     }
+  }
+
+  image(array: any) {
+    // console.log(array)
+    return  'data:image/jpeg;base64,' + array;
   }
 
 }
