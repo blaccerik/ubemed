@@ -29,6 +29,7 @@ export class InventoryComponent implements OnInit {
 
     this.inventoryService.getAll().subscribe(
       next => {
+        console.log(next)
         this.products = next
 
         // get images
