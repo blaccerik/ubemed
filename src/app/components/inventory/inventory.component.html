@@ -4,19 +4,27 @@
   </div>
 </div>
 <div class="container">
-  <div class="inner-container">
-    <div class="grid">
-      <div class="grid-item" *ngFor="let product of products">
-        <div class="grid-item-title">
-          {{product.title}}
-        </div>
-        <div class="grid-item-img">
-          <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="100" width="100">
-        </div>
-        <div class="grid-item-price">
-          {{product.price}}
-        </div>
+  <div class="grid">
+    <div class="grid-item"
+         *ngFor="let product of products"
+         (click)="click(product)">
+      <div class="grid-item-title">
+        {{product.title}}
       </div>
+      <div class="grid-item-img">
+        <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="100" width="100">
+      </div>
+      <div class="grid-item-price">
+        {{product.price}}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="stats" id="stats">
+  <div class="stats-container">
+    <div *ngIf="product">
+      <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="200" width="200">
+      <div class="stats-graph">test</div>
     </div>
   </div>
 </div>

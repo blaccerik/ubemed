@@ -13,6 +13,7 @@ import {Router} from "@angular/router";
 export class InventoryComponent implements OnInit {
 
   products: Product[] = [];
+  product: Product | undefined;
 
   constructor(
     private inventoryService: InventoryService,
@@ -22,7 +23,7 @@ export class InventoryComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
+    console.log(this.product)
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['']).then();
     }
@@ -54,6 +55,18 @@ export class InventoryComponent implements OnInit {
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
+    }
+  }
+
+  click(product: Product) {
+    if (product == this.product) {
+      this.product = undefined
+      // @ts-ignore
+      document.getElementById('stats').className = 'stats'
+    } else {
+      this.product = product;
+      // @ts-ignore
+      document.getElementById('stats').classList.add('stats-move')
     }
   }
 
