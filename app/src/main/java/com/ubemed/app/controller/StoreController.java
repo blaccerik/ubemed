@@ -12,6 +12,7 @@ import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +62,7 @@ public class StoreController {
 
 
     @PostMapping("/add")
-    public boolean saveProduct(
+    public boolean saveProduct(HttpServletRequest httpRequest,
             @RequestHeader(name="Authorization") String token,
             @RequestPart(value = "file") MultipartFile file,
             @RequestPart(value = "title") String title,
@@ -66,6 +70,7 @@ public class StoreController {
             // All numbers must be strings or else it wont work
             @RequestPart(value = "cost") String cost_string
     ) {
+
         List<String> list = Arrays.asList(cats_string.split(","));
         if (list.size() > maxCategories || list.size() < minCategories) {
             return false;
@@ -93,7 +98,13 @@ public class StoreController {
         } catch (NumberFormatException exception) {
            return false;
         }
-        return storeService.save(username, title, cats, cost, file);
+
+
+        // sync if multiple requests
+        String tranID = httpRequest.getParameter("tranID");
+        synchronized (String.valueOf(tranID).intern()) {
+            return storeService.save(username, title, cats, cost, file);
+        }
     }
 
     @GetMapping("/{id}/image")
@@ -112,16 +123,21 @@ public class StoreController {
 
     @PostMapping("/{id}")
     public boolean makeBid(
+            HttpServletRequest httpRequest,
             @RequestHeader(name="Authorization") String token,
             @PathVariable long id,
             @RequestBody Bid bid
     ) {
         String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
-        boolean value = storeService.makeBid(username, id, bid.getAmount());
-        if (value) {
-            updateBids(username, id, bid.getAmount());
+
+        String tranID = httpRequest.getParameter("tranID");
+        synchronized (String.valueOf(tranID).intern()) {
+            boolean value = storeService.makeBid(username, id, bid.getAmount());
+            if (value) {
+                updateBids(username, id, bid.getAmount());
+            }
+            return value;
         }
-        return value;
     }
 
     private void updateBids(String username, long id, long amount) {

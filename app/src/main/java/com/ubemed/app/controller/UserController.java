@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RequestMapping("/users")
 @RestController
 public class UserController {
@@ -48,14 +50,18 @@ public class UserController {
 
     @PostMapping("/create")
     public boolean create(
-    @RequestBody JwtRequest authenticationRequest
+            HttpServletRequest httpRequest,
+        @RequestBody JwtRequest authenticationRequest
     ) {
         String name = authenticationRequest.getUsername();
         String pass = authenticationRequest.getPassword();
         if (name == null || pass == null) {
             return false;
         }
-        return userService.save(name, pass);
+        String tranID = httpRequest.getParameter("tranID");
+        synchronized (String.valueOf(tranID).intern()) {
+            return userService.save(name, pass);
+        }
 
     }
 

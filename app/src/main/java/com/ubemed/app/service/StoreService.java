@@ -17,10 +17,11 @@ import com.ubemed.app.repository.UserRepository;
 import org.apache.logging.log4j.util.PropertySource;
 import org.hibernate.mapping.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -89,10 +90,14 @@ public class StoreService {
             return false;
         }
         DBUser dbUser = optionalDBUser.get();
+
+        System.out.println(dbUser.getCoins());
+
         Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
         if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().isOnSale()) {
             return false;
         }
+
         DBProduct dbProduct = optionalDBProduct.get();
         if (amount <= dbProduct.getHighestBid() || dbProduct.getDbUser().getId() == dbUser.getId()) {
             return false;
@@ -124,6 +129,7 @@ public class StoreService {
             dbUser.setCoins(dbUser.getCoins() - amount);
 
         }
+
         dbBid = new DBBid();
         dbBid.setAmount(amount);
         dbBid.setDbUser(dbUser);
@@ -186,6 +192,7 @@ public class StoreService {
         }
     }
 
+
     public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         DBUser dbUser;
@@ -206,10 +213,10 @@ public class StoreService {
                 catsList.add(optionalDBStoreCats.get());
             }
 
-
-            System.out.println(file.getBytes().length);
+//            System.out.println(file.getBytes().length);
             DBStoreImage dbStoreImage = modifyFile(file);
-            System.out.println(dbStoreImage.getFile().length);
+//            System.out.println(dbStoreImage.getFile().length);
+
 
             DBProduct dbProduct = new DBProduct();
             dbProduct.setDbUser(dbUser);
@@ -225,7 +232,12 @@ public class StoreService {
             dbProduct.setHighestBid(cost);
 
             dbUser.getProducts().add(dbProduct);
+
+//            System.out.println("----");
+            System.out.println(dbUser.getCoins());
             dbUser.setCoins(dbUser.getCoins() - cost);
+//            System.out.println(dbUser.getCoins());
+
             userRepository.save(dbUser);
             return true;
         } catch (IOException ioException) {
