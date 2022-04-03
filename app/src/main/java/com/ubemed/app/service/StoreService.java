@@ -91,8 +91,6 @@ public class StoreService {
         }
         DBUser dbUser = optionalDBUser.get();
 
-        System.out.println(dbUser.getCoins());
-
         Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
         if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().isOnSale()) {
             return false;
@@ -190,6 +188,30 @@ public class StoreService {
                 }
             }
         }
+    }
+
+    public boolean sell(String username, long id, long amount) {
+        Optional<DBUser> optionalDBUser = userRepository.findByName(username);
+        if (optionalDBUser.isEmpty()) {
+            return false;
+        }
+        DBUser dbUser = optionalDBUser.get();
+        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
+        if (optionalDBProduct.isEmpty() || optionalDBProduct.get().isOnSale()) {
+            return false;
+        }
+
+        // todo better logic
+
+        DBProduct dbProduct = optionalDBProduct.get();
+
+        dbProduct.setDate(new Date());
+        dbProduct.setOnSale(true);
+        dbProduct.setPrice(amount);
+        dbProduct.setHighestBid(amount);
+        dbProduct.setBids(new ArrayList<>());
+        productRepository.save(dbProduct);
+        return true;
     }
 
 
