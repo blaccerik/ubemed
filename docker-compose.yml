@@ -1,66 +1,79 @@
 version: '3.7'
 services:
-  postgres:
-    container_name: postgres
-    networks:
-      - ubemed
-    build:
-      context: docker/postgres
-    image: blaccerik/postgres
-    restart: always
-    # use expose when "production mode"
-    #    expose:
-    #      - 5432
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: ubemed
-      POSTGRES_USER: sa
-      POSTGRES_PASSWORD: sa
-    volumes:
-      - postgres:/var/lib/postgresql/data
-  pgadmin:
-    networks:
-      - ubemed
-    build:
-      context: docker/postgres-admin
-    image: blaccerik/pgadmin
-    container_name: pgadmin4
-    depends_on:
-      - postgres
-    # remove ports when in prod mode
-    ports:
-      - "5050:5050"
-  java:
-    networks:
-      - ubemed
-    image: blaccerik/java
-    container_name: java
-    ports:
-      - "8080:8080"
-# same thing as above
-#    expose:
-#      - 8080
-    restart: always
-    build:
-      context: app
-    environment:
-      - server_ip=http://37.157.81.108:8081
-      - jwt.secret=test
-      - postgres_username=sa
-      - postgres_password=sa
-      - postgres_url=jdbc:postgresql://postgres:5432/postgres
-      - spring.servlet.multipart.max-file-size=10MB
-      - spring.servlet.multipart.max-request-size=10MB
-  nginx:
-    networks:
-      - ubemed
-    container_name: nginx
-    image: blaccerik/nginx
-    build:
-      context: .
+#  postgres:
+#    container_name: postgres
+#    networks:
+#      - ubemed
+#    build:
+#      context: docker/postgres
+#    image: blaccerik/postgres
+#    restart: always
+#    # use expose when "production mode"
+#    #    expose:
+#    #      - 5432
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_DB: ubemed
+#      POSTGRES_USER: sa
+#      POSTGRES_PASSWORD: sa
+#    volumes:
+#      - postgres:/var/lib/postgresql/data
+#  pgadmin:
+#    networks:
+#      - ubemed
+#    build:
+#      context: docker/postgres-admin
+#    image: blaccerik/pgadmin
+#    container_name: pgadmin4
+#    depends_on:
+#      - postgres
+#    # remove ports when in prod mode
+#    ports:
+#      - "5050:5050"
+#  java:
+#    networks:
+#      - ubemed
+#    image: blaccerik/java
+#    container_name: java
+#    ports:
+#      - "8080:8080"
+## same thing as above
+##    expose:
+##      - 8080
+#    restart: always
+#    build:
+#      context: app
+#    environment:
+#      - server_ip=http://37.157.81.108:8081
+#      - jwt.secret=test
+#      - postgres_username=sa
+#      - postgres_password=sa
+#      - postgres_url=jdbc:postgresql://postgres:5432/postgres
+#      - spring.servlet.multipart.max-file-size=10MB
+#      - spring.servlet.multipart.max-request-size=10MB
+#  nginx:
+#    networks:
+#      - ubemed
+#    container_name: nginx
+#    image: blaccerik/nginx
+#    build:
+#      context: .
+#    ports:
+#      - "80:80"
+  swag:
+    container_name: swag
+    image: linuxserver/swag
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    env_file:
+      - swag.env
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/webserver/config:/config
 
 networks:
   ubemed:
