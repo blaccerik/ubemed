@@ -1,5 +1,5 @@
 hosted on digitalocean  
-nameserver: namecheap  
+nameserver: freenom 
 
 
 docker-compose file is in:  
