@@ -60,7 +60,7 @@ services:
     build:
       context: .
     ports:
-      - "8081:80"
+      - "80:80"
 
 networks:
   ubemed:
