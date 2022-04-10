@@ -12,4 +12,4 @@ docker-compose build
 docker-compose up -d
 
 test site:  
-https://www.ubemed.ml/ (not working)  
+https://www.ubemed.ml

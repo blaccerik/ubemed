@@ -1,0 +1,56 @@
+version: '3.7'
+services:
+  postgres:
+    container_name: postgres
+    networks:
+      - ubemed
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: ubemed
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: sa
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  java:
+    networks:
+      - ubemed
+    container_name: java
+    expose:
+      - 8080
+    restart: unless-stopped
+    build:
+      context: .
+    depends_on:
+      - postgres
+    environment:
+      - server_ip=https://www.ubemed.ml
+      - jwt.secret=test
+      - postgres_username=sa
+      - postgres_password=sa
+      - postgres_url=jdbc:postgresql://postgres:5432/postgres
+      - spring.servlet.multipart.max-file-size=10MB
+      - spring.servlet.multipart.max-request-size=10MB
+  swag:
+    container_name: swag
+    image: linuxserver/swag
+    networks:
+      - ubemed
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    env_file:
+      - swag.env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/webserver/config:/config
+
+networks:
+  ubemed:
+
+volumes:
+  postgres:
