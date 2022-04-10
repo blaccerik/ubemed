@@ -1,15 +1,10 @@
 # Ubemed
 
-
-compile java:  
-gradle clean build
-
-compile angular:  
-ng build  
-
-entire app:  
-docker-compose build
-docker-compose up -d
+stack:  
+java
+postgres
+nginx
+angular
 
 test site:  
 https://www.ubemed.ml
