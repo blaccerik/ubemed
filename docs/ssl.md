@@ -1,8 +1,8 @@
 hosted on digitalocean  
 nameserver: freenom 
 
-compile java:  
+java:  
 gradle clean build
 
-compile angular:  
+angular:  
 ng build
