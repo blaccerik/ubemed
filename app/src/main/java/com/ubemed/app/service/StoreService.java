@@ -1,23 +1,16 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBBid;
-import com.ubemed.app.dbmodel.DBPost;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBStoreCats;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
-import com.ubemed.app.dbmodel.DBVote;
 import com.ubemed.app.model.BidResponse;
-import com.ubemed.app.model.Post;
 import com.ubemed.app.model.Product;
-import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
-import org.apache.logging.log4j.util.PropertySource;
-import org.hibernate.mapping.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,21 +35,21 @@ import java.util.zip.Inflater;
 @org.springframework.stereotype.Service
 public class StoreService {
 
-    private final int height = 200;
-    private final int width = 200;
-    private final String imageName = "image";
+    private static final int height = 200;
+    private static final int width = 200;
+    private static final String imageName = "image";
+
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final CatRepository catRepository;
 
     @Autowired
-    private ProductRepository productRepository;
+    public StoreService(ProductRepository productRepository, UserRepository userRepository, CatRepository catRepository) {
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CatRepository catRepository;
-
-    @Autowired
-    private BidRepository bidRepository;
+        this.catRepository = catRepository;
+    }
 
     public List<Product> getAll() {
         List<Product> list = new ArrayList<>();
@@ -77,7 +70,7 @@ public class StoreService {
         return dbProduct.getBids().stream().map(dbBid -> new BidResponse(dbBid.getDbUser().getName(), dbBid.getAmount())).collect(Collectors.toList());
     }
 
-    private BufferedImage resizeImage(BufferedImage originalImage) throws IOException {
+    private BufferedImage resizeImage(BufferedImage originalImage) {
         Image resultingImage = originalImage.getScaledInstance(width, height, Image.SCALE_DEFAULT);
         BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);

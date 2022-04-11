@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,6 +29,7 @@ public class DBUser {
   private String pass;
   private String role;
   private long coins;
+  private Date lastClaimDate;
 
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DBPost> posts;
@@ -35,10 +37,11 @@ public class DBUser {
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<DBProduct> products;
 
-  public DBUser(String name, String pass, roles role, long coins) {
+  public DBUser(String name, String pass, roles role, long coins, Date date) {
     this.role = role.toString();
     this.name = name;
     this.pass = pass;
     this.coins = coins;
+    this.lastClaimDate = date;
   }
 }
