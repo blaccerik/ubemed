@@ -134,9 +134,8 @@ public class StoreService {
     }
 
     @Transactional
-    public void endBids() {
+    public void endBids(Date date) {
 
-        Date date = new Date();
         List<DBProduct> list = productRepository.findAll();
         for (DBProduct dbProduct : list) {
             if (dbProduct.isOnSale()) {
@@ -160,10 +159,12 @@ public class StoreService {
                                 userRepository.save(dbUser);
                             }
                         }
+
                         dbProduct.setDbUser(newUser);
                         dbProduct.setOnSale(false);
+                        dbProduct.setBids(new ArrayList<>());
 
-                        oldUser.setCoins(oldUser.getCoins() + (topBid.getAmount() / 2) + dbProduct.getPrice());
+                        oldUser.setCoins(oldUser.getCoins() + dbProduct.getHighestBid());
                         oldUser.getProducts().remove(dbProduct);
 
                         newUser.getProducts().add(dbProduct);
@@ -171,11 +172,10 @@ public class StoreService {
                         userRepository.save(oldUser);
                         userRepository.save(newUser);
 
-//                        bidRepository.
                     }
                     else  {
-                        oldUser.setCoins(oldUser.getCoins() + (dbProduct.getPrice() / 2));
-                        oldUser.getProducts().remove(dbProduct);
+                        oldUser.setCoins(oldUser.getCoins() + dbProduct.getPrice());
+                        dbProduct.setOnSale(false);
                         userRepository.save(oldUser);
                     }
                 }

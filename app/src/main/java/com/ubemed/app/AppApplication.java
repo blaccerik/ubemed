@@ -6,6 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.Date;
+
 @SpringBootApplication
 public class AppApplication {
 
@@ -18,6 +20,6 @@ public class AppApplication {
 
     @Scheduled(fixedRate = 1000 * 60 * 60)  // every hour from run
     public void doScheduledWork() {
-        storeService.endBids();
+        storeService.endBids(new Date());
     }
 }
