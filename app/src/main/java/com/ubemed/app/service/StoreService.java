@@ -97,10 +97,14 @@ public class StoreService {
         DBBid dbBid = null;
         long more;
         long max = -1;
-        for (DBBid dbBid1 : dbProduct.getBids()) {
-            if (dbBid1.getDbUser().getId() == dbUser.getId() && dbBid1.getAmount() > max) {
-                max = dbBid1.getAmount();
-                dbBid = dbBid1;
+        System.out.println("test " + dbProduct);
+        System.out.println(dbProduct.getBids());
+        if (dbProduct.getBids() != null) {
+            for (DBBid dbBid1 : dbProduct.getBids()) {
+                if (dbBid1.getDbUser().getId() == dbUser.getId() && dbBid1.getAmount() > max) {
+                    max = dbBid1.getAmount();
+                    dbBid = dbBid1;
+                }
             }
         }
 
