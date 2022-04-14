@@ -1,21 +1,25 @@
 package com.ubemed.app.service;
 
 
+import com.ubemed.app.AppApplication;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.repository.UserRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
 
 import static org.junit.Assert.assertEquals;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Transactional
 public class StoreServiceTest {
 
     @Autowired
