@@ -3,7 +3,9 @@ package com.ubemed.app.service;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -46,10 +48,17 @@ public class UserService {
         return false;
     }
 
+    @Transactional
     public boolean save(String name, String pass) {
         Optional<DBUser> optional = userRepository.findByName(name);
         if (optional.isEmpty()) {
-            DBUser dbUser = new DBUser(name, pass, DBUser.roles.user, startCoins, new Date());
+            DBUser dbUser = new DBUser();
+            dbUser.setName(name);
+            dbUser.setPass(pass);
+            dbUser.setRole(DBUser.roles.user.toString());
+            dbUser.setCoins(startCoins);
+            dbUser.setLastClaimDate(new Date());
+            dbUser.setProducts(new ArrayList<>());
             userRepository.save(dbUser);
             return true;
         }

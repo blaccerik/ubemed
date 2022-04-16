@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -32,10 +33,10 @@ public class DBUser {
   private Date lastClaimDate;
 
   @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<DBPost> posts;
+  private List<DBPost> posts = new ArrayList<>();
 
-  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<DBProduct> products;
+  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = false)
+  private List<DBProduct> products = new ArrayList<>();
 
   public DBUser(String name, String pass, roles role, long coins, Date date) {
     this.role = role.toString();

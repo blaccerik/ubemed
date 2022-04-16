@@ -7,6 +7,7 @@ import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.Product;
+import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,12 +44,13 @@ public class StoreService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CatRepository catRepository;
+    private final BidRepository bidRepository;
 
     @Autowired
-    public StoreService(ProductRepository productRepository, UserRepository userRepository, CatRepository catRepository) {
+    public StoreService(ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CatRepository catRepository) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
-
+        this.bidRepository = bidRepository;
         this.catRepository = catRepository;
     }
 
@@ -77,6 +80,9 @@ public class StoreService {
         return outputImage;
     }
 
+
+
+    @Transactional
     public boolean makeBid(String username, long id, long amount) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         if (optionalDBUser.isEmpty()) {
@@ -97,8 +103,6 @@ public class StoreService {
         DBBid dbBid = null;
         long more;
         long max = -1;
-        System.out.println("test " + dbProduct);
-        System.out.println(dbProduct.getBids());
         if (dbProduct.getBids() != null) {
             for (DBBid dbBid1 : dbProduct.getBids()) {
                 if (dbBid1.getDbUser().getId() == dbUser.getId() && dbBid1.getAmount() > max) {
@@ -107,6 +111,7 @@ public class StoreService {
                 }
             }
         }
+
 
         if (dbBid != null) {
 
@@ -129,6 +134,7 @@ public class StoreService {
         dbBid.setAmount(amount);
         dbBid.setDbUser(dbUser);
         dbBid.setAmountMore(more);
+        dbBid.setDbProduct(dbProduct);
         dbProduct.getBids().add(dbBid);
         dbProduct.setHighestBid(dbBid.getAmount());
 
@@ -164,18 +170,20 @@ public class StoreService {
                             }
                         }
 
-                        dbProduct.setDbUser(newUser);
+                        // need to this or else throws error
+                        List<DBBid> copy = new ArrayList<>(dbProduct.getBids());
+                        for (DBBid dbBid : copy) {
+                            dbProduct.removeBid(dbBid);
+                        }
                         dbProduct.setOnSale(false);
-                        dbProduct.setBids(new ArrayList<>());
+                        dbProduct.setDbUser(newUser);
 
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getHighestBid());
                         oldUser.getProducts().remove(dbProduct);
-
                         newUser.getProducts().add(dbProduct);
 
                         userRepository.save(oldUser);
                         userRepository.save(newUser);
-
                     }
                     else  {
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getPrice());

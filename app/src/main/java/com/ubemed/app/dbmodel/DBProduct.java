@@ -32,10 +32,14 @@ public class DBProduct {
     private Date date;
     private boolean onSale;
 
-    @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL)
     private DBStoreImage dbStoreImage;
 
-    @OneToMany(targetEntity = DBBid.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "bids", referencedColumnName = "id")
+    @OneToMany(mappedBy = "dbProduct", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DBBid> bids = new ArrayList<>();
+
+    public void removeBid(DBBid dbBid) {
+        bids.remove(dbBid);
+        dbBid.setDbUser(null);
+    }
 }
