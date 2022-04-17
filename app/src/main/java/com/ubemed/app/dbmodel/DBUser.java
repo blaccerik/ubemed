@@ -32,10 +32,10 @@ public class DBUser {
   private long coins;
   private Date lastClaimDate;
 
-  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<DBPost> posts = new ArrayList<>();
 
-  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, orphanRemoval = false)
+  @OneToMany(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<DBProduct> products = new ArrayList<>();
 
   public DBUser(String name, String pass, roles role, long coins, Date date) {
@@ -45,4 +45,14 @@ public class DBUser {
     this.coins = coins;
     this.lastClaimDate = date;
   }
+
+  public void removeProduct(DBProduct dbProduct) {
+    products.remove(dbProduct);
+    dbProduct.setDbUser(null);
+  }
+
+//  public void addProduct(DBProduct dbProduct) {
+//    products.add(dbProduct);
+//    dbProduct.setDbUser(this);
+//  }
 }

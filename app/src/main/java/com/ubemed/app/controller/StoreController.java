@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/store")
@@ -122,7 +123,7 @@ public class StoreController {
 
         String tranID = httpRequest.getParameter("tranID");
         synchronized (String.valueOf(tranID).intern()) {
-            return storeService.sell(username, id, amount);
+            return storeService.sell(username, id, amount, new Date());
         }
     }
 

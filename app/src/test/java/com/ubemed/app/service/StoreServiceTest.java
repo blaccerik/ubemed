@@ -29,15 +29,11 @@ public class StoreServiceTest {
     @Autowired
     ProductRepository productRepository;
 
-    @Autowired
-    BidRepository bidRepository;
-
     @Test
     void makeBid() {
 
         userRepository.deleteAll();
         productRepository.deleteAll();
-
 
         boolean value;
         DBUser dbUser1 = new DBUser();
@@ -71,7 +67,7 @@ public class StoreServiceTest {
 
         long id = productRepository.findAll().get(0).getId();
 
-        StoreService storeService = new StoreService(productRepository, userRepository, bidRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null);
 
         value = storeService.makeBid("3", id, 0);
         Assertions.assertEquals(value, false);
@@ -112,21 +108,20 @@ public class StoreServiceTest {
         userRepository.deleteAll();
         productRepository.deleteAll();
 
-
         DBUser dbUser = new DBUser();
         dbUser.setCoins(100);
         dbUser.setName("1");
-        userRepository.saveAndFlush(dbUser);
+        userRepository.save(dbUser);
 
         DBUser dbUser2 = new DBUser();
         dbUser2.setCoins(100);
         dbUser2.setName("2");
-        userRepository.saveAndFlush(dbUser2);
+        userRepository.save(dbUser2);
 
         DBUser dbUser3 = new DBUser();
         dbUser3.setCoins(100);
         dbUser3.setName("3");
-        userRepository.saveAndFlush(dbUser3);
+        userRepository.save(dbUser3);
 
         DBUser dbUser4 = new DBUser();
         dbUser4.setCoins(100);
@@ -138,7 +133,7 @@ public class StoreServiceTest {
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser5);
         dbProduct.setOnSale(true);
-        dbProduct.setPrice(10);
+        dbProduct.setPrice(100);
         dbProduct.setHighestBid(10);
         dbProduct.setBids(new ArrayList<>());
         dbProduct.setDate(UserServiceTest.parseDate("2022-05-05"));
@@ -146,7 +141,7 @@ public class StoreServiceTest {
         dbUser5.getProducts().add(dbProduct);
         userRepository.save(dbUser5);
 
-        StoreService storeService = new StoreService(productRepository, userRepository, bidRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null);
 
         long id = productRepository.findAll().get(0).getId();
 
@@ -163,13 +158,13 @@ public class StoreServiceTest {
         Assertions.assertEquals(userRepository.findByName("4").get().getProducts().size(), 1);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 0);
         Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 16);
-        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
+        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 100);
 
         storeService.endBids(UserServiceTest.parseDate("2022-05-06"));
 
         Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
         Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 16);
-        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
+        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 16);
         Assertions.assertEquals(productRepository.findById(id).get().isOnSale(), false);
 
         Assertions.assertEquals(userRepository.findByName("4").get().getProducts().size(), 0);
@@ -179,17 +174,77 @@ public class StoreServiceTest {
         Assertions.assertEquals(userRepository.findByName("3").get().getCoins(), 100);
         Assertions.assertEquals(userRepository.findByName("4").get().getCoins(), 116);
         Assertions.assertEquals(productRepository.findById(id).get().getBids().size(), 0);
-//
-//        dbProduct.setBids(new ArrayList<>());
-//
-//        dbProduct.setOnSale(true);
-//        dbProduct.setPrice(15);
-//        dbProduct.setHighestBid(15);
-//        storeService.endBids(UserServiceTest.parseDate("2022-05-06"));
-//        Assertions.assertEquals(dbProduct.getDbUser().getId(), 1);
-//        Assertions.assertEquals(dbUser1.getProducts().size(), 1);
-//        Assertions.assertEquals(dbProduct.getPrice(), 15);
-//        Assertions.assertEquals(dbUser1.getCoins(), 99);
-//        Assertions.assertEquals(dbProduct.isOnSale(), false);
+    }
+
+    @Test
+    void endBidsNoBids() {
+
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        StoreService storeService = new StoreService(productRepository, userRepository,null);
+
+        DBUser dbUser = new DBUser();
+        dbUser.setCoins(100);
+        dbUser.setName("1");
+        DBProduct dbProduct = new DBProduct();
+        dbProduct.setDbUser(dbUser);
+        dbProduct.setOnSale(true);
+        dbProduct.setPrice(10);
+        dbProduct.setHighestBid(20);
+        dbProduct.setBids(new ArrayList<>());
+        dbProduct.setDate(UserServiceTest.parseDate("2022-05-05"));
+        dbUser.getProducts().add(dbProduct);
+
+        userRepository.save(dbUser);
+
+        long id = productRepository.findAll().get(0).getId();
+
+
+        Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
+        Assertions.assertEquals(productRepository.findById(id).get().isOnSale(), true);
+        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
+        Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 20);
+        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
+
+        storeService.endBids(UserServiceTest.parseDate("2022-05-06"));
+
+        Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
+        Assertions.assertEquals(productRepository.findById(id).get().isOnSale(), false);
+        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
+        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
+        Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 10);
+        Assertions.assertEquals(userRepository.findByName("1").get().getCoins(), 110);
+    }
+
+    @Test
+    void sell() {
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        StoreService storeService = new StoreService(productRepository, userRepository,null);
+
+        DBUser dbUser = new DBUser();
+        dbUser.setCoins(100);
+        dbUser.setName("1");
+        DBProduct dbProduct = new DBProduct();
+        dbProduct.setDbUser(dbUser);
+        dbProduct.setOnSale(false);
+        dbProduct.setPrice(10);
+        dbProduct.setHighestBid(15);
+        dbProduct.setBids(new ArrayList<>());
+        dbProduct.setDate(UserServiceTest.parseDate("2022-05-05"));
+        dbUser.getProducts().add(dbProduct);
+
+        userRepository.save(dbUser);
+        long id = productRepository.findAll().get(0).getId();
+        Assertions.assertEquals(storeService.sell("1", id, 20, UserServiceTest.parseDate("2022-05-06")), true);
+
+        Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
+        Assertions.assertEquals(productRepository.findById(id).get().getBids().size(), 0);
+        Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 20);
+        Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
+        Assertions.assertEquals(productRepository.findById(id).get().getDate().getTime(), UserServiceTest.parseDate("2022-05-06").getTime());
+        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
+        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).getId(), id);
+        Assertions.assertEquals(userRepository.findByName("1").get().getCoins(), 80);
     }
 }

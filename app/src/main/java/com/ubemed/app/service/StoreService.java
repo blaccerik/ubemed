@@ -44,13 +44,11 @@ public class StoreService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CatRepository catRepository;
-    private final BidRepository bidRepository;
 
     @Autowired
-    public StoreService(ProductRepository productRepository, UserRepository userRepository, BidRepository bidRepository, CatRepository catRepository) {
+    public StoreService(ProductRepository productRepository, UserRepository userRepository, CatRepository catRepository) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
-        this.bidRepository = bidRepository;
         this.catRepository = catRepository;
     }
 
@@ -176,18 +174,21 @@ public class StoreService {
                             dbProduct.removeBid(dbBid);
                         }
                         dbProduct.setOnSale(false);
-                        dbProduct.setDbUser(newUser);
+                        dbProduct.setPrice(dbProduct.getHighestBid());
 
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getHighestBid());
-                        oldUser.getProducts().remove(dbProduct);
-                        newUser.getProducts().add(dbProduct);
 
-                        userRepository.save(oldUser);
+                        oldUser.removeProduct(dbProduct);
+                        newUser.getProducts().add(dbProduct);
+                        dbProduct.setDbUser(newUser);
+
                         userRepository.save(newUser);
+                        userRepository.save(oldUser);
                     }
                     else  {
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getPrice());
                         dbProduct.setOnSale(false);
+                        dbProduct.setHighestBid(dbProduct.getPrice());
                         userRepository.save(oldUser);
                     }
                 }
@@ -195,28 +196,27 @@ public class StoreService {
         }
     }
 
-    public boolean sell(String username, long id, long amount) {
+    public boolean sell(String username, long id, long amount, Date date) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         if (optionalDBUser.isEmpty()) {
             return false;
         }
         DBUser dbUser = optionalDBUser.get();
-        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isEmpty() || optionalDBProduct.get().isOnSale()) {
+        if (dbUser.getCoins() < amount) {
             return false;
         }
 
-        // todo better logic
-
-        DBProduct dbProduct = optionalDBProduct.get();
-
-        dbProduct.setDate(new Date());
-        dbProduct.setOnSale(true);
-        dbProduct.setPrice(amount);
-        dbProduct.setHighestBid(amount);
-        dbProduct.setBids(new ArrayList<>());
-        productRepository.save(dbProduct);
-        return true;
+        for (DBProduct dbProduct : dbUser.getProducts()) {
+            if (dbProduct.getId() == id) {
+                dbProduct.setHighestBid(amount);
+                dbProduct.setOnSale(true);
+                dbProduct.setDate(date);
+                dbUser.setCoins(dbUser.getCoins() - amount);
+                userRepository.save(dbUser);
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -261,7 +261,7 @@ public class StoreService {
             dbUser.getProducts().add(dbProduct);
 
 //            System.out.println("----");
-            System.out.println(dbUser.getCoins());
+//            System.out.println(dbUser.getCoins());
             dbUser.setCoins(dbUser.getCoins() - cost);
 //            System.out.println(dbUser.getCoins());
 
