@@ -57,7 +57,9 @@ public class UserService {
             dbUser.setPass(pass);
             dbUser.setRole(DBUser.roles.user.toString());
             dbUser.setCoins(startCoins);
-            dbUser.setLastClaimDate(new Date());
+            Date date = new Date();
+            date.setTime(10);
+            dbUser.setLastClaimDate(date);
             dbUser.setProducts(new ArrayList<>());
             userRepository.save(dbUser);
             return true;

@@ -4,6 +4,7 @@ package com.ubemed.app.service;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.repository.BidRepository;
+import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -13,11 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @SpringBootTest
 @Transactional
@@ -28,6 +34,9 @@ public class StoreServiceTest {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    CatRepository catRepository;
 
     @Test
     void makeBid() {
@@ -246,5 +255,124 @@ public class StoreServiceTest {
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).getId(), id);
         Assertions.assertEquals(userRepository.findByName("1").get().getCoins(), 80);
+    }
+
+    @Test
+    void sellFailed() {
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        StoreService storeService = new StoreService(productRepository, userRepository,null);
+
+        DBUser dbUser = new DBUser();
+        dbUser.setCoins(100);
+        dbUser.setName("1");
+        DBProduct dbProduct = new DBProduct();
+        dbProduct.setDbUser(dbUser);
+        dbProduct.setOnSale(false);
+        dbProduct.setPrice(10);
+        dbProduct.setHighestBid(15);
+        dbProduct.setBids(new ArrayList<>());
+        dbProduct.setDate(UserServiceTest.parseDate("2022-05-05"));
+        dbUser.getProducts().add(dbProduct);
+        userRepository.save(dbUser);
+
+        DBUser dbUser2 = new DBUser();
+        dbUser2.setCoins(100);
+        dbUser2.setName("2");
+        DBProduct dbProduct2 = new DBProduct();
+        dbProduct2.setDbUser(dbUser2);
+        dbProduct2.setOnSale(false);
+        dbProduct2.setPrice(10);
+        dbProduct2.setHighestBid(15);
+        dbProduct2.setBids(new ArrayList<>());
+        dbProduct2.setDate(UserServiceTest.parseDate("2022-05-05"));
+        dbUser2.getProducts().add(dbProduct2);
+        userRepository.save(dbUser2);
+
+        long id;
+        long id2;
+        DBProduct dbProduct1 = productRepository.findAll().get(0);
+        DBProduct dbProduct11 = productRepository.findAll().get(1);
+        if (dbProduct1.getDbUser().getName().equals("1")) {
+            id = dbProduct1.getId();
+            id2 = dbProduct11.getId();
+        } else {
+            id = dbProduct11.getId();
+            id2 = dbProduct1.getId();
+        }
+        Assertions.assertEquals(storeService.sell("1", id2, 20, UserServiceTest.parseDate("2022-05-06")), false);
+        Assertions.assertEquals(storeService.sell("1", id, 101, UserServiceTest.parseDate("2022-05-06")), false);
+
+        DBProduct dbProduct3 = productRepository.getById(id);
+        dbProduct3.setOnSale(true);
+        productRepository.save(dbProduct3);
+
+        Assertions.assertEquals(storeService.sell("1", id, 20, UserServiceTest.parseDate("2022-05-06")), false);
+    }
+
+    @Test
+    void save() {
+        userRepository.deleteAll();
+        productRepository.deleteAll();
+        StoreService storeService = new StoreService(productRepository, userRepository,catRepository);
+
+        DBUser dbUser = new DBUser();
+        dbUser.setCoins(20);
+        dbUser.setName("1");
+        userRepository.save(dbUser);
+        MultipartFile multipartFile = new MultipartFile() {
+            @Override
+            public String getName() {
+                return null;
+            }
+
+            @Override
+            public String getOriginalFilename() {
+                return null;
+            }
+
+            @Override
+            public String getContentType() {
+                return "image/png";
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public long getSize() {
+                return 0;
+            }
+
+            @Override
+            public byte[] getBytes() throws IOException {
+                return "test".getBytes();
+            }
+
+            @Override
+            public InputStream getInputStream() throws IOException {
+                return null;
+            }
+
+            @Override
+            public void transferTo(File dest) throws IOException, IllegalStateException {
+
+            }
+        };
+        assertEquals(storeService.save("1", "test", List.of(1L,3L,6L), 20, multipartFile, UserServiceTest.parseDate("2022-05-05"), StoreService.strategy.test), true);
+        assertEquals(userRepository.findByName("1").get().getCoins(), 0);
+        assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
+
+        long id = productRepository.findAll().get(0).getId();
+        assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
+        assertEquals(productRepository.findById(id).get().getDbStoreCats().size(), 3);
+        assertEquals(productRepository.findById(id).get().isOnSale(), false);
+        assertEquals(productRepository.findById(id).get().getPrice(), 20);
+        assertEquals(productRepository.findById(id).get().getHighestBid(), 20);
+        assertNotEquals(productRepository.findById(id).get().getDbStoreImage(), null);
+        assertEquals(productRepository.findById(id).get().getDate(), UserServiceTest.parseDate("2022-05-05"));
+
     }
 }

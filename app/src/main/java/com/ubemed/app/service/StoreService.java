@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -36,6 +37,11 @@ import java.util.zip.Inflater;
 
 @org.springframework.stereotype.Service
 public class StoreService {
+
+    public enum strategy {
+        normal,
+        test
+    }
 
     private static final int height = 200;
     private static final int width = 200;
@@ -72,6 +78,7 @@ public class StoreService {
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage) {
+        System.out.println(originalImage);
         Image resultingImage = originalImage.getScaledInstance(width, height, Image.SCALE_DEFAULT);
         BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
@@ -208,6 +215,9 @@ public class StoreService {
 
         for (DBProduct dbProduct : dbUser.getProducts()) {
             if (dbProduct.getId() == id) {
+                if (dbProduct.isOnSale()) {
+                    return false;
+                }
                 dbProduct.setHighestBid(amount);
                 dbProduct.setOnSale(true);
                 dbProduct.setDate(date);
@@ -220,7 +230,7 @@ public class StoreService {
     }
 
 
-    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
+    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file, Date date, strategy strategy) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         DBUser dbUser;
         if (optionalDBUser.isEmpty() || optionalDBUser.get().getCoins() < cost) {
@@ -239,10 +249,12 @@ public class StoreService {
                 }
                 catsList.add(optionalDBStoreCats.get());
             }
-
-//            System.out.println(file.getBytes().length);
-            DBStoreImage dbStoreImage = modifyFile(file);
-//            System.out.println(dbStoreImage.getFile().length);
+            DBStoreImage dbStoreImage;
+            if (strategy.equals(StoreService.strategy.normal)) {
+                dbStoreImage = modifyFile(file);
+            } else {
+                dbStoreImage = new DBStoreImage();
+            }
 
 
             DBProduct dbProduct = new DBProduct();
@@ -253,17 +265,13 @@ public class StoreService {
             dbProduct.setPrice(cost);
             dbProduct.setTitle(title);
             dbProduct.setDbStoreCats(catsList);
-            dbProduct.setDate(new Date());
-            dbProduct.setOnSale(true);
+            dbProduct.setDate(date);
+            dbProduct.setOnSale(false);
             dbProduct.setBids(new ArrayList<>());
             dbProduct.setHighestBid(cost);
 
             dbUser.getProducts().add(dbProduct);
-
-//            System.out.println("----");
-//            System.out.println(dbUser.getCoins());
             dbUser.setCoins(dbUser.getCoins() - cost);
-//            System.out.println(dbUser.getCoins());
 
             userRepository.save(dbUser);
             return true;
@@ -272,14 +280,17 @@ public class StoreService {
         }
     }
 
-    private DBStoreImage modifyFile(MultipartFile file) throws IOException {
+    public DBStoreImage modifyFile(MultipartFile file) throws IOException {
 
         // translate to bufferedimage
         InputStream inputStream = new ByteArrayInputStream(file.getBytes());
+        System.out.println(inputStream);
+        System.out.println(Arrays.toString(file.getBytes()));
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         inputStream.close();
 
         // resize
+        System.out.println(bufferedImage);
         bufferedImage = resizeImage(bufferedImage);
 
         // back to byte array

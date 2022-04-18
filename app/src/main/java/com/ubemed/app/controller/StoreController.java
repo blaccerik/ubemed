@@ -68,7 +68,6 @@ public class StoreController {
         if (list.size() > maxCategories || list.size() < minCategories) {
             return false;
         }
-
         List<Long> cats = new ArrayList<>();
         for (String string : list) {
             try {
@@ -81,6 +80,7 @@ public class StoreController {
                 return false;
             }
         }
+
         String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
         long cost;
         try {
@@ -92,11 +92,10 @@ public class StoreController {
            return false;
         }
 
-
         // sync if multiple requests
         String tranID = httpRequest.getParameter("tranID");
         synchronized (String.valueOf(tranID).intern()) {
-            return storeService.save(username, title, cats, cost, file);
+            return storeService.save(username, title, cats, cost, file, new Date(), StoreService.strategy.normal);
         }
     }
 
