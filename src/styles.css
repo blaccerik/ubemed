@@ -12,6 +12,12 @@ body * {
   box-sizing: border-box;
 }
 
+html * {
+  margin: 0;
+}
+
+
+
 :root {
   --green: #73AD21;
   --white: #f3e1d5;
