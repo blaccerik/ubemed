@@ -16,12 +16,10 @@ html * {
   margin: 0;
 }
 
-
-
 :root {
   --green: #73AD21;
   --white: #f3e1d5;
-
+  --dark-bg: #853f0b;
   --title-epic: #eea5d9;
   --title-rare: #7bd38b;
   --title-normal: #ebebf8;

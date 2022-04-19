@@ -1,8 +1,18 @@
 
 <mat-drawer-container class="container" [hasBackdrop]="true">
-  <mat-drawer #drawer>I'm a drawer</mat-drawer>
+  <mat-drawer class="drawer" #drawer>
+    <button (click)="drawer.toggle()" mat-icon-button color="basic">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button color="basic" class="create">
+      create
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-drawer>
   <mat-drawer-content>
-    <button mat-raised-button (click)="drawer.toggle()">Toggle drawer</button>
+    <button (click)="drawer.toggle()" mat-icon-button color="basic">
+      <mat-icon>menu</mat-icon>
+    </button>
   </mat-drawer-content>
 </mat-drawer-container>
 
