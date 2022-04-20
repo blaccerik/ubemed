@@ -35,6 +35,7 @@ import {MatChipsModule} from "@angular/material/chips";
 import { StoreOfferComponent } from './components/store/store-offer/store-offer.component';
 import {InventoryComponent} from "./components/inventory/inventory.component";
 import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import {MatSidenavModule} from "@angular/material/sidenav";
         MatButtonToggleModule,
         MatDialogModule,
         MatChipsModule,
-        MatSidenavModule
+        MatSidenavModule,
+        MatTooltipModule
     ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JWTInterceptor, multi: true, },

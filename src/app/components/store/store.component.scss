@@ -1,12 +1,3 @@
-.create {
-  background-color: #73AD21;
-  //width: fit-content;
-}
-
-.create:hover {
-  color: #f3e1d5;
-}
-
 #loading{
   position: absolute;
   left: 50%;
@@ -27,20 +18,84 @@
 }
 
 .options {
+  //background-color: var(--dark-bg);
+  background-color: var(--green);
+  border: 1px var(--green-border) solid;
+  border-radius: 5px;
+  padding: 5px 15px;
+  width: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
 }
 
-.drawer {
-  background-color: var(--dark-bg);
-  width: 100px;
+.button {
+  background-color: var(--green-border);
+}
+
+::placeholder {
+  color: #dcd3d3;
+}
+
+.searchBox {
+  //transform:  translate(-50%,50%);
+  height: 40px;
+  border-radius: 40px;
+}
+
+.searchBox:hover > .searchInput {
+  width: 240px;
+  padding: 0 10px;
+}
+
+.searchBox:hover > .searchButton {
+  background: white;
+  color : #2f3640;
+}
+
+.searchButton {
+  color: white;
+  float: right;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2f3640;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.4s;
+}
+
+.searchInput {
+  border:none;
+  background: none;
+  outline:none;
+  float:left;
+  padding: 0;
+  color: white;
+  font-size: 16px;
+  transition: 0.4s;
+  line-height: 40px;
+  width: 0;
+}
+
+@media screen and (max-width: 520px) {
+  .searchBox:hover > .searchInput {
+    width: 150px;
+    padding: 0 6px;
+  }
 }
 
 .container {
-  position: absolute;
-  top: 60px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #d27b23;
+  margin-left: 5%;
+  margin-top: 15px;
+  //position: absolute;
+  //top: 60px;
+  //bottom: 0;
+  //left: 0;
+  //right: 0;
+  //background-color: #d27b23;
 }
 
 .grid {

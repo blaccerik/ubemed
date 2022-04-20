@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from "../services/auth.service";
 import {StoreService} from "../services/store.service";
-import {Post} from "../model/Post";
-import {HttpClient} from "@angular/common/http";
 import {Product} from "../model/Product";
 import {Router} from "@angular/router";
-import {LoginComponent} from "../login/login.component";
 import {MatDialog} from "@angular/material/dialog";
 import {StoreOfferComponent} from "./store-offer/store-offer.component";
+
+interface Event {
+  value: string;
+  viewValue: string;
+  icon: string;
+}
+
 
 @Component({
   selector: 'app-store',
@@ -17,6 +21,13 @@ import {StoreOfferComponent} from "./store-offer/store-offer.component";
 export class StoreComponent implements OnInit {
 
   products: Product[] = [];
+  events: Event[] = [
+    {value: 'hot', viewValue: 'Hot', icon: "whatshot"},
+    {value: 'expensive', viewValue: 'Expensive', icon: "attach_money"},
+    {value: 'cheap', viewValue: 'Cheap', icon: "money_off"},
+    {value: 'new', viewValue: 'New', icon: "new_releases"},
+  ];
+
 
   constructor(
     private router: Router,
@@ -25,8 +36,8 @@ export class StoreComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
-  ran() {
-    return Math.random() < 0.5;
+
+  onClickEvent(value: string) {
   }
 
   ngOnInit(): void {

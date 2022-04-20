@@ -1,66 +1,69 @@
+<div class="container">
 
-<mat-drawer-container class="container" [hasBackdrop]="true">
-  <mat-drawer class="drawer" #drawer>
-    <button (click)="drawer.toggle()" mat-icon-button color="basic">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button color="basic" class="create">
-      create
+  <div class="options">
+    <button [disabled]="!authService.isLoggedIn()" (click)="create()" class="button"
+            mat-icon-button color="basic"
+            matTooltip="Create">
       <mat-icon>add</mat-icon>
     </button>
-  </mat-drawer>
-  <mat-drawer-content>
-    <button (click)="drawer.toggle()" mat-icon-button color="basic">
-      <mat-icon>menu</mat-icon>
+    <button class="button" mat-icon-button color="basic" matTooltip="Refresh">
+      <mat-icon>refresh</mat-icon>
     </button>
-  </mat-drawer-content>
-</mat-drawer-container>
+    <button [matMenuTriggerFor]="menu" class="button" mat-icon-button color="basic" matTooltip="Sort">
+      <mat-icon>sort</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngFor="let event of events" (click)="onClickEvent(event.value)">
+        <mat-icon>{{event.icon}}</mat-icon>
+        <span>{{event.viewValue}}</span>
+      </button>
+    </mat-menu>
+    <div class="button searchBox">
+      <input class="searchInput" type="text" name="" placeholder="Search">
+      <button mat-icon-button color="basic">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+  </div>
 
-
-<!--<div class="container">-->
-<!--  <div class="options">-->
-<!--    <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button class="create">-->
-<!--      create-->
-<!--    </button>-->
-<!--  </div>-->
-<!--  <div class="d-flex justify-content-center">-->
-<!--    <div class="spinner-border" role="status">-->
-<!--      <span class="sr-only" id="loading"></span>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  <div class="grid">-->
-<!--    <div class="grid-item"-->
-<!--         *ngFor="let product of products"-->
-<!--         [ngStyle]="-->
-<!--         product.bid < 100 ? { background: 'var(&#45;&#45;normal)' } :-->
-<!--         product.bid < 500 ? { background: 'var(&#45;&#45;rare)' } :-->
-<!--         { background: 'var(&#45;&#45;epic)' }">-->
-<!--      <div class="grid-item-data rarity-normal">-->
-<!--        <div class="grid-item-title"-->
-<!--             [ngStyle]="-->
-<!--         product.bid < 100 ? { background: 'var(&#45;&#45;title-normal)' } :-->
-<!--         product.bid < 500 ? { background: 'var(&#45;&#45;title-rare)' } :-->
-<!--         { background: 'var(&#45;&#45;title-epic)' }"-->
-<!--        >-->
-<!--          {{product.title}}-->
-<!--        </div>-->
-<!--        <div class="grid-item-owner">-->
-<!--          {{ 'store.seller' | translate}}: {{product.seller}}-->
-<!--        </div>-->
-<!--        <div style="margin-left: 5px">-->
-<!--          {{ 'store.cost' | translate}}: {{product.bid}}-->
-<!--        </div>-->
-<!--        <div style="display: flex">-->
-<!--          <button [disabled]="!authService.isLoggedIn()"-->
-<!--                  (click)="makeOffer(product.id, product.price)"-->
-<!--                  class="grid-item-button" mat-flat-button>-->
-<!--            {{ 'store.bid' | translate}}-->
-<!--          </button>-->
-<!--        </div>-->
-<!--        <div class="grid-item-img">-->
-<!--          <img *ngIf="product.file" [src]="image(product.file)" alt="image">-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only" id="loading"></span>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="grid-item"
+         *ngFor="let product of products"
+         [ngStyle]="
+         product.bid < 100 ? { background: 'var(--normal)' } :
+         product.bid < 500 ? { background: 'var(--rare)' } :
+         { background: 'var(--epic)' }">
+      <div class="grid-item-data rarity-normal">
+        <div class="grid-item-title"
+             [ngStyle]="
+         product.bid < 100 ? { background: 'var(--title-normal)' } :
+         product.bid < 500 ? { background: 'var(--title-rare)' } :
+         { background: 'var(--title-epic)' }"
+        >
+          {{product.title}}
+        </div>
+        <div class="grid-item-owner">
+          {{ 'store.seller' | translate}}: {{product.seller}}
+        </div>
+        <div style="margin-left: 5px">
+          {{ 'store.cost' | translate}}: {{product.bid}}
+        </div>
+        <div style="display: flex">
+          <button [disabled]="!authService.isLoggedIn()"
+                  (click)="makeOffer(product.id, product.price)"
+                  class="grid-item-button" mat-flat-button>
+            {{ 'store.bid' | translate}}
+          </button>
+        </div>
+        <div class="grid-item-img">
+          <img *ngIf="product.file" [src]="image(product.file)" alt="image">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
