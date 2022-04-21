@@ -5,6 +5,7 @@ import {Product} from "../model/Product";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {StoreOfferComponent} from "./store-offer/store-offer.component";
+import {NgForm} from "@angular/forms";
 
 interface Event {
   value: string;
@@ -38,9 +39,25 @@ export class StoreComponent implements OnInit {
 
 
   onClickEvent(value: string) {
+    console.log(value)
+  }
+
+  refresh() {
+    this.ngOnInit();
+  }
+
+  search(form: NgForm) {
+    console.log(form.value.search)
   }
 
   ngOnInit(): void {
+
+    // @ts-ignore
+    document.getElementById('loading').style.display = "";
+
+    // @ts-ignore
+    document.getElementById('grid').style.display = "none";
+
     this.storeService.getAll().subscribe(
       next => {
         if (next) {
@@ -70,6 +87,8 @@ export class StoreComponent implements OnInit {
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
+      // @ts-ignore
+      document.getElementById('grid').style.display = "";
     }
   }
 

@@ -284,13 +284,10 @@ public class StoreService {
 
         // translate to bufferedimage
         InputStream inputStream = new ByteArrayInputStream(file.getBytes());
-        System.out.println(inputStream);
-        System.out.println(Arrays.toString(file.getBytes()));
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         inputStream.close();
 
         // resize
-        System.out.println(bufferedImage);
         bufferedImage = resizeImage(bufferedImage);
 
         // back to byte array
