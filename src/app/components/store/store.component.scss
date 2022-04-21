@@ -99,6 +99,12 @@
 }
 
 .grid {
+  background-color: var(--white);
+  border-radius: 5px;
+  border: 1px var(--white-border) solid;
+  padding: 15px;
+
+
   margin-top: 20px;
   display: inline-grid;
   grid-template-columns: auto auto auto auto;

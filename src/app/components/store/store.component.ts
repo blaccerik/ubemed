@@ -13,6 +13,12 @@ interface Event {
   icon: string;
 }
 
+interface Cat {
+  value: string,
+  viewValue: string;
+  selected: boolean;
+}
+
 
 @Component({
   selector: 'app-store',
@@ -29,6 +35,14 @@ export class StoreComponent implements OnInit {
     {value: 'new', viewValue: 'New', icon: "new_releases"},
   ];
 
+  cats: Cat[] = [
+    {value: '1', viewValue: '1', selected: false},
+    {value: '2', viewValue: '2', selected: false},
+    {value: '3', viewValue: '3', selected: false},
+    {value: '4', viewValue: '4', selected: false},
+    {value: '5', viewValue: '5', selected: false},
+  ]
+
 
   constructor(
     private router: Router,
@@ -39,7 +53,19 @@ export class StoreComponent implements OnInit {
 
 
   onClickEvent(value: string) {
-    console.log(value)
+    this.router.navigate(["store"], {queryParams: {'filter': value}, queryParamsHandling: 'merge'})
+  }
+
+  onClickCat($event: any, value: string) {
+
+    $event.stopPropagation();
+
+    for (let i = 0; i < this.cats.length; i++) {
+      let cat = this.cats[i];
+      if (cat.value == value) {
+        cat.selected = !cat.selected
+      }
+    }
   }
 
   refresh() {
@@ -47,7 +73,7 @@ export class StoreComponent implements OnInit {
   }
 
   search(form: NgForm) {
-    console.log(form.value.search)
+    this.router.navigate(["store"], {queryParams: {'search': form.value.search}, queryParamsHandling: 'merge'})
   }
 
   ngOnInit(): void {

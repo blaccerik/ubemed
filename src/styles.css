@@ -19,7 +19,11 @@ html * {
 :root {
   --green: #73AD21;
   --green-border: #598811;
+
+
   --white: #f3e1d5;
+  --white-border: #7c7878;
+
   --dark-bg: #853f0b;
   --title-epic: #eea5d9;
   --title-rare: #7bd38b;
