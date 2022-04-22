@@ -107,16 +107,24 @@
 
   margin-top: 20px;
   display: inline-grid;
-  grid-template-columns: auto auto auto auto;
+  max-width: 80%;
+  min-width: 230px;
+  //width: fit-content;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, max(200px, 200px)), 1fr));
+  //grid-auto-columns: 3fr;
+  //grid-template-columns: auto auto auto auto;
   grid-gap: 50px 50px;
   /*grid-template-columns: auto auto auto;*/
 }
 
 .grid-item {
-  //background-color: ;
+
+  width: 200px;
+  height: 300px;
   //border: 1px solid #a14004;
   border-radius: 5px;
   padding: 5px;
+  //max-width: 100%;
 
   &-data {
     width: 200px;

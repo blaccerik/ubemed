@@ -55,32 +55,32 @@
          product.bid < 100 ? { background: 'var(--normal)' } :
          product.bid < 500 ? { background: 'var(--rare)' } :
          { background: 'var(--epic)' }">
-      <div class="grid-item-data rarity-normal">
-        <div class="grid-item-title"
-             [ngStyle]="
-         product.bid < 100 ? { background: 'var(--title-normal)' } :
-         product.bid < 500 ? { background: 'var(--title-rare)' } :
-         { background: 'var(--title-epic)' }"
-        >
-          {{product.title}}
-        </div>
-        <div class="grid-item-owner">
-          {{ 'store.seller' | translate}}: {{product.seller}}
-        </div>
-        <div style="margin-left: 5px">
-          {{ 'store.cost' | translate}}: {{product.bid}}
-        </div>
-        <div style="display: flex">
-          <button [disabled]="!authService.isLoggedIn()"
-                  (click)="makeOffer(product.id, product.price)"
-                  class="grid-item-button" mat-flat-button>
-            {{ 'store.bid' | translate}}
-          </button>
-        </div>
-        <div class="grid-item-img">
-          <img *ngIf="product.file" [src]="image(product.file)" alt="image">
-        </div>
-      </div>
+<!--      <div class="grid-item-data rarity-normal">-->
+<!--        <div class="grid-item-title"-->
+<!--             [ngStyle]="-->
+<!--         product.bid < 100 ? { background: 'var(&#45;&#45;title-normal)' } :-->
+<!--         product.bid < 500 ? { background: 'var(&#45;&#45;title-rare)' } :-->
+<!--         { background: 'var(&#45;&#45;title-epic)' }"-->
+<!--        >-->
+<!--          {{product.title}}-->
+<!--        </div>-->
+<!--        <div class="grid-item-owner">-->
+<!--          {{ 'store.seller' | translate}}: {{product.seller}}-->
+<!--        </div>-->
+<!--        <div style="margin-left: 5px">-->
+<!--          {{ 'store.cost' | translate}}: {{product.bid}}-->
+<!--        </div>-->
+<!--        <div style="display: flex">-->
+<!--          <button [disabled]="!authService.isLoggedIn()"-->
+<!--                  (click)="makeOffer(product.id, product.price)"-->
+<!--                  class="grid-item-button" mat-flat-button>-->
+<!--            {{ 'store.bid' | translate}}-->
+<!--          </button>-->
+<!--        </div>-->
+<!--        <div class="grid-item-img">-->
+<!--          <img *ngIf="product.file" [src]="image(product.file)" alt="image">-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 </div>
