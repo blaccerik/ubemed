@@ -49,13 +49,28 @@
   </div>
 
   <div id="grid" class="grid">
-    <div class="grid-item"
+    <div class="grid-item hvr-grow-shadow"
          *ngFor="let product of products"
-         [ngStyle]="
-         product.bid < 100 ? { background: 'var(--normal)' } :
-         product.bid < 500 ? { background: 'var(--rare)' } :
-         { background: 'var(--epic)' }">
-<!--      <div class="grid-item-data rarity-normal">-->
+         (click)="makeOffer(product.id, product.price)"
+    >
+      <div class="grid-item-img">
+        <img *ngIf="product.file" [src]="image(product.file)" alt="image">
+      </div>
+      <div class="grid-item-title">
+        {{product.title}}
+      </div>
+      <div class="grid-item-icon">
+        <mat-icon>person</mat-icon>
+        <div class="grid-item-icon-text">
+          {{product.seller}}
+        </div>
+      </div>
+      <div class="grid-item-icon">
+        <mat-icon>payments</mat-icon>
+        <div class="grid-item-icon-text">
+          {{product.bid}}
+        </div>
+      </div>
 <!--        <div class="grid-item-title"-->
 <!--             [ngStyle]="-->
 <!--         product.bid < 100 ? { background: 'var(&#45;&#45;title-normal)' } :-->
@@ -63,9 +78,6 @@
 <!--         { background: 'var(&#45;&#45;title-epic)' }"-->
 <!--        >-->
 <!--          {{product.title}}-->
-<!--        </div>-->
-<!--        <div class="grid-item-owner">-->
-<!--          {{ 'store.seller' | translate}}: {{product.seller}}-->
 <!--        </div>-->
 <!--        <div style="margin-left: 5px">-->
 <!--          {{ 'store.cost' | translate}}: {{product.bid}}-->
@@ -77,10 +89,6 @@
 <!--            {{ 'store.bid' | translate}}-->
 <!--          </button>-->
 <!--        </div>-->
-<!--        <div class="grid-item-img">-->
-<!--          <img *ngIf="product.file" [src]="image(product.file)" alt="image">-->
-<!--        </div>-->
-<!--      </div>-->
     </div>
   </div>
 </div>
