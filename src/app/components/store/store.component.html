@@ -51,7 +51,7 @@
   <div id="grid" class="grid">
     <div class="grid-item hvr-grow-shadow"
          *ngFor="let product of products"
-         (click)="makeOffer(product.id, product.price)"
+         (click)="makeOffer(product)"
     >
       <div class="grid-item-img">
         <img *ngIf="product.file" [src]="image(product.file)" alt="image">
@@ -71,24 +71,6 @@
           {{product.bid}}
         </div>
       </div>
-<!--        <div class="grid-item-title"-->
-<!--             [ngStyle]="-->
-<!--         product.bid < 100 ? { background: 'var(&#45;&#45;title-normal)' } :-->
-<!--         product.bid < 500 ? { background: 'var(&#45;&#45;title-rare)' } :-->
-<!--         { background: 'var(&#45;&#45;title-epic)' }"-->
-<!--        >-->
-<!--          {{product.title}}-->
-<!--        </div>-->
-<!--        <div style="margin-left: 5px">-->
-<!--          {{ 'store.cost' | translate}}: {{product.bid}}-->
-<!--        </div>-->
-<!--        <div style="display: flex">-->
-<!--          <button [disabled]="!authService.isLoggedIn()"-->
-<!--                  (click)="makeOffer(product.id, product.price)"-->
-<!--                  class="grid-item-button" mat-flat-button>-->
-<!--            {{ 'store.bid' | translate}}-->
-<!--          </button>-->
-<!--        </div>-->
     </div>
   </div>
 </div>

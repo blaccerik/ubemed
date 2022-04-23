@@ -1,13 +1,47 @@
-.bids {
-  width: 200px;
-  height: 200px;
-  background-color: #efe4e4;
-  border-radius: 3px;
-  /*background-color: yellow;*/
-  margin-bottom: 15px;
-  overflow-y: scroll;
-  /*white-space: nowrap;*/
+.container {
+  display: flex;
 }
+
+.image {
+  height: 200px;
+  width: 200px;
+}
+
+.bids {
+  margin-left: 10px;
+  overflow-y: scroll;
+  background-color: var(--white);
+}
+
+.title {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-bottom: black 1px solid;
+}
+
+.icon {
+   font-size: 20px;
+   display: flex;
+   height: 24px;
+
+  &-text {
+   margin-left: 5px;
+   white-space: nowrap;
+   font-size: 14px;
+  }
+}
+
+.offer {
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: black 1px solid;
+  text-align: center;
+}
+
+.button {
+  margin-left: 20px;
+}
+
 
 .bid {
   /*margin: 3px;*/

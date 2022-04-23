@@ -122,17 +122,15 @@ export class StoreComponent implements OnInit {
     this.router.navigate(["store/new"])
   }
 
-  makeOffer(id: number, offer: number) {
+  makeOffer(product: Product) {
     this.dialog.open(StoreOfferComponent, {
       data: {
-        id: id,
-        cost: offer
+        product: product
       }
     });
   }
 
   image(array: any) {
-    // console.log(array)
     return  'data:image/jpeg;base64,' + array;
   }
 }
