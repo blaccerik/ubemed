@@ -153,6 +153,6 @@ public class StoreController {
     }
 
     private void updateBids(String username, long id, long amount) {
-        template.convertAndSend("/bids/" + id, new BidResponse(username, amount));
+        template.convertAndSend("/bids", new BidResponse(username, id, amount));
     }
 }

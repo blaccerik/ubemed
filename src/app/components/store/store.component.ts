@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from "../services/auth.service";
 import {StoreService} from "../services/store.service";
+import {Stomp} from "@stomp/stompjs";
+import * as SockJS from 'sockjs-client';
 import {Product} from "../model/Product";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {StoreOfferComponent} from "./store-offer/store-offer.component";
 import {NgForm} from "@angular/forms";
+import {BidResponse} from "../model/BidResponse";
 
 interface Event {
   value: string;
@@ -43,6 +46,7 @@ export class StoreComponent implements OnInit {
     {value: '5', viewValue: '5', selected: false},
   ]
 
+  stompClient: any;
 
   constructor(
     private router: Router,
@@ -78,11 +82,15 @@ export class StoreComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.disconnect()
+
     // @ts-ignore
     document.getElementById('loading').style.display = "";
 
     // @ts-ignore
     document.getElementById('grid').style.display = "none";
+
+    this.connect()
 
     this.storeService.getAll().subscribe(
       next => {
@@ -110,11 +118,76 @@ export class StoreComponent implements OnInit {
         }
       }
       );
+
+
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
       // @ts-ignore
       document.getElementById('grid').style.display = "";
+    }
+  }
+
+
+  connect() {
+    const socket = new SockJS('api/websocket');
+    this.stompClient = Stomp.over(socket);
+    this.stompClient.debug = () => {};
+
+    const headers = {}
+    this.stompClient.connect(
+      headers,
+      (next: any) => {
+        this.stompClient.subscribe('/bids', (res: any) => {
+          const value = JSON.parse(res.body)
+          let username: string = value.username;
+          let id: number = value.id;
+          let amount: number = value.amount
+
+          let val = this.products.find(function (el) {
+            return el.id == id;
+          });
+          if (val !== undefined) {
+            val.bid = amount;
+          }
+          // console.log(val)
+          // this.cost = value.amount;
+          // this.form.setControl("amount",
+          //   new FormControl(' ', [
+          //     Validators.required,
+          //     Validators.max(this.authService.getCoins()),
+          //     Validators.min(this.cost + 1)
+          //   ])
+          // )
+          // const bidResponse: BidResponse = new BidResponse(value.username, value.amount)
+          // this.bids.unshift(bidResponse);
+        })
+      }
+    );
+
+    function compare( a: BidResponse, b: BidResponse ) {
+      if ( a.amount < b.amount ){
+        return 1;
+      }
+      if ( a.amount > b.amount ){
+        return -1;
+      }
+      return 0;
+    }
+  }
+
+  // // Check if element is not undefined && not null
+  // isNotNullNorUndefined = function (o: any) {
+  //   return (typeof (o) !== 'undefined' && o !== null);
+  // };
+  //
+  // check(o: any,  id: number) {
+  //   return o.id = id;
+  // }
+
+  disconnect() {
+    if (this.stompClient != null) {
+      this.stompClient.disconnect();
     }
   }
 

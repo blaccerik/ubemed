@@ -12,5 +12,6 @@ import lombok.Setter;
 public class BidResponse {
 
     String username;
+    long id;
     long amount;
 }

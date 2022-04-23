@@ -74,7 +74,7 @@ public class StoreService {
             return Collections.emptyList();
         }
         DBProduct dbProduct = optionalDBProduct.get();
-        return dbProduct.getBids().stream().map(dbBid -> new BidResponse(dbBid.getDbUser().getName(), dbBid.getAmount())).collect(Collectors.toList());
+        return dbProduct.getBids().stream().map(dbBid -> new BidResponse(dbBid.getDbUser().getName(), dbBid.getId(), dbBid.getAmount())).collect(Collectors.toList());
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage) {
