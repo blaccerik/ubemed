@@ -31,6 +31,7 @@ public class DBProduct {
     private String title;
     private Date date;
     private boolean onSale;
+    private long numberOfBids;
 
     @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL)
     private DBStoreImage dbStoreImage;

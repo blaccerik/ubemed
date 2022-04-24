@@ -48,9 +48,10 @@ public class StoreController {
     @GetMapping()
     public List<Product> getAll(
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "filter", required = false) String filter
+            @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search
     ) {
-        return storeService.getAll();
+        return storeService.getAll(page, filter, search);
     }
 
 

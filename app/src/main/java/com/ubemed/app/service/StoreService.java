@@ -58,14 +58,25 @@ public class StoreService {
         this.catRepository = catRepository;
     }
 
-    public List<Product> getAll() {
-        List<Product> list = new ArrayList<>();
-        for (DBProduct dbProduct : productRepository.findAll()) {
-            if (dbProduct.isOnSale()) {
-                list.add(new Product(dbProduct));
+    public List<Product> getAll(Integer page, String filter, String search) {
+        return getFiltered(page, filter, search).stream()
+                .filter(o -> o.isOnSale())
+                .map(o -> new Product(o)).collect(Collectors.toList());
+    }
+
+    private List<DBProduct> getFiltered(Integer page, String filter, String search) {
+        if (filter != null) {
+            if (filter.equals("new")) {
+                productRepository.findNew();
+            } else if (filter.equals("cheap")) {
+                productRepository.findCheap();
+            } else if (filter.equals("expensive")) {
+                productRepository.findExpensive();
+            } else if (filter.equals("hot")) {
+                productRepository.findHot();
             }
         }
-        return list;
+        return productRepository.findAll();
     }
 
     public List<BidResponse> getBids(long id) {
@@ -141,6 +152,7 @@ public class StoreService {
         dbBid.setAmountMore(more);
         dbBid.setDbProduct(dbProduct);
         dbProduct.getBids().add(dbBid);
+        dbProduct.setNumberOfBids(dbProduct.getNumberOfBids() + 1);
         dbProduct.setHighestBid(dbBid.getAmount());
 
         productRepository.save(dbProduct);
@@ -219,6 +231,7 @@ public class StoreService {
                     return false;
                 }
                 dbProduct.setHighestBid(amount);
+                dbProduct.setNumberOfBids(0);
                 dbProduct.setOnSale(true);
                 dbProduct.setDate(date);
                 dbUser.setCoins(dbUser.getCoins() - amount);
@@ -269,6 +282,7 @@ public class StoreService {
             dbProduct.setOnSale(false);
             dbProduct.setBids(new ArrayList<>());
             dbProduct.setHighestBid(cost);
+            dbProduct.setNumberOfBids(0);
 
             dbUser.getProducts().add(dbProduct);
             dbUser.setCoins(dbUser.getCoins() - cost);
