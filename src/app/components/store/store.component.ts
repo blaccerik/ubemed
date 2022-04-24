@@ -9,6 +9,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {StoreOfferComponent} from "./store-offer/store-offer.component";
 import {NgForm} from "@angular/forms";
 import {BidResponse} from "../model/BidResponse";
+import {animate, state, style, transition, trigger} from "@angular/animations";
 
 interface Event {
   value: string;
@@ -26,7 +27,16 @@ interface Cat {
 @Component({
   selector: 'app-store',
   templateUrl: './store.component.html',
-  styleUrls: ['./store.component.scss']
+  styleUrls: ['./store.component.scss'],
+  animations: [
+    trigger('valueAnimation', [
+      transition(':increment', [
+          style({ color: 'green', fontSize: '20px' }),
+          animate('0.8s ease-out', style('*'))
+        ]
+      )
+    ])
+  ]
 })
 export class StoreComponent implements OnInit {
 
@@ -102,6 +112,8 @@ export class StoreComponent implements OnInit {
         // get images
         for (let i = 0; i < this.products.length; i++) {
           let product = this.products[i];
+          product.bids.sort(compare)
+
           const value = localStorage.getItem("image-" + product.id)
 
           // save to localstorage
@@ -119,6 +131,15 @@ export class StoreComponent implements OnInit {
       }
       );
 
+    function compare( a: BidResponse, b: BidResponse ) {
+      if ( a.amount < b.amount ){
+        return 1;
+      }
+      if ( a.amount > b.amount ){
+        return -1;
+      }
+      return 0;
+    }
 
     function hideloader() {
       // @ts-ignore
@@ -149,6 +170,7 @@ export class StoreComponent implements OnInit {
           });
           if (val !== undefined) {
             val.bid = amount;
+            val.bids.unshift(new BidResponse(username, amount))
           }
           // console.log(val)
           // this.cost = value.amount;
@@ -164,26 +186,7 @@ export class StoreComponent implements OnInit {
         })
       }
     );
-
-    function compare( a: BidResponse, b: BidResponse ) {
-      if ( a.amount < b.amount ){
-        return 1;
-      }
-      if ( a.amount > b.amount ){
-        return -1;
-      }
-      return 0;
-    }
   }
-
-  // // Check if element is not undefined && not null
-  // isNotNullNorUndefined = function (o: any) {
-  //   return (typeof (o) !== 'undefined' && o !== null);
-  // };
-  //
-  // check(o: any,  id: number) {
-  //   return o.id = id;
-  // }
 
   disconnect() {
     if (this.stompClient != null) {

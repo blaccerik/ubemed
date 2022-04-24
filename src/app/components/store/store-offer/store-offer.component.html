@@ -3,7 +3,12 @@
     <img *ngIf="product.file" [src]="image(product.file)" alt="image">
   </div>
   <div class="image bids">
-    t
+    <div *ngFor="let bid of product.bids" [@valueAnimation]="product.bids">
+      <div class="bid">
+        <div class="bid-user">{{bid.username}}</div>
+        <div class="bid-bid">{{bid.amount}}</div>
+      </div>
+    </div>
   </div>
 </div>
   <div class="title">

@@ -126,12 +126,12 @@ public class StoreController {
         }
     }
 
-    @GetMapping("/{id}/bids")
-    public List<BidResponse> getBids(
-            @PathVariable Long id
-    ) {
-        return storeService.getBids(id);
-    }
+//    @GetMapping("/{id}/bids")
+//    public List<BidResponse> getBids(
+//            @PathVariable Long id
+//    ) {
+//        return storeService.getBids(id);
+//    }
 
     @PostMapping("/{id}")
     public boolean makeBid(

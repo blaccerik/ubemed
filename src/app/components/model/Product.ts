@@ -1,3 +1,5 @@
+import {BidResponse} from "./BidResponse";
+
 export class Product {
   cats: string[];
   price: number;
@@ -6,4 +8,5 @@ export class Product {
   title: string;
   id: number;
   file: any;
+  bids: BidResponse[];
 }

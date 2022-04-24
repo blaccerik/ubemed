@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -17,6 +18,7 @@ public class Product {
 
     private long price;
     private long bid;
+    private List<BidResponse> bids;
     private String seller;
     private String title;
     private List<String> cats;
@@ -30,6 +32,7 @@ public class Product {
         for (DBStoreCats dbStoreCats : dbProduct.getDbStoreCats()) {
             list.add(dbStoreCats.getName());
         }
+        this.bids = dbProduct.getBids().stream().map(o -> new BidResponse(o)).collect(Collectors.toList());
         this.cats = list;
         this.title = dbProduct.getTitle();
         this.id = dbProduct.getId();
