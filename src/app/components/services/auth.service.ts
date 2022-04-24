@@ -11,11 +11,13 @@ import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 export class AuthService {
   private loggedIn = new BehaviorSubject<boolean>(false);
   private coins: number;
+  private name: string;
   private apiUrl = '/api/users';
 
   constructor(private http: HttpClient) {
     const token = localStorage.getItem("auth")
     this.coins = -1;
+    this.name = '';
     if (!!token && !this.tokenExpired(token)) {
       this.loggedIn.next(true);
     } else {
@@ -26,6 +28,7 @@ export class AuthService {
   private checkToken() {
     const token = localStorage.getItem("auth")
     if (!!token && !this.tokenExpired(token)) {
+      this.name = this.tokenName(token);
       this.loggedIn.next(true);
     } else {
       this.loggedIn.next(false);
@@ -37,6 +40,9 @@ export class AuthService {
       this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
         result => {
           this.coins = result;
+        }, error => {
+          this.coins = -1;
+          localStorage.removeItem("auth")
         }
       )
     }
@@ -45,6 +51,10 @@ export class AuthService {
   isLoggedIn() {
     this.checkToken();
     return this.loggedIn.getValue();
+  }
+
+  getName() {
+    return this.name;
   }
 
   getCoins() {
@@ -107,18 +117,4 @@ export class AuthService {
       catchError(this.handleError)
     );
   }
-
-  // post(data: Login) {
-  //   // const headers = new Headers();
-  //   // headers.append('Content-Type', 'application/json');
-  //   // headers.append("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2NDI4ODcxMDIsImlhdCI6MTY0Mjg2OTEwMn0.4_jJ1sjpH9BBrYimNs0SvXkj4z7faN5f4sQ5r8Pf91g9RVZCX2o_5jxbsWPqXrFJJk4ksZkKpsUK6PKSUcCCVg")
-  //   // { 'headers': headers }
-  //   return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
-  //     tap((response: any) => {
-  //       this.loggedIn.next(true);
-  //       localStorage.setItem("auth", response.token);
-  //     }),
-  //     catchError(this.handleError)
-  //   );
-  // }
 }

@@ -1,4 +1,5 @@
 import {BidResponse} from "./BidResponse";
+import {FormGroup} from "@angular/forms";
 
 export class Product {
   cats: string[];
@@ -8,5 +9,7 @@ export class Product {
   title: string;
   id: number;
   file: any;
+
   bids: BidResponse[];
+  form: FormGroup;
 }

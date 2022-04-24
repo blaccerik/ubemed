@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {HttpClient, HttpParams, HttpErrorResponse} from "@angular/common/http";
 import {catchError, map, Observable, throwError as observableThrowError} from "rxjs";
 import {Product} from "../model/Product";
 import {FormGroup} from "@angular/forms";
 import {Bid} from "../model/Bid";
 import {BidResponse} from "../model/BidResponse";
+import {ActivatedRoute} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +13,16 @@ import {BidResponse} from "../model/BidResponse";
 export class StoreService {
   private apiUrl = '/api/store';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private activatedRoute : ActivatedRoute
+  ) { }
 
   public getAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl).pipe()
+    // let data = {filter: "ee"};
+    // let a = new HttpParams();
+    let data = this.activatedRoute.snapshot.queryParams;
+    return this.http.get<Product[]>(this.apiUrl, {params: data}).pipe()
   }
 
   public getImg(id: number): any {

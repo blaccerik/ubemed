@@ -28,23 +28,18 @@ import {animate, style, transition, trigger} from "@angular/animations";
 export class StoreOfferComponent implements OnInit {
 
   product: Product;
-  form: FormGroup;
   stompClient: any;
-  bids: BidResponse[];
   showLoader: boolean;
   error: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: {product: Product},
-    private formBuilder: FormBuilder,
     private storeService: StoreService,
-    private authService: AuthService,
+    public authService: AuthService,
     private dialogRef: MatDialogRef<StoreOfferComponent>
   ) {
     this.product = data.product;
     this.error = false;
-    this.form = this.initForm();
-    this.bids = [];
     this.showLoader = true;
   }
 
@@ -52,20 +47,8 @@ export class StoreOfferComponent implements OnInit {
 
   }
 
-  initForm() {
-    return this.formBuilder.group({
-      amount: new FormControl('',
-        [
-          Validators.required,
-          Validators.max(this.authService.getCoins()),
-          Validators.min(this.product.price + 1)
-        ]
-      ),
-    });
-  }
-
   hasError(path: string, errorCode: string) {
-    return this.form && this.form.hasError(errorCode, path);
+    return this.product.form && this.product.form.hasError(errorCode, path);
   }
 
   image(array: any) {
@@ -74,7 +57,9 @@ export class StoreOfferComponent implements OnInit {
 
   submit() {
     // update Validator
-    const post = { ...this.form.value}
+    const post = { ...this.product.form.value}
+    const name = this.authService.getName()
+    // console.log(post)
     // const a = new FormData();
     // a.append("amount", this.form.value.amount);
 

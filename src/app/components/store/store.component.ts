@@ -7,7 +7,7 @@ import {Product} from "../model/Product";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {StoreOfferComponent} from "./store-offer/store-offer.component";
-import {NgForm} from "@angular/forms";
+import {FormBuilder, FormControl, NgForm, Validators} from "@angular/forms";
 import {BidResponse} from "../model/BidResponse";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 
@@ -63,11 +63,14 @@ export class StoreComponent implements OnInit {
     private storeService: StoreService,
     public authService: AuthService,
     private dialog: MatDialog,
+    private formBuilder: FormBuilder,
   ) {}
 
 
   onClickEvent(value: string) {
-    this.router.navigate(["store"], {queryParams: {'filter': value}, queryParamsHandling: 'merge'})
+    this.router.navigate(["store"], {
+      queryParams: {'filter': value}, queryParamsHandling: 'merge'
+    }).then(r => this.ngOnInit());
   }
 
   onClickCat($event: any, value: string) {
@@ -87,7 +90,10 @@ export class StoreComponent implements OnInit {
   }
 
   search(form: NgForm) {
-    this.router.navigate(["store"], {queryParams: {'search': form.value.search}, queryParamsHandling: 'merge'})
+    this.router.navigate(["store"], {
+      queryParams: {'search': form.value.search},
+      queryParamsHandling: 'merge'
+    }).then(r => this.ngOnInit());
   }
 
   ngOnInit(): void {
@@ -112,8 +118,10 @@ export class StoreComponent implements OnInit {
         // get images
         for (let i = 0; i < this.products.length; i++) {
           let product = this.products[i];
-          product.bids.sort(compare)
 
+          product.form = this.initForm(product.bid + 1);
+
+          product.bids.sort(compare)
           const value = localStorage.getItem("image-" + product.id)
 
           // save to localstorage
@@ -149,6 +157,18 @@ export class StoreComponent implements OnInit {
     }
   }
 
+  initForm(amount: number) {
+    return this.formBuilder.group({
+      amount: new FormControl('',
+        [
+          Validators.required,
+          Validators.pattern("^[0-9]*$"),
+          Validators.min(amount)
+        ]
+      ),
+    });
+  }
+
 
   connect() {
     const socket = new SockJS('api/websocket');
@@ -171,16 +191,17 @@ export class StoreComponent implements OnInit {
           if (val !== undefined) {
             val.bid = amount;
             val.bids.unshift(new BidResponse(username, amount))
+
+            // update validator
+            val.form.setControl("amount",
+              new FormControl(' ', [
+                Validators.pattern("^[0-9]*$"),
+                Validators.required,
+                Validators.min(amount + 1)
+              ])
+            )
           }
           // console.log(val)
-          // this.cost = value.amount;
-          // this.form.setControl("amount",
-          //   new FormControl(' ', [
-          //     Validators.required,
-          //     Validators.max(this.authService.getCoins()),
-          //     Validators.min(this.cost + 1)
-          //   ])
-          // )
           // const bidResponse: BidResponse = new BidResponse(value.username, value.amount)
           // this.bids.unshift(bidResponse);
         })
