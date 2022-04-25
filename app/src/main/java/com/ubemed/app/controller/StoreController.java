@@ -28,8 +28,8 @@ import java.util.List;
 @RequestMapping("/store")
 @RestController
 public class StoreController {
-    private final int maxCategories = 3;
-    private final int minCategories = 1;
+    private static final int maxCategories = 3;
+    private static final int minCategories = 1;
 
     private final long maxCost = 10000;
 

@@ -1,7 +1,16 @@
 import { Injectable } from '@angular/core';
 import {ForumService} from "./forum.service";
 import {Post} from "../model/Post";
-import {BehaviorSubject, catchError, map, skipWhile, take, tap, throwError as observableThrowError} from "rxjs";
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  skipWhile,
+  take,
+  tap,
+  throwError as observableThrowError
+} from "rxjs";
 import {Login} from "../model/Login";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 
@@ -36,15 +45,7 @@ export class AuthService {
   }
 
   private checkCoins() {
-    if (this.coins === -1) {
-      this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
-        result => {
-          this.coins = result;
-        }, error => {
-          this.coins = -1;
-          localStorage.removeItem("auth")
-        }
-      )
+    if (this.coins == -1) {
     }
   }
 
@@ -57,12 +58,33 @@ export class AuthService {
     return this.name;
   }
 
-  getCoins() {
-    if (this.loggedIn.getValue()) {
-      this.checkCoins();
-    }
-    return this.coins;
+  getCoins(): Observable<number> {
+    return new Observable(observer => {
+      if (this.loggedIn.getValue()) {
+        if (this.coins == -1) {
+          this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
+            result => {
+              this.coins = result;
+              console.log("call")
+              observer.next(this.coins)
+            }, error => {
+              this.coins = -1;
+              localStorage.removeItem("auth")
+            }
+          )
+        }
+      } else {
+        observer.next(this.coins)
+      }
+    })
   }
+
+  // getCoins(): number {
+  //   if (this.loggedIn.getValue()) {
+  //     this.checkCoins();
+  //   }
+  //   return this.coins;
+  // }
 
   updateCoins() {
     this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(

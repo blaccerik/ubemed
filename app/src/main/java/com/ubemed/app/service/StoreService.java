@@ -70,18 +70,22 @@ public class StoreService {
             search = "";
         }
 
-        if (filter != null) {
-            if (filter.equals("new")) {
-                return productRepository.findNew(search);
-            } else if (filter.equals("cheap")) {
-                return productRepository.findCheap(search);
-            } else if (filter.equals("expensive")) {
-                return productRepository.findExpensive(search);
-            } else if (filter.equals("hot")) {
-                return productRepository.findHot(search);
-            }
+        if (filter == null) {
+            filter = "";
         }
-        return productRepository.findAll();
+
+        switch (filter) {
+            case "new":
+                return productRepository.findNew(search);
+            case "cheap":
+                return productRepository.findCheap(search);
+            case "expensive":
+                return productRepository.findExpensive(search);
+            case "hot":
+                return productRepository.findHot(search);
+        }
+
+        return productRepository.findDefault(search);
     }
 
     public List<BidResponse> getBids(long id) {
@@ -94,7 +98,6 @@ public class StoreService {
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage) {
-        System.out.println(originalImage);
         Image resultingImage = originalImage.getScaledInstance(width, height, Image.SCALE_DEFAULT);
         BufferedImage outputImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);

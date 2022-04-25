@@ -15,6 +15,9 @@ public interface ProductRepository extends JpaRepository<DBProduct, Long> {
 //    @Query(value = "SELECT * FROM public.dbproduct WHERE on_sale=false AND db_user_id=:id", nativeQuery = true)
 //    List<DBProduct> findAllById(long id);
 
+    @Query(value = "SELECT * FROM dbproduct WHERE title LIKE %:string%", nativeQuery = true)
+    List<DBProduct> findDefault(String string);
+
     @Query(value = "SELECT * FROM dbproduct WHERE title LIKE %:string% ORDER BY id DESC", nativeQuery = true)
     List<DBProduct> findNew(String string);
 

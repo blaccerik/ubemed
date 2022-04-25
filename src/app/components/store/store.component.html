@@ -3,7 +3,7 @@
   <div class="options">
     <button [disabled]="!authService.isLoggedIn()" (click)="create()" class="button"
             mat-icon-button color="basic"
-            matTooltip="Create">
+            matTooltip="New">
       <mat-icon>add</mat-icon>
     </button>
     <button (click)="refresh()" class="button" mat-icon-button color="basic" matTooltip="Refresh">
@@ -16,9 +16,9 @@
     </button>
     <mat-menu #menu2="matMenu">
       <button mat-menu-item *ngFor="let cat of cats" (click)="onClickCat($event, cat.value)">
-        <mat-icon style="color: red" *ngIf="cat.selected">close</mat-icon>
-        <mat-icon style="color: green" *ngIf="!cat.selected">done</mat-icon>
-        <span [ngStyle]="{'color': cat.selected? 'red' : 'green'}" >{{cat.viewValue}}</span>
+        <mat-icon style="color: red" *ngIf="!cat.selected">close</mat-icon>
+        <mat-icon style="color: green" *ngIf="cat.selected">done</mat-icon>
+        <span [ngStyle]="{'color': cat.selected? 'green' : 'red'}" >{{cat.viewValue}}</span>
       </button>
     </mat-menu>
 
@@ -48,16 +48,16 @@
     </div>
   </div>
 
-  <div *ngIf="products.length == 0" class="no-found">
+  <div *ngIf="products != undefined && getSelected().length == 0" id="no-found" class="no-found">
     <img src="https://img.icons8.com/cute-clipart/100/000000/nothing-found.png"/>
     <h2>
       {{ 'store.no-found' | translate }}
     </h2>
   </div>
 
-  <div *ngIf="products.length > 0" id="grid" class="grid">
+  <div *ngIf="products != undefined && getSelected().length > 0" id="grid" class="grid">
     <div class="grid-item hvr-grow-shadow"
-         *ngFor="let product of products"
+         *ngFor="let product of getSelected()"
          (click)="makeOffer(product)"
     >
       <div *ngIf="product">

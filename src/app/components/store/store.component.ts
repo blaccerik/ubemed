@@ -19,7 +19,7 @@ interface Event {
 }
 
 interface Cat {
-  value: string,
+  value: number,
   viewValue: string;
   selected: boolean;
 }
@@ -41,7 +41,7 @@ interface Cat {
 })
 export class StoreComponent implements OnInit {
 
-  products: Product[] = [];
+  products: Product[];
   events: Event[] = [
     {value: 'hot', viewValue: 'Hot', icon: "whatshot"},
     {value: 'expensive', viewValue: 'Expensive', icon: "attach_money"},
@@ -50,11 +50,12 @@ export class StoreComponent implements OnInit {
   ];
 
   cats: Cat[] = [
-    {value: '1', viewValue: '1', selected: false},
-    {value: '2', viewValue: '2', selected: false},
-    {value: '3', viewValue: '3', selected: false},
-    {value: '4', viewValue: '4', selected: false},
-    {value: '5', viewValue: '5', selected: false},
+    {value: 1, viewValue: '1', selected: true},
+    {value: 2, viewValue: '2', selected: true},
+    {value: 3, viewValue: '3', selected: true},
+    {value: 4, viewValue: '4', selected: true},
+    {value: 5, viewValue: '5', selected: true},
+    {value: 6, viewValue: '6', selected: true},
   ]
 
   stompClient: any;
@@ -74,7 +75,7 @@ export class StoreComponent implements OnInit {
     }).then(r => this.ngOnInit());
   }
 
-  onClickCat($event: any, value: string) {
+  onClickCat($event: any, value: number) {
 
     $event.stopPropagation();
 
@@ -90,15 +91,19 @@ export class StoreComponent implements OnInit {
     this.ngOnInit();
   }
 
-  getSelected() {
+  getSelected(): Product[] {
     let list: Product[] = []
     for (let i = 0; i < this.products.length; i++) {
       let product = this.products[i];
-      for (let j = 0; j < product.cats.length; j++) {
-        let cat = product.cats[j];
-
+      for (let j = 0; j < this.cats.length; j++) {
+        let cat = this.cats[j];
+        if (cat.selected && product.cats.includes(cat.value)) {
+          list.push(product);
+          break
+        }
       }
     }
+    return list;
   }
 
   search(form: NgForm) {
@@ -115,8 +120,15 @@ export class StoreComponent implements OnInit {
     // @ts-ignore
     document.getElementById('loading').style.display = "";
 
-    // document.getElementById('grid').style.display = "none";
+    if (document.getElementById('grid')) {
+      // @ts-ignore
+      document.getElementById('grid').style.display = "none";
+    }
 
+    if (document.getElementById('no-found')) {
+      // @ts-ignore
+      document.getElementById('no-found').style.display = "none";
+    }
 
 
     this.connect()
@@ -133,21 +145,8 @@ export class StoreComponent implements OnInit {
           let product = this.products[i];
 
           product.form = this.initForm(product.bid + 1);
-
+          this.storeService.getImage(product);
           product.bids.sort(compare)
-          const value = localStorage.getItem("image-" + product.id)
-
-          // save to localstorage
-          if (!value) {
-            this.storeService.getImg(product.id).subscribe(
-              (next: any) => {
-                product.file = next.file;
-                localStorage.setItem("image-" + product.id, product.file);
-              }
-            )
-          } else {
-            product.file = value;
-          }
         }
       }
       );
@@ -169,6 +168,11 @@ export class StoreComponent implements OnInit {
       if (document.getElementById('grid')) {
         // @ts-ignore
         document.getElementById('grid').style.display = "";
+      }
+
+      if (document.getElementById('no-found')) {
+        // @ts-ignore
+        document.getElementById('no-found').style.display = "";
       }
     }
   }

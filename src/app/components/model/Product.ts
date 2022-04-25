@@ -2,7 +2,7 @@ import {BidResponse} from "./BidResponse";
 import {FormGroup} from "@angular/forms";
 
 export class Product {
-  cats: string[];
+  cats: number[];
   price: number;
   bid: number;
   seller: string;

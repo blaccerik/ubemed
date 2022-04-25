@@ -25,12 +25,12 @@ export class StoreService {
     return this.http.get<Product[]>(this.apiUrl, {params: data}).pipe()
   }
 
-  public getImg(id: number): any {
+  private getImg(id: number): any {
     return this.http.get(this.apiUrl + "/" + id + "/image").pipe(catchError(this.handleError))
   }
 
-  public getBids(id: number): Observable<BidResponse[]> {
-    return this.http.get<BidResponse[]>(this.apiUrl + "/" + id + "/bids").pipe(catchError(this.handleError))
+  public sell(id: number, form: FormData): any {
+    return this.http.put(this.apiUrl + "/" + id, form).pipe(catchError(this.handleError))
   }
 
   public makeBid(id: number, bid: Bid): any {
@@ -46,4 +46,20 @@ export class StoreService {
     return observableThrowError(res.error || 'Server error');
   }
 
+  public getImage(product: Product) {
+    const value = localStorage.getItem("image-" + product.id)
+    let file: any
+    // save to localstorage
+    if (!value) {
+      this.getImg(product.id).subscribe(
+        (next: any) => {
+          file = next.file;
+          localStorage.setItem("image-" + product.id, file);
+          product.file = file
+        }
+      )
+    } else {
+      product.file = value;
+    }
+  }
 }

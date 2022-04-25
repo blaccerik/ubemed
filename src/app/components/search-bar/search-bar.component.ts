@@ -21,6 +21,8 @@ export class SearchBarComponent implements OnInit {
     {value: 'suvepyks', viewValue: 'SuvePüks 2003'},
   ];
 
+  coins: number
+
   constructor(
     private router: Router,
     private dialog: MatDialog,
@@ -28,6 +30,9 @@ export class SearchBarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.service.getCoins().subscribe(next => {
+      this.coins = next;
+    })
   }
 
   onSubmit(form: NgForm) {

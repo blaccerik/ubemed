@@ -4,6 +4,7 @@ import {StoreService} from "../services/store.service";
 import {AuthService} from "../services/auth.service";
 import {InventoryService} from "../services/inventory.service";
 import {Router} from "@angular/router";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-inventory',
@@ -14,6 +15,7 @@ export class InventoryComponent implements OnInit {
 
   products: Product[] = [];
   product: Product | undefined;
+  sellItem: FormGroup;
 
   constructor(
     private inventoryService: InventoryService,
@@ -23,32 +25,32 @@ export class InventoryComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.product)
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['']).then();
     }
+    this.authService.getCoins().subscribe(
+        next => {
+          this.sellItem = new FormGroup({
+            amount: new FormControl("",
+                [
+                  Validators.min(1),
+                  Validators.max(next),
+                  Validators.required
+                ]),
+          });
+        }
+    )
 
     this.inventoryService.getAll().subscribe(
       next => {
-        console.log(next)
         this.products = next
+
+        hideloader();
 
         // get images
         for (let i = 0; i < this.products.length; i++) {
           let product = this.products[i];
-          const value = localStorage.getItem("image-" + product.id)
-
-          // save to localstorage
-          if (!value) {
-            this.storeService.getImg(product.id).subscribe(
-              (next: any) => {
-                product.file = next.file;
-                localStorage.setItem("image-" + product.id, product.file);
-              }
-            )
-          } else {
-            product.file = value;
-          }
+          this.storeService.getImage(product);
         }
       }
     );
@@ -68,6 +70,15 @@ export class InventoryComponent implements OnInit {
       // @ts-ignore
       document.getElementById('stats').classList.add('stats-move')
     }
+  }
+
+  sell(id: number) {
+    const cats = this.sellItem.value
+    console.log(cats)
+  }
+
+  hasError(path: string, errorCode: string) {
+    return this.sellItem && this.sellItem.hasError(errorCode, path);
   }
 
   image(array: any) {
