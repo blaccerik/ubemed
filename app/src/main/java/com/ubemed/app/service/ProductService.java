@@ -2,8 +2,8 @@ package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBUser;
-import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.Product;
+import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
 @org.springframework.stereotype.Service
 public class ProductService {
 
-    @Autowired
-    ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public ProductService(ProductRepository productRepository, UserRepository userRepository) {
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<Product> getAll(String username) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);

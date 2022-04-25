@@ -10,6 +10,7 @@ import {StoreOfferComponent} from "./store-offer/store-offer.component";
 import {FormBuilder, FormControl, NgForm, Validators} from "@angular/forms";
 import {BidResponse} from "../model/BidResponse";
 import {animate, state, style, transition, trigger} from "@angular/animations";
+import {InventoryService} from "../services/inventory.service";
 
 interface Event {
   value: string;
@@ -63,7 +64,7 @@ export class StoreComponent implements OnInit {
     private storeService: StoreService,
     public authService: AuthService,
     private dialog: MatDialog,
-    private formBuilder: FormBuilder,
+    private formBuilder: FormBuilder
   ) {}
 
 
@@ -89,6 +90,17 @@ export class StoreComponent implements OnInit {
     this.ngOnInit();
   }
 
+  getSelected() {
+    let list: Product[] = []
+    for (let i = 0; i < this.products.length; i++) {
+      let product = this.products[i];
+      for (let j = 0; j < product.cats.length; j++) {
+        let cat = product.cats[j];
+
+      }
+    }
+  }
+
   search(form: NgForm) {
     this.router.navigate(["store"], {
       queryParams: {'search': form.value.search},
@@ -103,8 +115,9 @@ export class StoreComponent implements OnInit {
     // @ts-ignore
     document.getElementById('loading').style.display = "";
 
-    // @ts-ignore
-    document.getElementById('grid').style.display = "none";
+    // document.getElementById('grid').style.display = "none";
+
+
 
     this.connect()
 
@@ -152,8 +165,11 @@ export class StoreComponent implements OnInit {
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
-      // @ts-ignore
-      document.getElementById('grid').style.display = "";
+
+      if (document.getElementById('grid')) {
+        // @ts-ignore
+        document.getElementById('grid').style.display = "";
+      }
     }
   }
 

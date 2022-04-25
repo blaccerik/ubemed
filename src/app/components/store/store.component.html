@@ -48,27 +48,36 @@
     </div>
   </div>
 
-  <div id="grid" class="grid">
+  <div *ngIf="products.length == 0" class="no-found">
+    <img src="https://img.icons8.com/cute-clipart/100/000000/nothing-found.png"/>
+    <h2>
+      {{ 'store.no-found' | translate }}
+    </h2>
+  </div>
+
+  <div *ngIf="products.length > 0" id="grid" class="grid">
     <div class="grid-item hvr-grow-shadow"
          *ngFor="let product of products"
          (click)="makeOffer(product)"
     >
-      <div class="grid-item-img">
-        <img *ngIf="product.file" [src]="image(product.file)" alt="image">
-      </div>
-      <div class="grid-item-title">
-        {{product.title}}
-      </div>
-      <div class="grid-item-icon">
-        <mat-icon>person</mat-icon>
-        <div class="grid-item-icon-text">
-          {{product.seller}}
+      <div *ngIf="product">
+        <div class="grid-item-img">
+          <img *ngIf="product.file" [src]="image(product.file)" alt="image">
         </div>
-      </div>
-      <div class="grid-item-icon">
-        <mat-icon>payments</mat-icon>
-        <div class="grid-item-icon-text" [@valueAnimation]="product.bid">
-          {{product.bid}}
+        <div class="grid-item-title">
+          {{product.title}}
+        </div>
+        <div class="grid-item-icon">
+          <mat-icon>person</mat-icon>
+          <div class="grid-item-icon-text">
+            {{product.seller}}
+          </div>
+        </div>
+        <div class="grid-item-icon">
+          <mat-icon>payments</mat-icon>
+          <div class="grid-item-icon-text" [@valueAnimation]="product.bid">
+            {{product.bid}}
+          </div>
         </div>
       </div>
     </div>

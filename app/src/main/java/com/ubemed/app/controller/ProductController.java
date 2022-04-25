@@ -2,9 +2,7 @@ package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
 import com.ubemed.app.model.Product;
-import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.service.ProductService;
-import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,5 +33,4 @@ public class ProductController {
 
         return productService.getAll(username);
     }
-
 }

@@ -65,15 +65,20 @@ public class StoreService {
     }
 
     private List<DBProduct> getFiltered(Integer page, String filter, String search) {
+
+        if (search == null) {
+            search = "";
+        }
+
         if (filter != null) {
             if (filter.equals("new")) {
-                productRepository.findNew();
+                return productRepository.findNew(search);
             } else if (filter.equals("cheap")) {
-                productRepository.findCheap();
+                return productRepository.findCheap(search);
             } else if (filter.equals("expensive")) {
-                productRepository.findExpensive();
+                return productRepository.findExpensive(search);
             } else if (filter.equals("hot")) {
-                productRepository.findHot();
+                return productRepository.findHot(search);
             }
         }
         return productRepository.findAll();

@@ -19,12 +19,12 @@ public class ApplicationInit implements CommandLineRunner {
         List<DBStoreCats> list = catRepository.findAll();
         if (list.isEmpty()) {
             List<DBStoreCats> catsList = List.of(
-                    new DBStoreCats(1,"1"),
-                    new DBStoreCats(2,"2"),
-                    new DBStoreCats(3,"3"),
-                    new DBStoreCats(4,"4"),
-                    new DBStoreCats(5,"5"),
-                    new DBStoreCats(6,"6")
+                    new DBStoreCats(1,"cat 1"),
+                    new DBStoreCats(2,"cat 2"),
+                    new DBStoreCats(3,"cat 3"),
+                    new DBStoreCats(4,"cat 4"),
+                    new DBStoreCats(5,"cat 5"),
+                    new DBStoreCats(6,"cat 6")
             );
             catRepository.saveAll(catsList);
         }
