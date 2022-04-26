@@ -28,13 +28,13 @@ export class InventoryComponent implements OnInit {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['']).then();
     }
-    this.authService.getCoins().subscribe(
+    this.authService.getData(false).subscribe(
         next => {
           this.sellItem = new FormGroup({
             amount: new FormControl("",
                 [
                   Validators.min(1),
-                  Validators.max(next),
+                  Validators.max(next.coins),
                   Validators.required
                 ]),
           });

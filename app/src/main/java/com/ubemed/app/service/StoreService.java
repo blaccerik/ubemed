@@ -229,10 +229,6 @@ public class StoreService {
             return false;
         }
         DBUser dbUser = optionalDBUser.get();
-        if (dbUser.getCoins() < amount) {
-            return false;
-        }
-
         for (DBProduct dbProduct : dbUser.getProducts()) {
             if (dbProduct.getId() == id) {
                 if (dbProduct.isOnSale()) {
@@ -242,7 +238,6 @@ public class StoreService {
                 dbProduct.setNumberOfBids(0);
                 dbProduct.setOnSale(true);
                 dbProduct.setDate(date);
-                dbUser.setCoins(dbUser.getCoins() - amount);
                 userRepository.save(dbUser);
                 return true;
             }

@@ -4,7 +4,7 @@ import {Post} from "../model/Post";
 import {
   BehaviorSubject,
   catchError,
-  map,
+  map, observable,
   Observable,
   skipWhile,
   take,
@@ -13,83 +13,76 @@ import {
 } from "rxjs";
 import {Login} from "../model/Login";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {UserData} from "../model/UserData";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private loggedIn = new BehaviorSubject<boolean>(false);
+  private loggedIn: boolean;
   private coins: number;
   private name: string;
+  private lastClaimDate: number
   private apiUrl = '/api/users';
 
   constructor(private http: HttpClient) {
-    const token = localStorage.getItem("auth")
+    this.loggedIn = false;
+    // const token = localStorage.getItem("auth")
     this.coins = -1;
     this.name = '';
-    if (!!token && !this.tokenExpired(token)) {
-      this.loggedIn.next(true);
-    } else {
-      this.loggedIn.next(false);
-    }
+    this.checkToken()
+    // if (!!token && !this.tokenExpired(token)) {
+    //   this.loggedIn.next(true);
+    // } else {
+    //   this.loggedIn.next(false);
+    // }
   }
 
   private checkToken() {
     const token = localStorage.getItem("auth")
     if (!!token && !this.tokenExpired(token)) {
       this.name = this.tokenName(token);
-      this.loggedIn.next(true);
+      this.loggedIn = true;
     } else {
-      this.loggedIn.next(false);
-    }
-  }
-
-  private checkCoins() {
-    if (this.coins == -1) {
+      localStorage.removeItem("auth")
+      this.loggedIn = false;
     }
   }
 
   isLoggedIn() {
     this.checkToken();
-    return this.loggedIn.getValue();
+    return this.loggedIn;
   }
 
   getName() {
     return this.name;
   }
-
-  getCoins(): Observable<number> {
-    return new Observable(observer => {
-      if (this.loggedIn.getValue()) {
-        if (this.coins == -1) {
-          this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
-            result => {
-              this.coins = result;
-              console.log("call")
-              observer.next(this.coins)
-            }, error => {
-              this.coins = -1;
-              localStorage.removeItem("auth")
-            }
-          )
+  
+  getData(force: boolean): Observable<UserData> {
+    this.checkToken()
+    return new Observable<UserData>(
+      observer => {
+        if (this.loggedIn || force) {
+          if (this.coins == -1  || force) {
+            this.http.get<UserData>(this.apiUrl + "/data").pipe(catchError(this.handleError)).subscribe(
+              next => {
+                this.coins = next.coins;
+                this.lastClaimDate = next.lastClaimDate;
+                let userData = new UserData();
+                userData.coins = this.coins;
+                userData.lastClaimDate = this.lastClaimDate;
+                observer.next(userData);
+              }
+            )
+          } else {
+            let userData = new UserData();
+            userData.coins = this.coins;
+            userData.lastClaimDate = this.lastClaimDate;
+            observer.next(userData);
+          }
+        } else {
+          observer.next(new UserData());
         }
-      } else {
-        observer.next(this.coins)
-      }
-    })
-  }
-
-  // getCoins(): number {
-  //   if (this.loggedIn.getValue()) {
-  //     this.checkCoins();
-  //   }
-  //   return this.coins;
-  // }
-
-  updateCoins() {
-    this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
-      result => {
-        this.coins = result;
       }
     )
   }
@@ -116,16 +109,22 @@ export class AuthService {
     return "";
   }
 
+  claim() {
+    return this.http.get(this.apiUrl + "/claim").pipe(catchError(this.handleError))
+  }
+
   logout() {
     localStorage.removeItem("auth");
-    this.loggedIn.next(false);
+    this.loggedIn = false;
+    this.coins = -1;
+    this.lastClaimDate = -1;
     location.reload();
   }
 
   login(data: Login) {
     return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
       tap((response: any) => {
-        this.loggedIn.next(true);
+        this.loggedIn = true;
         localStorage.setItem("auth", response.token);
         }
       ),

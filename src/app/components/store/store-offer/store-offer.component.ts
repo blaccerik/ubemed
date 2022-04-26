@@ -10,6 +10,7 @@ import {AuthService} from "../../services/auth.service";
 import {Product} from "../../model/Product";
 import {StoreComponent} from "../store.component";
 import {animate, style, transition, trigger} from "@angular/animations";
+import {SearchBarComponent} from "../../search-bar/search-bar.component";
 
 @Component({
   selector: 'app-store-offer',
@@ -67,7 +68,12 @@ export class StoreOfferComponent implements OnInit {
       (next: any)=> {
         this.error = !next;
         if (next) {
-          this.authService.updateCoins();
+          this.authService.getData(true).subscribe(next => {
+
+            // todo make searchbar update itself
+
+            // this.searchBarComponent.update();
+          })
         }
       }
     )

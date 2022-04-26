@@ -253,8 +253,9 @@ public class StoreServiceTest {
         Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
         Assertions.assertEquals(productRepository.findById(id).get().getDate().getTime(), UserServiceTest.parseDate("2022-05-06").getTime());
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
+        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).isOnSale(), true);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).getId(), id);
-        Assertions.assertEquals(userRepository.findByName("1").get().getCoins(), 80);
+        Assertions.assertEquals(userRepository.findByName("1").get().getCoins(), 100);
     }
 
     @Test
@@ -266,6 +267,7 @@ public class StoreServiceTest {
         DBUser dbUser = new DBUser();
         dbUser.setCoins(100);
         dbUser.setName("1");
+
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser);
         dbProduct.setOnSale(false);
@@ -301,12 +303,7 @@ public class StoreServiceTest {
             id2 = dbProduct1.getId();
         }
         Assertions.assertEquals(storeService.sell("1", id2, 20, UserServiceTest.parseDate("2022-05-06")), false);
-        Assertions.assertEquals(storeService.sell("1", id, 101, UserServiceTest.parseDate("2022-05-06")), false);
-
-        DBProduct dbProduct3 = productRepository.getById(id);
-        dbProduct3.setOnSale(true);
-        productRepository.save(dbProduct3);
-
+        Assertions.assertEquals(storeService.sell("1", id, 20, UserServiceTest.parseDate("2022-05-06")), true);
         Assertions.assertEquals(storeService.sell("1", id, 20, UserServiceTest.parseDate("2022-05-06")), false);
     }
 

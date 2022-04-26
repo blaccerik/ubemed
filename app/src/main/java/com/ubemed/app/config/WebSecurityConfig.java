@@ -68,6 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/users/check",
                         "users/coins",
+                        "users/data",
                         "/forum/new",
                         "/store/add")
                 .hasAnyAuthority("user")
