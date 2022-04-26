@@ -28,7 +28,6 @@
 <div class="stats" id="stats">
   <div *ngIf="product">
     <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="200" width="200">
-    <div class="stats-graph">stats</div>
 
     <form [formGroup]="sellItem" (ngSubmit)="sell(product.id)">
       <mat-form-field class="cost" appearance="outline">
@@ -42,7 +41,7 @@
         </mat-error>
       </mat-form-field>
       <div style="margin-top: 10px; margin-left: 2px">
-        <button mat-raised-button [disabled]="sellItem.invalid">{{ 'store.new.create' | translate }}</button>
+        <button mat-raised-button [disabled]="sellItem.invalid">Sell</button>
       </div>
     </form>
   </div>

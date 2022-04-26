@@ -282,7 +282,7 @@ public class StoreService {
             dbProduct.setTitle(title);
             dbProduct.setDbStoreCats(catsList);
             dbProduct.setDate(date);
-            dbProduct.setOnSale(false);
+            dbProduct.setOnSale(true);
             dbProduct.setBids(new ArrayList<>());
             dbProduct.setHighestBid(cost);
             dbProduct.setNumberOfBids(0);

@@ -86,6 +86,7 @@ export class StoreNewComponent implements OnInit {
     this.storeService.upload(a).subscribe(
       next => {
         if (next) {
+          this.authService.update()
           this.router.navigate(["store"]).then();
         } else {
           this.showError = true;

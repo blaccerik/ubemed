@@ -17,7 +17,7 @@
   width: 0;
   height: 0;
 
-  background-color: #331906;
+  background-color: var(--white);
   border-radius: 10px;
   border: 5px white solid;
   padding: 20px;
@@ -40,12 +40,12 @@
   //  padding: 15px;
   //}
 
-  &-graph {
-    margin-top: 15px;
-    background-color: papayawhip;
-    //height: 50px;
-    width: 200px;
-  }
+  //&-graph {
+  //  margin-top: 15px;
+  //  background-color: papayawhip;
+  //  //height: 50px;
+  //  width: 200px;
+  //}
 }
 
 .container {

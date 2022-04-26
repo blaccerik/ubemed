@@ -365,7 +365,7 @@ public class StoreServiceTest {
         long id = productRepository.findAll().get(0).getId();
         assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
         assertEquals(productRepository.findById(id).get().getDbStoreCats().size(), 3);
-        assertEquals(productRepository.findById(id).get().isOnSale(), false);
+        assertEquals(productRepository.findById(id).get().isOnSale(), true);
         assertEquals(productRepository.findById(id).get().getTitle(), "test");
         assertEquals(productRepository.findById(id).get().getPrice(), 20);
         assertEquals(productRepository.findById(id).get().getHighestBid(), 20);
