@@ -29,7 +29,7 @@ export class StoreService {
     return this.http.get(this.apiUrl + "/" + id + "/image").pipe(catchError(this.handleError))
   }
 
-  public sell(id: number, form: FormData): any {
+  public sell(id: number, form: FormData) {
     return this.http.put(this.apiUrl + "/" + id, form).pipe(catchError(this.handleError))
   }
 

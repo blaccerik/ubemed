@@ -28,18 +28,23 @@ export class InventoryComponent implements OnInit {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['']).then();
     }
-    this.authService.getData(false).subscribe(
-        next => {
-          this.sellItem = new FormGroup({
-            amount: new FormControl("",
-                [
-                  Validators.min(1),
-                  Validators.max(next.coins),
-                  Validators.required
-                ]),
-          });
-        }
-    )
+
+    this.product = undefined;
+
+    // @ts-ignore
+    document.getElementById('loading').style.display = "";
+    // @ts-ignore
+    document.getElementById('grid').style.display = "none";
+    // @ts-ignore
+    document.getElementById('stats').className = 'stats'
+
+    this.sellItem = new FormGroup({
+      amount: new FormControl("",
+        [
+            Validators.min(1),
+            Validators.required
+        ]),
+    });
 
     this.inventoryService.getAll().subscribe(
       next => {
@@ -57,6 +62,8 @@ export class InventoryComponent implements OnInit {
     function hideloader() {
       // @ts-ignore
       document.getElementById('loading').style.display = "none";
+      // @ts-ignore
+      document.getElementById('grid').style.display = "";
     }
   }
 
@@ -74,7 +81,14 @@ export class InventoryComponent implements OnInit {
 
   sell(id: number) {
     const cats = this.sellItem.value
-    console.log(cats)
+    this.storeService.sell(id, cats).subscribe(
+        next => {
+          console.log(next)
+          this.ngOnInit()
+          // console.log(next)
+        }
+    )
+    // console.log(cats)
   }
 
   hasError(path: string, errorCode: string) {

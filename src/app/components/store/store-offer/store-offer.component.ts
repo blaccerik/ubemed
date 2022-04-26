@@ -60,20 +60,12 @@ export class StoreOfferComponent implements OnInit {
     // update Validator
     const post = { ...this.product.form.value}
     const name = this.authService.getName()
-    // console.log(post)
-    // const a = new FormData();
-    // a.append("amount", this.form.value.amount);
 
     this.storeService.makeBid(this.product.id, post).subscribe(
       (next: any)=> {
         this.error = !next;
         if (next) {
-          this.authService.getData(true).subscribe(next => {
-
-            // todo make searchbar update itself
-
-            // this.searchBarComponent.update();
-          })
+          this.authService.update();
         }
       }
     )

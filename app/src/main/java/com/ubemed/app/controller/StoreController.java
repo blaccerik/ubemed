@@ -30,8 +30,7 @@ import java.util.List;
 public class StoreController {
     private static final int maxCategories = 3;
     private static final int minCategories = 1;
-
-    private final long maxCost = 10000;
+    private static final long maxCost = 10000;
 
     @Autowired
     private StoreService storeService;

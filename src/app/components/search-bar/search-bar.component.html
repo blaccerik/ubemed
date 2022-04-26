@@ -35,7 +35,7 @@
               class="login"
               (click)="openDialog()">{{ 'search-bar.login'| translate }}</button>
     </div>
-    <div *ngIf="service.isLoggedIn() && coins != -1"
+    <div *ngIf="service.isLoggedIn()"
          class="user-info"
          [matMenuTriggerFor]="settings">
       <div class="user-info-picture"></div>
@@ -44,7 +44,7 @@
           {{service.tokenName(service.getToken())}}
         </div>
         <div class="user-info-coins">
-          Coins: {{coins}}
+          Coins: {{service.getCoins()}}
         </div>
       </div>
     </div>

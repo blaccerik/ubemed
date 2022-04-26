@@ -4,7 +4,6 @@ import {NgForm} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {LoginComponent} from "../login/login.component";
 import {AuthService} from "../services/auth.service";
-import {InventoryService} from "../services/inventory.service";
 
 interface Event {
   value: string;
@@ -22,9 +21,6 @@ export class SearchBarComponent implements OnInit {
     {value: 'suvepyks', viewValue: 'SuvePüks 2003'},
   ];
 
-  coins: number;
-  lastClaimDate: number;
-
   constructor(
     private router: Router,
     private dialog: MatDialog,
@@ -32,7 +28,7 @@ export class SearchBarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.update()
+    this.service.update();
   }
 
   onSubmit(form: NgForm) {
@@ -54,21 +50,14 @@ export class SearchBarComponent implements OnInit {
     this.dialog.open(LoginComponent);
   }
 
-  update() {
-    this.service.getData(true).subscribe(next => {
-      this.coins = next.coins;
-      this.lastClaimDate = next.lastClaimDate;
-    })
-  }
-
   logout() {
     this.service.logout();
   }
 
   canClaim(): boolean {
     const date = new Date();
-    if (!isNaN(this.lastClaimDate)) {
-      const diffTime = date.getTime() - this.lastClaimDate
+    if (this.service.getLastClaimDate() != undefined) {
+      const diffTime = date.getTime() - this.service.getLastClaimDate()
       const diff = Math.ceil(diffTime / (1000 * 60 * 60));
       return diff >= 24;
     }
@@ -78,7 +67,8 @@ export class SearchBarComponent implements OnInit {
   claim() {
     this.service.claim().subscribe(
       next => {
-        this.update();
+        this.service.update();
+        // this.update();
       }
     )
   }

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {ForumService} from "./forum.service";
 import {Post} from "../model/Post";
 import {
   BehaviorSubject,
@@ -31,11 +30,23 @@ export class AuthService {
     this.coins = -1;
     this.name = '';
     this.checkToken()
-    // if (!!token && !this.tokenExpired(token)) {
-    //   this.loggedIn.next(true);
-    // } else {
-    //   this.loggedIn.next(false);
-    // }
+  }
+
+  public getCoins() {
+    return this.coins;
+  }
+
+  public getLastClaimDate() {
+    return this.lastClaimDate;
+  }
+
+  public update() {
+    this.http.get<UserData>(this.apiUrl + "/data").pipe(catchError(this.handleError)).subscribe(
+      next => {
+        this.coins = next.coins;
+        this.lastClaimDate = next.lastClaimDate;
+      }
+    )
   }
 
   private checkToken() {
@@ -54,41 +65,12 @@ export class AuthService {
     return this.loggedIn;
   }
 
-  getName() {
+  public getName() {
     return this.name;
-  }
-  
-  getData(force: boolean): Observable<UserData> {
-    this.checkToken()
-    return new Observable<UserData>(
-      observer => {
-        if (this.loggedIn || force) {
-          if (this.coins == -1  || force) {
-            this.http.get<UserData>(this.apiUrl + "/data").pipe(catchError(this.handleError)).subscribe(
-              next => {
-                this.coins = next.coins;
-                this.lastClaimDate = next.lastClaimDate;
-                let userData = new UserData();
-                userData.coins = this.coins;
-                userData.lastClaimDate = this.lastClaimDate;
-                observer.next(userData);
-              }
-            )
-          } else {
-            let userData = new UserData();
-            userData.coins = this.coins;
-            userData.lastClaimDate = this.lastClaimDate;
-            observer.next(userData);
-          }
-        } else {
-          observer.next(new UserData());
-        }
-      }
-    )
   }
 
   private handleError(res: HttpErrorResponse | any) {
-    console.error(res.error || res.body.error);
+    // console.error(res.error || res.body.error);
     return observableThrowError(res.error || 'Server error');
   }
 
