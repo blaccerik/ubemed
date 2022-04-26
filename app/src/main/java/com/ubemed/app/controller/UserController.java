@@ -3,6 +3,7 @@ package com.ubemed.app.controller;
 import com.ubemed.app.config.JwtTokenUtil;
 import com.ubemed.app.model.JwtRequest;
 import com.ubemed.app.model.JwtResponse;
+import com.ubemed.app.model.UserData;
 import com.ubemed.app.service.JwtUserDetailsService;
 import com.ubemed.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +24,16 @@ import java.util.Date;
 @RestController
 public class UserController {
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtUserDetailsService userDetailsService;
+    private final UserService userService;
 
     @Autowired
-    private JwtUserDetailsService userDetailsService;
-
-    @Autowired
-    private UserService userService;
+    public UserController(JwtTokenUtil jwtTokenUtil, JwtUserDetailsService userDetailsService, UserService userService) {
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+    }
 
 
     @GetMapping("/check")
@@ -46,6 +49,14 @@ public class UserController {
     ) {
         String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
         return userService.getCoins(username);
+    }
+
+    @GetMapping("/data")
+    public UserData data(
+            @RequestHeader(name="Authorization") String token
+    ) {
+        String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
+        return userService.getData(username);
     }
 
     @PostMapping("/create")

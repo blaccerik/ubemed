@@ -1,0 +1,99 @@
+.container {
+  display: flex;
+}
+
+.image {
+  height: 200px;
+  width: 200px;
+}
+
+.bids {
+  margin-left: 10px;
+  overflow-y: scroll;
+  background-color: var(--white);
+}
+
+.title {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-bottom: black 1px solid;
+}
+
+.icon {
+   font-size: 20px;
+   display: flex;
+   height: 24px;
+
+  &-text {
+   margin-left: 5px;
+   white-space: nowrap;
+   font-size: 14px;
+  }
+}
+
+.offer {
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: black 1px solid;
+  text-align: center;
+}
+
+.button {
+  margin-left: 20px;
+}
+
+
+.bid {
+  //margin: 3px;
+  /*height: 15px;*/
+  display: flex;
+  /*border: 1px solid black;*/
+  /*border-radius: 5px;*/
+  /*margin: 1px;*/
+  /*border-bottom: 1px solid black;*/
+  /*word-wrap: break-word;*/
+  /*border: 1px;*/
+  /*border: 1px solid black;*/
+}
+
+.bid-user {
+  width: 50px;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  padding-left: 4px;
+  /*float: left;*/
+  /*background-color: grey;*/
+}
+
+.bid-bid {
+  //width: 100px;
+  text-align: center;
+  padding-left: 5px;
+  margin-left: 5px;
+}
+
+//
+//
+//#loading{
+//  /*background-color: #4aa84c;*/
+//  /*position: absolute;*/
+//  /*position: inherit;*/
+//  position: absolute;
+//  /*left: 50%;*/
+//  /*top: 50%;*/
+//  z-index: 1;
+//  margin: 62px;
+//  /*margin: -75px 0 0 -75px;*/
+//  border: 16px solid #f3e1d5;
+//  border-radius: 50%;
+//  border-top: 16px solid orange;
+//  width: 70px;
+//  height: 70px;
+//  animation: spin 2s linear infinite;
+//}
+//
+//@keyframes spin {
+//  0% { transform: rotate(0deg); }
+//  100% { transform: rotate(720deg); }
+//}

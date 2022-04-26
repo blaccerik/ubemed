@@ -7,6 +7,7 @@ import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.Product;
+import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
@@ -22,9 +23,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +37,11 @@ import java.util.zip.Inflater;
 
 @org.springframework.stereotype.Service
 public class StoreService {
+
+    public enum strategy {
+        normal,
+        test
+    }
 
     private static final int height = 200;
     private static final int width = 200;
@@ -47,18 +55,37 @@ public class StoreService {
     public StoreService(ProductRepository productRepository, UserRepository userRepository, CatRepository catRepository) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
-
         this.catRepository = catRepository;
     }
 
-    public List<Product> getAll() {
-        List<Product> list = new ArrayList<>();
-        for (DBProduct dbProduct : productRepository.findAll()) {
-            if (dbProduct.isOnSale()) {
-                list.add(new Product(dbProduct));
-            }
+    public List<Product> getAll(Integer page, String filter, String search) {
+        return getFiltered(page, filter, search).stream()
+                .filter(o -> o.isOnSale())
+                .map(o -> new Product(o)).collect(Collectors.toList());
+    }
+
+    private List<DBProduct> getFiltered(Integer page, String filter, String search) {
+
+        if (search == null) {
+            search = "";
         }
-        return list;
+
+        if (filter == null) {
+            filter = "";
+        }
+
+        switch (filter) {
+            case "new":
+                return productRepository.findNew(search);
+            case "cheap":
+                return productRepository.findCheap(search);
+            case "expensive":
+                return productRepository.findExpensive(search);
+            case "hot":
+                return productRepository.findHot(search);
+        }
+
+        return productRepository.findDefault(search);
     }
 
     public List<BidResponse> getBids(long id) {
@@ -67,7 +94,7 @@ public class StoreService {
             return Collections.emptyList();
         }
         DBProduct dbProduct = optionalDBProduct.get();
-        return dbProduct.getBids().stream().map(dbBid -> new BidResponse(dbBid.getDbUser().getName(), dbBid.getAmount())).collect(Collectors.toList());
+        return dbProduct.getBids().stream().map(dbBid -> new BidResponse(dbBid.getDbUser().getName(), dbBid.getId(), dbBid.getAmount())).collect(Collectors.toList());
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage) {
@@ -77,6 +104,9 @@ public class StoreService {
         return outputImage;
     }
 
+
+
+    @Transactional
     public boolean makeBid(String username, long id, long amount) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         if (optionalDBUser.isEmpty()) {
@@ -97,12 +127,15 @@ public class StoreService {
         DBBid dbBid = null;
         long more;
         long max = -1;
-        for (DBBid dbBid1 : dbProduct.getBids()) {
-            if (dbBid1.getDbUser().getId() == dbUser.getId() && dbBid1.getAmount() > max) {
-                max = dbBid1.getAmount();
-                dbBid = dbBid1;
+        if (dbProduct.getBids() != null) {
+            for (DBBid dbBid1 : dbProduct.getBids()) {
+                if (dbBid1.getDbUser().getId() == dbUser.getId() && dbBid1.getAmount() > max) {
+                    max = dbBid1.getAmount();
+                    dbBid = dbBid1;
+                }
             }
         }
+
 
         if (dbBid != null) {
 
@@ -125,7 +158,9 @@ public class StoreService {
         dbBid.setAmount(amount);
         dbBid.setDbUser(dbUser);
         dbBid.setAmountMore(more);
+        dbBid.setDbProduct(dbProduct);
         dbProduct.getBids().add(dbBid);
+        dbProduct.setNumberOfBids(dbProduct.getNumberOfBids() + 1);
         dbProduct.setHighestBid(dbBid.getAmount());
 
         productRepository.save(dbProduct);
@@ -160,22 +195,27 @@ public class StoreService {
                             }
                         }
 
-                        dbProduct.setDbUser(newUser);
+                        // need to this or else throws error
+                        List<DBBid> copy = new ArrayList<>(dbProduct.getBids());
+                        for (DBBid dbBid : copy) {
+                            dbProduct.removeBid(dbBid);
+                        }
                         dbProduct.setOnSale(false);
-                        dbProduct.setBids(new ArrayList<>());
+                        dbProduct.setPrice(dbProduct.getHighestBid());
 
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getHighestBid());
-                        oldUser.getProducts().remove(dbProduct);
 
+                        oldUser.removeProduct(dbProduct);
                         newUser.getProducts().add(dbProduct);
+                        dbProduct.setDbUser(newUser);
 
-                        userRepository.save(oldUser);
                         userRepository.save(newUser);
-
+                        userRepository.save(oldUser);
                     }
                     else  {
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getPrice());
                         dbProduct.setOnSale(false);
+                        dbProduct.setHighestBid(dbProduct.getPrice());
                         userRepository.save(oldUser);
                     }
                 }
@@ -183,32 +223,30 @@ public class StoreService {
         }
     }
 
-    public boolean sell(String username, long id, long amount) {
+    public boolean sell(String username, long id, long amount, Date date) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         if (optionalDBUser.isEmpty()) {
             return false;
         }
         DBUser dbUser = optionalDBUser.get();
-        Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isEmpty() || optionalDBProduct.get().isOnSale()) {
-            return false;
+        for (DBProduct dbProduct : dbUser.getProducts()) {
+            if (dbProduct.getId() == id) {
+                if (dbProduct.isOnSale()) {
+                    return false;
+                }
+                dbProduct.setHighestBid(amount);
+                dbProduct.setNumberOfBids(0);
+                dbProduct.setOnSale(true);
+                dbProduct.setDate(date);
+                userRepository.save(dbUser);
+                return true;
+            }
         }
-
-        // todo better logic
-
-        DBProduct dbProduct = optionalDBProduct.get();
-
-        dbProduct.setDate(new Date());
-        dbProduct.setOnSale(true);
-        dbProduct.setPrice(amount);
-        dbProduct.setHighestBid(amount);
-        dbProduct.setBids(new ArrayList<>());
-        productRepository.save(dbProduct);
-        return true;
+        return false;
     }
 
 
-    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file) {
+    public boolean save(String username, String title, List<Long> cats, long cost, MultipartFile file, Date date, strategy strategy) {
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         DBUser dbUser;
         if (optionalDBUser.isEmpty() || optionalDBUser.get().getCoins() < cost) {
@@ -227,10 +265,12 @@ public class StoreService {
                 }
                 catsList.add(optionalDBStoreCats.get());
             }
-
-//            System.out.println(file.getBytes().length);
-            DBStoreImage dbStoreImage = modifyFile(file);
-//            System.out.println(dbStoreImage.getFile().length);
+            DBStoreImage dbStoreImage;
+            if (strategy.equals(StoreService.strategy.normal)) {
+                dbStoreImage = modifyFile(file);
+            } else {
+                dbStoreImage = new DBStoreImage();
+            }
 
 
             DBProduct dbProduct = new DBProduct();
@@ -241,17 +281,14 @@ public class StoreService {
             dbProduct.setPrice(cost);
             dbProduct.setTitle(title);
             dbProduct.setDbStoreCats(catsList);
-            dbProduct.setDate(new Date());
+            dbProduct.setDate(date);
             dbProduct.setOnSale(true);
             dbProduct.setBids(new ArrayList<>());
             dbProduct.setHighestBid(cost);
+            dbProduct.setNumberOfBids(0);
 
             dbUser.getProducts().add(dbProduct);
-
-//            System.out.println("----");
-            System.out.println(dbUser.getCoins());
             dbUser.setCoins(dbUser.getCoins() - cost);
-//            System.out.println(dbUser.getCoins());
 
             userRepository.save(dbUser);
             return true;
@@ -260,7 +297,7 @@ public class StoreService {
         }
     }
 
-    private DBStoreImage modifyFile(MultipartFile file) throws IOException {
+    public DBStoreImage modifyFile(MultipartFile file) throws IOException {
 
         // translate to bufferedimage
         InputStream inputStream = new ByteArrayInputStream(file.getBytes());

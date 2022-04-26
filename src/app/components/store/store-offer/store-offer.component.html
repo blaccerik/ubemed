@@ -1,37 +1,73 @@
-<div>
-  <div class="bids">
-    <div *ngIf="showLoader">
-      <span id="loading"></span>
-    </div>
-    <div *ngFor="let bid of bids">
+<div class="container">
+  <div class="image">
+    <img *ngIf="product.file" [src]="image(product.file)" alt="image">
+  </div>
+  <div class="image bids">
+    <div *ngFor="let bid of product.bids" [@valueAnimation]="product.bids">
       <div class="bid">
         <div class="bid-user">{{bid.username}}</div>
         <div class="bid-bid">{{bid.amount}}</div>
       </div>
     </div>
   </div>
-  <mat-dialog-content>{{ 'store.offer.title' | translate }}</mat-dialog-content>
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <table>
-      <tr>
-        <td>
-          <mat-form-field class="w-100p" appearance="outline">
-            <mat-label>{{ 'store.offer.offer' | translate }}</mat-label>
-            <input type="number" matInput formControlName="amount"/>
-            <mat-error *ngIf="hasError('amount', 'required')">
-              {{ 'login.required' | translate }}
-            </mat-error>
-            <mat-error *ngIf="hasError('amount', 'max')">
-              {{ 'store.offer.max' | translate }}
-            </mat-error>
-            <mat-error *ngIf="hasError('amount', 'min')">
-              {{ 'store.offer.min' | translate }}
-            </mat-error>
-          </mat-form-field>
-        </td>
-      </tr>
-    </table>
-    <mat-error *ngIf="error">{{ 'store.offer.error'| translate }}</mat-error>
-    <button mat-raised-button [disabled]="form.invalid">{{ 'store.offer.bid'| translate }}</button>
-  </form>
 </div>
+  <div class="title">
+    {{product.title}}
+  </div>
+
+  <div class="icon">
+    <mat-icon>person</mat-icon>
+    <div class="icon-text">
+      {{product.seller}}
+    </div>
+  </div>
+
+  <div class="icon">
+    <mat-icon>payments</mat-icon>
+    <div class="icon-text">
+      {{product.bid}}
+    </div>
+  </div>
+
+  <div *ngFor="let cat of product.cats">
+    <div class="icon">
+      <mat-icon>category</mat-icon>
+      <div class="icon-text">
+        {{cat}}
+      </div>
+    </div>
+  </div>
+
+<!--  <div class="bids">-->
+<!--&lt;!&ndash;    <div *ngIf="showLoader">&ndash;&gt;-->
+<!--&lt;!&ndash;      <span id="loading"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+<!--    <div *ngFor="let bid of bids">-->
+<!--      <div class="bid">-->
+<!--        <div class="bid-user">{{bid.username}}</div>-->
+<!--        <div class="bid-bid">{{bid.amount}}</div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+  <div class="offer">
+    <mat-dialog-content>{{ 'store.offer.title' | translate }}</mat-dialog-content>
+    <div class="container">
+      <form [formGroup]="product.form" (ngSubmit)="submit()">
+        <mat-form-field class="w-100p" appearance="outline">
+          <mat-label>{{ 'store.offer.offer' | translate }}</mat-label>
+          <input type="text" matInput formControlName="amount"/>
+          <mat-error *ngIf="hasError('amount', 'required')">
+            {{ 'login.required' | translate }}
+          </mat-error>
+          <mat-error *ngIf="hasError('amount', 'min')">
+            {{ 'store.offer.min' | translate }}
+          </mat-error>
+        </mat-form-field>
+        <mat-error *ngIf="error">{{ 'store.offer.error'| translate }}</mat-error>
+        <button class="button" mat-raised-button [disabled]="product.form.invalid
+        || !authService.isLoggedIn()
+        || product.seller === authService.getName()">{{ 'store.offer.bid'| translate }}</button>
+      </form>
+    </div>
+  </div>
+<!--</div>-->

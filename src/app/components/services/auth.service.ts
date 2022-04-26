@@ -1,69 +1,76 @@
 import { Injectable } from '@angular/core';
-import {ForumService} from "./forum.service";
 import {Post} from "../model/Post";
-import {BehaviorSubject, catchError, map, skipWhile, take, tap, throwError as observableThrowError} from "rxjs";
+import {
+  BehaviorSubject,
+  catchError,
+  map, observable,
+  Observable,
+  skipWhile,
+  take,
+  tap,
+  throwError as observableThrowError
+} from "rxjs";
 import {Login} from "../model/Login";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {UserData} from "../model/UserData";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private loggedIn = new BehaviorSubject<boolean>(false);
+  private loggedIn: boolean;
   private coins: number;
+  private name: string;
+  private lastClaimDate: number
   private apiUrl = '/api/users';
 
   constructor(private http: HttpClient) {
-    const token = localStorage.getItem("auth")
+    this.loggedIn = false;
+    // const token = localStorage.getItem("auth")
     this.coins = -1;
-    if (!!token && !this.tokenExpired(token)) {
-      this.loggedIn.next(true);
-    } else {
-      this.loggedIn.next(false);
-    }
+    this.name = '';
+    this.checkToken()
+  }
+
+  public getCoins() {
+    return this.coins;
+  }
+
+  public getLastClaimDate() {
+    return this.lastClaimDate;
+  }
+
+  public update() {
+    this.http.get<UserData>(this.apiUrl + "/data").pipe(catchError(this.handleError)).subscribe(
+      next => {
+        this.coins = next.coins;
+        this.lastClaimDate = next.lastClaimDate;
+      }
+    )
   }
 
   private checkToken() {
     const token = localStorage.getItem("auth")
     if (!!token && !this.tokenExpired(token)) {
-      this.loggedIn.next(true);
+      this.name = this.tokenName(token);
+      this.loggedIn = true;
     } else {
-      this.loggedIn.next(false);
-    }
-  }
-
-  private checkCoins() {
-    if (this.coins === -1) {
-      this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
-        result => {
-          this.coins = result;
-        }
-      )
+      localStorage.removeItem("auth")
+      this.loggedIn = false;
     }
   }
 
   isLoggedIn() {
     this.checkToken();
-    return this.loggedIn.getValue();
+    return this.loggedIn;
   }
 
-  getCoins() {
-    if (this.loggedIn.getValue()) {
-      this.checkCoins();
-    }
-    return this.coins;
-  }
-
-  updateCoins() {
-    this.http.get<number>(this.apiUrl + "/coins").pipe(catchError(this.handleError)).subscribe(
-      result => {
-        this.coins = result;
-      }
-    )
+  public getName() {
+    return this.name;
   }
 
   private handleError(res: HttpErrorResponse | any) {
-    console.error(res.error || res.body.error);
+    // console.error(res.error || res.body.error);
     return observableThrowError(res.error || 'Server error');
   }
 
@@ -84,16 +91,22 @@ export class AuthService {
     return "";
   }
 
+  claim() {
+    return this.http.get(this.apiUrl + "/claim").pipe(catchError(this.handleError))
+  }
+
   logout() {
     localStorage.removeItem("auth");
-    this.loggedIn.next(false);
+    this.loggedIn = false;
+    this.coins = -1;
+    this.lastClaimDate = -1;
     location.reload();
   }
 
   login(data: Login) {
     return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
       tap((response: any) => {
-        this.loggedIn.next(true);
+        this.loggedIn = true;
         localStorage.setItem("auth", response.token);
         }
       ),
@@ -107,18 +120,4 @@ export class AuthService {
       catchError(this.handleError)
     );
   }
-
-  // post(data: Login) {
-  //   // const headers = new Headers();
-  //   // headers.append('Content-Type', 'application/json');
-  //   // headers.append("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdHJpbmciLCJleHAiOjE2NDI4ODcxMDIsImlhdCI6MTY0Mjg2OTEwMn0.4_jJ1sjpH9BBrYimNs0SvXkj4z7faN5f4sQ5r8Pf91g9RVZCX2o_5jxbsWPqXrFJJk4ksZkKpsUK6PKSUcCCVg")
-  //   // { 'headers': headers }
-  //   return this.http.post<Post>(this.apiUrl + "/login", data).pipe(
-  //     tap((response: any) => {
-  //       this.loggedIn.next(true);
-  //       localStorage.setItem("auth", response.token);
-  //     }),
-  //     catchError(this.handleError)
-  //   );
-  // }
 }

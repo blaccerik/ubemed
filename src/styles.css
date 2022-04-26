@@ -12,15 +12,43 @@ body * {
   box-sizing: border-box;
 }
 
+html * {
+  margin: 0;
+}
+
 :root {
   --green: #73AD21;
-  --white: #f3e1d5;
+  --green-border: #598811;
 
+
+  --white: #f3e1d5;
+  --white-border: #696363;
+
+  --dark-bg: #853f0b;
   --title-epic: #eea5d9;
   --title-rare: #7bd38b;
   --title-normal: #ebebf8;
   --normal: #afa9a9;
   --rare: #4aa84c;
   --epic: #e84ee8;
+}
+
+#loading{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3e1d5;
+  border-radius: 50%;
+  border-top: 16px solid orange;
+  width: 70px;
+  height: 70px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(720deg); }
 }
 

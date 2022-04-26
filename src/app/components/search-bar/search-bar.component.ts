@@ -24,10 +24,11 @@ export class SearchBarComponent implements OnInit {
   constructor(
     private router: Router,
     private dialog: MatDialog,
-    public service: AuthService,
+    public service: AuthService
   ) { }
 
   ngOnInit(): void {
+    this.service.update();
   }
 
   onSubmit(form: NgForm) {
@@ -53,4 +54,22 @@ export class SearchBarComponent implements OnInit {
     this.service.logout();
   }
 
+  canClaim(): boolean {
+    const date = new Date();
+    if (this.service.getLastClaimDate() != undefined) {
+      const diffTime = date.getTime() - this.service.getLastClaimDate()
+      const diff = Math.ceil(diffTime / (1000 * 60 * 60));
+      return diff >= 24;
+    }
+    return false;
+  }
+
+  claim() {
+    this.service.claim().subscribe(
+      next => {
+        this.service.update();
+        // this.update();
+      }
+    )
+  }
 }

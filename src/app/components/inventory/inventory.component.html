@@ -4,8 +4,8 @@
   </div>
 </div>
 <div class="container">
-  <div class="grid">
-    <div class="grid-item"
+  <div class="grid" id="grid">
+    <div class="grid-item hvr-grow-shadow"
          *ngFor="let product of products"
          (click)="click(product)">
       <div class="grid-item-title">
@@ -15,16 +15,34 @@
         <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="100" width="100">
       </div>
       <div class="grid-item-price">
-        {{product.price}}
+        <div class="grid-item-icon">
+          <mat-icon>payments</mat-icon>
+          <div class="grid-item-icon-text">
+            {{product.price}}
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 <div class="stats" id="stats">
-  <div class="stats-container">
-    <div *ngIf="product">
-      <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="200" width="200">
-      <div class="stats-graph">test</div>
-    </div>
+  <div *ngIf="product">
+    <img *ngIf="product.file" [src]="image(product.file)" alt="image" height="200" width="200">
+
+    <form [formGroup]="sellItem" (ngSubmit)="sell(product.id)">
+      <mat-form-field class="cost" appearance="outline">
+        <mat-label>{{ 'store.new.cost.name' | translate }}</mat-label>
+        <input type="number" matInput formControlName="amount"/>
+        <mat-error *ngIf="hasError('amount', 'required')">
+          req
+        </mat-error>
+        <mat-error *ngIf="hasError('amount', 'min')">
+          min
+        </mat-error>
+      </mat-form-field>
+      <div style="margin-top: 10px; margin-left: 2px">
+        <button mat-raised-button [disabled]="sellItem.invalid">Sell</button>
+      </div>
+    </form>
   </div>
 </div>

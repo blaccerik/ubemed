@@ -1,46 +1,83 @@
-
 <div class="container">
+
   <div class="options">
-    <button [disabled]="!authService.isLoggedIn()" (click)="create()" mat-button class="create">
-      create
+    <button [disabled]="!authService.isLoggedIn()" (click)="create()" class="button"
+            mat-icon-button color="basic"
+            matTooltip="New">
+      <mat-icon>add</mat-icon>
     </button>
+    <button (click)="refresh()" class="button" mat-icon-button color="basic" matTooltip="Refresh">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+
+    <button [matMenuTriggerFor]="menu2" class="button" mat-icon-button color="basic" matTooltip="Category">
+      <mat-icon>category</mat-icon>
+    </button>
+    <mat-menu #menu2="matMenu">
+      <button mat-menu-item *ngFor="let cat of cats" (click)="onClickCat($event, cat.value)">
+        <mat-icon style="color: red" *ngIf="!cat.selected">close</mat-icon>
+        <mat-icon style="color: green" *ngIf="cat.selected">done</mat-icon>
+        <span [ngStyle]="{'color': cat.selected? 'green' : 'red'}" >{{cat.viewValue}}</span>
+      </button>
+    </mat-menu>
+
+    <button [matMenuTriggerFor]="menu" class="button" mat-icon-button color="basic" matTooltip="Sort">
+      <mat-icon>sort</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngFor="let event of events" (click)="onClickEvent(event.value)">
+        <mat-icon>{{event.icon}}</mat-icon>
+        <span>{{event.viewValue}}</span>
+      </button>
+    </mat-menu>
+
+    <form #form="ngForm" (ngSubmit)="search(form)">
+      <div class="button searchBox">
+      <input name="search" ngModel class="searchInput" type="text" placeholder="Search">
+      <button mat-icon-button color="basic">
+        <mat-icon>search</mat-icon>
+      </button>
+      </div>
+    </form>
   </div>
+
   <div class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
       <span class="sr-only" id="loading"></span>
     </div>
   </div>
-  <div class="grid">
-    <div class="grid-item"
-         *ngFor="let product of products"
-         [ngStyle]="
-         product.bid < 100 ? { background: 'var(--normal)' } :
-         product.bid < 500 ? { background: 'var(--rare)' } :
-         { background: 'var(--epic)' }">
-      <div class="grid-item-data rarity-normal">
-        <div class="grid-item-title"
-             [ngStyle]="
-         product.bid < 100 ? { background: 'var(--title-normal)' } :
-         product.bid < 500 ? { background: 'var(--title-rare)' } :
-         { background: 'var(--title-epic)' }"
-        >
-          {{product.title}}
-        </div>
-        <div class="grid-item-owner">
-          {{ 'store.seller' | translate}}: {{product.seller}}
-        </div>
-        <div style="margin-left: 5px">
-          {{ 'store.cost' | translate}}: {{product.bid}}
-        </div>
-        <div style="display: flex">
-          <button [disabled]="!authService.isLoggedIn()"
-                  (click)="makeOffer(product.id, product.price)"
-                  class="grid-item-button" mat-flat-button>
-            {{ 'store.bid' | translate}}
-          </button>
-        </div>
+
+  <div *ngIf="products != undefined && getSelected().length == 0" id="no-found" class="no-found">
+    <img src="https://img.icons8.com/cute-clipart/100/000000/nothing-found.png"/>
+    <h2>
+      {{ 'store.no-found' | translate }}
+    </h2>
+  </div>
+
+  <div *ngIf="products != undefined && getSelected().length > 0" id="grid" class="grid">
+    <div class="grid-item hvr-grow-shadow"
+         *ngFor="let product of getSelected()"
+         (click)="makeOffer(product)"
+    >
+      <div *ngIf="product">
         <div class="grid-item-img">
           <img *ngIf="product.file" [src]="image(product.file)" alt="image">
+        </div>
+        <div class="grid-item-title">
+          {{product.title}}
+        </div>
+        <div class="grid-item-icon">
+          <mat-icon>person</mat-icon>
+          <div class="grid-item-icon-text">
+            {{product.seller}}
+          </div>
+        </div>
+        <div class="grid-item-icon">
+          <mat-icon>payments</mat-icon>
+          <div class="grid-item-icon-text" [@valueAnimation]="product.bid">
+            {{product.bid}}
+          </div>
         </div>
       </div>
     </div>

@@ -22,15 +22,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/store")
 @RestController
 public class StoreController {
-    private final int maxCategories = 3;
-    private final int minCategories = 1;
-
-    private final long maxCost = 10000;
+    private static final int maxCategories = 3;
+    private static final int minCategories = 1;
+    private static final long maxCost = 10000;
 
     @Autowired
     private StoreService storeService;
@@ -47,9 +47,10 @@ public class StoreController {
     @GetMapping()
     public List<Product> getAll(
             @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(value = "filter", required = false) String filter
+            @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search
     ) {
-        return storeService.getAll();
+        return storeService.getAll(page, filter, search);
     }
 
 
@@ -67,7 +68,6 @@ public class StoreController {
         if (list.size() > maxCategories || list.size() < minCategories) {
             return false;
         }
-
         List<Long> cats = new ArrayList<>();
         for (String string : list) {
             try {
@@ -80,6 +80,7 @@ public class StoreController {
                 return false;
             }
         }
+
         String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
         long cost;
         try {
@@ -91,11 +92,10 @@ public class StoreController {
            return false;
         }
 
-
         // sync if multiple requests
         String tranID = httpRequest.getParameter("tranID");
         synchronized (String.valueOf(tranID).intern()) {
-            return storeService.save(username, title, cats, cost, file);
+            return storeService.save(username, title, cats, cost, file, new Date(), StoreService.strategy.normal);
         }
     }
 
@@ -122,16 +122,16 @@ public class StoreController {
 
         String tranID = httpRequest.getParameter("tranID");
         synchronized (String.valueOf(tranID).intern()) {
-            return storeService.sell(username, id, amount);
+            return storeService.sell(username, id, amount, new Date());
         }
     }
 
-    @GetMapping("/{id}/bids")
-    public List<BidResponse> getBids(
-            @PathVariable Long id
-    ) {
-        return storeService.getBids(id);
-    }
+//    @GetMapping("/{id}/bids")
+//    public List<BidResponse> getBids(
+//            @PathVariable Long id
+//    ) {
+//        return storeService.getBids(id);
+//    }
 
     @PostMapping("/{id}")
     public boolean makeBid(
@@ -153,6 +153,6 @@ public class StoreController {
     }
 
     private void updateBids(String username, long id, long amount) {
-        template.convertAndSend("/bids/" + id, new BidResponse(username, amount));
+        template.convertAndSend("/bids", new BidResponse(username, id, amount));
     }
 }

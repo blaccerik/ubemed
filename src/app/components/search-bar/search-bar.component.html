@@ -35,7 +35,7 @@
               class="login"
               (click)="openDialog()">{{ 'search-bar.login'| translate }}</button>
     </div>
-    <div *ngIf="service.isLoggedIn() && service.getCoins() !== -1"
+    <div *ngIf="service.isLoggedIn()"
          class="user-info"
          [matMenuTriggerFor]="settings">
       <div class="user-info-picture"></div>
@@ -51,6 +51,7 @@
     <mat-menu #settings="matMenu">
       <button (click)="logout()" mat-menu-item>Logout</button>
       <button routerLink="/inventory" mat-menu-item>{{ 'search-bar.inventory' | translate }}</button>
+      <button (click)="claim()" [disabled]="!canClaim()" mat-menu-item>Claim</button>
     </mat-menu>
   </div>
 </div>

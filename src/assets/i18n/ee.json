@@ -51,6 +51,7 @@
     "back": "Tagasi"
   },
   "store": {
+    "no-found": "Midagi ei leitud",
     "seller": "Omanik",
     "cost": "Hind",
     "bid": "Loo Pakkumine",

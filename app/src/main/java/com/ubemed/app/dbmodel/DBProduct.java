@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,18 +24,23 @@ public class DBProduct {
     private DBUser dbUser;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    private List<DBStoreCats> dbStoreCats;
+    private List<DBStoreCats> dbStoreCats = new ArrayList<>();
 
     private long price;
     private long highestBid;
     private String title;
     private Date date;
     private boolean onSale;
+    private long numberOfBids;
 
-    @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL)
     private DBStoreImage dbStoreImage;
 
-    @OneToMany(targetEntity = DBBid.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "bids", referencedColumnName = "id")
-    private List<DBBid> bids;
+    @OneToMany(mappedBy = "dbProduct", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<DBBid> bids = new ArrayList<>();
+
+    public void removeBid(DBBid dbBid) {
+        bids.remove(dbBid);
+        dbBid.setDbUser(null);
+    }
 }

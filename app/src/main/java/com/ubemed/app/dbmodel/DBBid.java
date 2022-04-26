@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,9 @@ public class DBBid {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private DBUser dbUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DBProduct dbProduct;
 
     private long amount;
 
