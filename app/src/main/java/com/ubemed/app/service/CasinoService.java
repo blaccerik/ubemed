@@ -1,6 +1,7 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBProduct;
+import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBWheelGame;
 import com.ubemed.app.repository.UserRepository;
@@ -42,7 +43,7 @@ public class CasinoService {
             for (int i = 0; i < products.size(); i++) {
                 DBProduct dbProduct = products.get(i);
                 if (item == dbProduct.getId()) {
-                    if (dbProduct.isOnSale()) {
+                    if (dbProduct.getDbProductState().getState().equals(DBProductState.states.sale)) {
                         return -1;
                     }
                     value += dbProduct.getPrice();

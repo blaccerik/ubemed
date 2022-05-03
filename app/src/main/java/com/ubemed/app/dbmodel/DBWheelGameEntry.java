@@ -29,9 +29,19 @@ public class DBWheelGameEntry {
     @ManyToOne(fetch = FetchType.LAZY)
     private DBWheelGame dbWheelGame;
 
-    @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL)
-    private DBUser dbUser;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private DBUser dbUser;
 
     @OneToMany(mappedBy = "dbWheelGameEntry", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DBProduct> products = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private DBUser dbUser;
+
+    public DBUser getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(DBUser dbUser) {
+        this.dbUser = dbUser;
+    }
 }

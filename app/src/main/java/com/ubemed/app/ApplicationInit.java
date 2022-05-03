@@ -1,7 +1,9 @@
 package com.ubemed.app;
 
+import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBStoreCats;
 import com.ubemed.app.repository.CatRepository;
+import com.ubemed.app.repository.ProductStateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,9 @@ public class ApplicationInit implements CommandLineRunner {
 
     @Autowired
     private CatRepository catRepository;
+
+    @Autowired
+    private ProductStateRepository productStateRepository;
 
     @Override
     public void run(String... args) {
@@ -27,6 +32,16 @@ public class ApplicationInit implements CommandLineRunner {
                     new DBStoreCats(6,"cat 6")
             );
             catRepository.saveAll(catsList);
+        }
+        List<DBProductState> states = productStateRepository.findAll();
+        System.out.println(states);
+        if (states.isEmpty()) {
+            List<DBProductState> productStates = List.of(
+                    new DBProductState(DBProductState.states.casino),
+                    new DBProductState(DBProductState.states.inventory),
+                    new DBProductState(DBProductState.states.sale)
+            );
+            productStateRepository.saveAll(productStates);
         }
     }
 

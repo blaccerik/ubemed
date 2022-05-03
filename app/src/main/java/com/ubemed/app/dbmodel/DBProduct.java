@@ -33,11 +33,10 @@ public class DBProduct {
     private long highestBid;
     private String title;
     private Date date;
-    private boolean onSale;
     private long numberOfBids;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private DBProductState dbProductState;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DBProductState dbProductState;
 
     @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL)
     private DBStoreImage dbStoreImage;
