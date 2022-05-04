@@ -25,6 +25,7 @@ public class DBWheelGameEntry {
     @GeneratedValue
     private long id;
     private long value;
+    private long coins;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private DBWheelGame dbWheelGame;

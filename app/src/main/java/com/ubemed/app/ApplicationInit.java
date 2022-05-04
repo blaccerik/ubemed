@@ -34,12 +34,11 @@ public class ApplicationInit implements CommandLineRunner {
             catRepository.saveAll(catsList);
         }
         List<DBProductState> states = productStateRepository.findAll();
-        System.out.println(states);
         if (states.isEmpty()) {
             List<DBProductState> productStates = List.of(
-                    new DBProductState(DBProductState.states.casino),
-                    new DBProductState(DBProductState.states.inventory),
-                    new DBProductState(DBProductState.states.sale)
+                    new DBProductState(DBProductState.states.casino, "Casino"),
+                    new DBProductState(DBProductState.states.inventory, "Inventory"),
+                    new DBProductState(DBProductState.states.sale, "Sale")
             );
             productStateRepository.saveAll(productStates);
         }

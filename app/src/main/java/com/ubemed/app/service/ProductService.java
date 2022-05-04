@@ -37,7 +37,7 @@ public class ProductService {
 
         List<Product> list = new ArrayList<>();
         for (DBProduct dbProduct : productRepository.findAll()) {
-            if (dbProduct.getDbUser().getId() == dbUser.getId() && dbProduct.getDbProductState().getState().equals(DBProductState.states.inventory)) {
+            if (dbProduct.getDbProductState().getState().equals(DBProductState.states.inventory) && dbProduct.getDbUser().getId() == dbUser.getId()) {
                 list.add(new Product(dbProduct));
             }
         }

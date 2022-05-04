@@ -26,4 +26,9 @@ public class DBWheelGame {
 
     @OneToMany(mappedBy = "dbWheelGame", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DBWheelGameEntry> dbWheelGameEntries = new ArrayList<>();
+
+    public void addEntry(DBWheelGameEntry dbWheelGameEntry) {
+        dbWheelGameEntries.add(dbWheelGameEntry);
+        dbWheelGameEntry.setDbWheelGame(this);
+    }
 }

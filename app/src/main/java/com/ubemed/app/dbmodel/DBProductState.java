@@ -26,8 +26,10 @@ public class DBProductState {
     private long id;
 
     private states state;
+    private String name;
 
-    public DBProductState(states state) {
+    public DBProductState(states state, String name) {
         this.state = state;
+        this.name = name;
     }
 }
