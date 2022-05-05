@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,7 @@ public class DBWheelGame {
     @GeneratedValue
     private long id;
     private long value;
+    private Date createTime;
 
     @OneToMany(mappedBy = "dbWheelGame", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DBWheelGameEntry> dbWheelGameEntries = new ArrayList<>();

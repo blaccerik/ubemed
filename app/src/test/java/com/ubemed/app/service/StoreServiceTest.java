@@ -2,10 +2,12 @@ package com.ubemed.app.service;
 
 
 import com.ubemed.app.dbmodel.DBProduct;
+import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
+import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,9 @@ public class StoreServiceTest {
     @Autowired
     CatRepository catRepository;
 
+    @Autowired
+    ProductStateRepository productStateRepository;
+
     @Test
     void makeBid() {
 
@@ -61,7 +66,9 @@ public class StoreServiceTest {
 
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser3);
-        dbProduct.setOnSale(true);
+
+        dbProduct.setDbProductState(productStateRepository.findByState(DBProductState.states.sale));
+
         dbProduct.setPrice(10);
         dbProduct.setHighestBid(10);
         dbProduct.setBids(new ArrayList<>());
@@ -76,7 +83,7 @@ public class StoreServiceTest {
 
         long id = productRepository.findAll().get(0).getId();
 
-        StoreService storeService = new StoreService(productRepository, userRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null, productStateRepository);
 
         value = storeService.makeBid("3", id, 0);
         Assertions.assertEquals(value, false);
@@ -141,7 +148,9 @@ public class StoreServiceTest {
 
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser5);
-        dbProduct.setOnSale(true);
+
+        dbProduct.setDbProductState(productStateRepository.findByState(DBProductState.states.sale));
+
         dbProduct.setPrice(100);
         dbProduct.setHighestBid(10);
         dbProduct.setBids(new ArrayList<>());
@@ -150,7 +159,7 @@ public class StoreServiceTest {
         dbUser5.getProducts().add(dbProduct);
         userRepository.save(dbUser5);
 
-        StoreService storeService = new StoreService(productRepository, userRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null, productStateRepository);
 
         long id = productRepository.findAll().get(0).getId();
 
@@ -174,7 +183,7 @@ public class StoreServiceTest {
         Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
         Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 16);
         Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 16);
-        Assertions.assertEquals(productRepository.findById(id).get().isOnSale(), false);
+        Assertions.assertEquals(productRepository.findById(id).get().getDbProductState().getState(), DBProductState.states.inventory);
 
         Assertions.assertEquals(userRepository.findByName("4").get().getProducts().size(), 0);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
@@ -190,14 +199,14 @@ public class StoreServiceTest {
 
         userRepository.deleteAll();
         productRepository.deleteAll();
-        StoreService storeService = new StoreService(productRepository, userRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null, productStateRepository);
 
         DBUser dbUser = new DBUser();
         dbUser.setCoins(100);
         dbUser.setName("1");
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser);
-        dbProduct.setOnSale(true);
+        dbProduct.setDbProductState(productStateRepository.findByState(DBProductState.states.sale));
         dbProduct.setPrice(10);
         dbProduct.setHighestBid(20);
         dbProduct.setBids(new ArrayList<>());
@@ -210,7 +219,7 @@ public class StoreServiceTest {
 
 
         Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
-        Assertions.assertEquals(productRepository.findById(id).get().isOnSale(), true);
+        Assertions.assertEquals(productRepository.findById(id).get().getDbProductState().getState(), DBProductState.states.sale);
         Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
         Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 20);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
@@ -218,7 +227,7 @@ public class StoreServiceTest {
         storeService.endBids(UserServiceTest.parseDate("2022-05-06"));
 
         Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
-        Assertions.assertEquals(productRepository.findById(id).get().isOnSale(), false);
+        Assertions.assertEquals(productRepository.findById(id).get().getDbProductState().getState(), DBProductState.states.inventory);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
         Assertions.assertEquals(productRepository.findById(id).get().getPrice(), 10);
         Assertions.assertEquals(productRepository.findById(id).get().getHighestBid(), 10);
@@ -229,14 +238,14 @@ public class StoreServiceTest {
     void sell() {
         userRepository.deleteAll();
         productRepository.deleteAll();
-        StoreService storeService = new StoreService(productRepository, userRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null, productStateRepository);
 
         DBUser dbUser = new DBUser();
         dbUser.setCoins(100);
         dbUser.setName("1");
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser);
-        dbProduct.setOnSale(false);
+        dbProduct.setDbProductState(productStateRepository.findByState(DBProductState.states.inventory));
         dbProduct.setPrice(10);
         dbProduct.setHighestBid(15);
         dbProduct.setBids(new ArrayList<>());
@@ -253,7 +262,7 @@ public class StoreServiceTest {
         Assertions.assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
         Assertions.assertEquals(productRepository.findById(id).get().getDate().getTime(), UserServiceTest.parseDate("2022-05-06").getTime());
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
-        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).isOnSale(), true);
+        Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).getDbProductState().getState(), DBProductState.states.sale);
         Assertions.assertEquals(userRepository.findByName("1").get().getProducts().get(0).getId(), id);
         Assertions.assertEquals(userRepository.findByName("1").get().getCoins(), 100);
     }
@@ -262,7 +271,7 @@ public class StoreServiceTest {
     void sellFailed() {
         userRepository.deleteAll();
         productRepository.deleteAll();
-        StoreService storeService = new StoreService(productRepository, userRepository,null);
+        StoreService storeService = new StoreService(productRepository, userRepository,null, productStateRepository);
 
         DBUser dbUser = new DBUser();
         dbUser.setCoins(100);
@@ -270,7 +279,7 @@ public class StoreServiceTest {
 
         DBProduct dbProduct = new DBProduct();
         dbProduct.setDbUser(dbUser);
-        dbProduct.setOnSale(false);
+        dbProduct.setDbProductState(productStateRepository.findByState(DBProductState.states.inventory));
         dbProduct.setPrice(10);
         dbProduct.setHighestBid(15);
         dbProduct.setBids(new ArrayList<>());
@@ -283,7 +292,7 @@ public class StoreServiceTest {
         dbUser2.setName("2");
         DBProduct dbProduct2 = new DBProduct();
         dbProduct2.setDbUser(dbUser2);
-        dbProduct2.setOnSale(false);
+        dbProduct2.setDbProductState(productStateRepository.findByState(DBProductState.states.inventory));
         dbProduct2.setPrice(10);
         dbProduct2.setHighestBid(15);
         dbProduct2.setBids(new ArrayList<>());
@@ -311,7 +320,7 @@ public class StoreServiceTest {
     void save() {
         userRepository.deleteAll();
         productRepository.deleteAll();
-        StoreService storeService = new StoreService(productRepository, userRepository,catRepository);
+        StoreService storeService = new StoreService(productRepository, userRepository,catRepository, productStateRepository);
 
         DBUser dbUser = new DBUser();
         dbUser.setCoins(20);
@@ -365,7 +374,7 @@ public class StoreServiceTest {
         long id = productRepository.findAll().get(0).getId();
         assertEquals(productRepository.findById(id).get().getDbUser().getName(), "1");
         assertEquals(productRepository.findById(id).get().getDbStoreCats().size(), 3);
-        assertEquals(productRepository.findById(id).get().isOnSale(), true);
+        assertEquals(productRepository.findById(id).get().getDbProductState().getState(), DBProductState.states.sale);
         assertEquals(productRepository.findById(id).get().getTitle(), "test");
         assertEquals(productRepository.findById(id).get().getPrice(), 20);
         assertEquals(productRepository.findById(id).get().getHighestBid(), 20);

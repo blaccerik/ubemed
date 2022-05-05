@@ -32,9 +32,7 @@ public class CasinoService {
     private DBWheelGame getLatestGame() {
         List<DBWheelGame> list = wheelRepository.findAll();
         if (list.isEmpty()) {
-            DBWheelGame dbWheelGame = new DBWheelGame();
-            dbWheelGame.setValue(0);
-            return dbWheelGame;
+            return null;
         }
         return list.get(0);
     }
@@ -77,9 +75,10 @@ public class CasinoService {
         if (value == 0) {
             return -1;
         }
-        // get latest wheel game
-
         DBWheelGame dbWheelGame = getLatestGame();
+        if (dbWheelGame == null) {
+            return -1;
+        }
 
         DBWheelGameEntry dbWheelGameEntry = new DBWheelGameEntry();
         dbWheelGameEntry.setProducts(remove);
@@ -94,6 +93,8 @@ public class CasinoService {
         for (DBProduct dbProduct : remove) {
             dbProduct.setDbWheelGameEntry(dbWheelGameEntry);
         }
+
+        dbUser.setCoins(dbUser.getCoins() - coins);
 
         wheelRepository.save(dbWheelGame);
         userRepository.save(dbUser);

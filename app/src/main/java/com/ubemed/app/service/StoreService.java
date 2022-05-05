@@ -124,7 +124,7 @@ public class StoreService {
         DBUser dbUser = optionalDBUser.get();
 
         Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().getDbProductState().getState().equals(DBProductState.states.inventory)) {
+        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().getDbProductState().getState().equals(DBProductState.states.sale)) {
             return false;
         }
 
