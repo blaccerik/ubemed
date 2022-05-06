@@ -23,6 +23,9 @@ public class DBProduct {
     @ManyToOne(fetch = FetchType.LAZY)
     private DBUser dbUser;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DBWheelGameEntry dbWheelGameEntry;
+
     @ManyToMany(fetch = FetchType.LAZY)
     private List<DBStoreCats> dbStoreCats = new ArrayList<>();
 
@@ -30,8 +33,10 @@ public class DBProduct {
     private long highestBid;
     private String title;
     private Date date;
-    private boolean onSale;
     private long numberOfBids;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private DBProductState dbProductState;
 
     @OneToOne(mappedBy = "dbProduct", cascade = CascadeType.ALL)
     private DBStoreImage dbStoreImage;

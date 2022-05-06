@@ -39,10 +39,12 @@ public class SchedulerConfig {
 //    @Scheduled(fixedDelay = 1500)
 //    private void updateBids() {
 //        n += 1;
-//        DBUser dbUser = userRepository.findAll().get(n % userRepository.findAll().size());
+//        if (userRepository.findAll().size() > 0 && productRepository.findAll().size() > 0) {
+//            DBUser dbUser = userRepository.findAll().get(n % userRepository.findAll().size());
 //
-//        DBProduct dbProduct = productRepository.findAll().get(n % productRepository.findAll().size());
-//        System.out.println(dbUser.getName() + " " + dbProduct.getId());
-//        template.convertAndSend("/bids", new BidResponse(dbUser.getName(), dbProduct.getId(), 15 + n));
+//            DBProduct dbProduct = productRepository.findAll().get(n % productRepository.findAll().size());
+//            System.out.println(dbUser.getName() + " " + dbProduct.getId());
+//            template.convertAndSend("/bids", new BidResponse(dbUser.getName(), dbProduct.getId(), 15 + n));
+//        }
 //    }
 }

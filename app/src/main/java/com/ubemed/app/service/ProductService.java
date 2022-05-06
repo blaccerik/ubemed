@@ -1,6 +1,7 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBProduct;
+import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.model.Product;
 import com.ubemed.app.repository.CatRepository;
@@ -36,7 +37,7 @@ public class ProductService {
 
         List<Product> list = new ArrayList<>();
         for (DBProduct dbProduct : productRepository.findAll()) {
-            if (dbProduct.getDbUser().getId() == dbUser.getId() && !dbProduct.isOnSale()) {
+            if (dbProduct.getDbProductState().getState().equals(DBProductState.states.inventory) && dbProduct.getDbUser().getId() == dbUser.getId()) {
                 list.add(new Product(dbProduct));
             }
         }

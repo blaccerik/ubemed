@@ -2,6 +2,7 @@ package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBBid;
 import com.ubemed.app.dbmodel.DBProduct;
+import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBStoreCats;
 import com.ubemed.app.dbmodel.DBStoreImage;
 import com.ubemed.app.dbmodel.DBUser;
@@ -10,6 +11,7 @@ import com.ubemed.app.model.Product;
 import com.ubemed.app.repository.BidRepository;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
+import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,16 +53,23 @@ public class StoreService {
     private final UserRepository userRepository;
     private final CatRepository catRepository;
 
+    private final ProductStateRepository productStateRepository;
+
     @Autowired
-    public StoreService(ProductRepository productRepository, UserRepository userRepository, CatRepository catRepository) {
+    public StoreService(ProductRepository productRepository,
+                        UserRepository userRepository,
+                        CatRepository catRepository,
+                        ProductStateRepository productStateRepository
+    ) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.catRepository = catRepository;
+        this.productStateRepository = productStateRepository;
     }
 
     public List<Product> getAll(Integer page, String filter, String search) {
         return getFiltered(page, filter, search).stream()
-                .filter(o -> o.isOnSale())
+                .filter(o -> o.getDbProductState().getState().equals(DBProductState.states.sale))
                 .map(o -> new Product(o)).collect(Collectors.toList());
     }
 
@@ -90,7 +99,7 @@ public class StoreService {
 
     public List<BidResponse> getBids(long id) {
         Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().isOnSale()) {
+        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().getDbProductState().getState().equals(DBProductState.states.sale)) {
             return Collections.emptyList();
         }
         DBProduct dbProduct = optionalDBProduct.get();
@@ -115,7 +124,7 @@ public class StoreService {
         DBUser dbUser = optionalDBUser.get();
 
         Optional<DBProduct> optionalDBProduct = productRepository.findById(id);
-        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().isOnSale()) {
+        if (optionalDBProduct.isEmpty() || !optionalDBProduct.get().getDbProductState().getState().equals(DBProductState.states.sale)) {
             return false;
         }
 
@@ -173,7 +182,7 @@ public class StoreService {
 
         List<DBProduct> list = productRepository.findAll();
         for (DBProduct dbProduct : list) {
-            if (dbProduct.isOnSale()) {
+            if (dbProduct.getDbProductState().getState().equals(DBProductState.states.sale)) {
                 long secs = (date.getTime() -  dbProduct.getDate().getTime()) / 1000;
                 long hours = secs / 3600;
                 if (hours >= 24) {
@@ -200,7 +209,11 @@ public class StoreService {
                         for (DBBid dbBid : copy) {
                             dbProduct.removeBid(dbBid);
                         }
-                        dbProduct.setOnSale(false);
+
+                        DBProductState dbProductState = productStateRepository.findByState(DBProductState.states.inventory);
+                        dbProduct.setDbProductState(dbProductState);
+
+
                         dbProduct.setPrice(dbProduct.getHighestBid());
 
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getHighestBid());
@@ -214,7 +227,8 @@ public class StoreService {
                     }
                     else  {
                         oldUser.setCoins(oldUser.getCoins() + dbProduct.getPrice());
-                        dbProduct.setOnSale(false);
+                        DBProductState dbProductState = productStateRepository.findByState(DBProductState.states.inventory);
+                        dbProduct.setDbProductState(dbProductState);
                         dbProduct.setHighestBid(dbProduct.getPrice());
                         userRepository.save(oldUser);
                     }
@@ -231,12 +245,14 @@ public class StoreService {
         DBUser dbUser = optionalDBUser.get();
         for (DBProduct dbProduct : dbUser.getProducts()) {
             if (dbProduct.getId() == id) {
-                if (dbProduct.isOnSale()) {
+                if (dbProduct.getDbProductState().getState().equals(DBProductState.states.sale)) {
                     return false;
                 }
                 dbProduct.setHighestBid(amount);
                 dbProduct.setNumberOfBids(0);
-                dbProduct.setOnSale(true);
+
+                DBProductState dbProductState = productStateRepository.findByState(DBProductState.states.sale);
+                dbProduct.setDbProductState(dbProductState);
                 dbProduct.setDate(date);
                 userRepository.save(dbUser);
                 return true;
@@ -282,7 +298,10 @@ public class StoreService {
             dbProduct.setTitle(title);
             dbProduct.setDbStoreCats(catsList);
             dbProduct.setDate(date);
-            dbProduct.setOnSale(true);
+
+            DBProductState dbProductState = productStateRepository.findByState(DBProductState.states.sale);
+            dbProduct.setDbProductState(dbProductState);
+
             dbProduct.setBids(new ArrayList<>());
             dbProduct.setHighestBid(cost);
             dbProduct.setNumberOfBids(0);
