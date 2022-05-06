@@ -42,7 +42,7 @@ public class StoreController {
     private ImageService imageService;
 
     @Autowired
-    SimpMessagingTemplate template;
+    private SimpMessagingTemplate template;
 
     @GetMapping()
     public List<Product> getAll(

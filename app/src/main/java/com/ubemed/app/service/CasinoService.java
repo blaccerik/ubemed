@@ -10,12 +10,14 @@ import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
 import com.ubemed.app.repository.WheelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @org.springframework.stereotype.Service
 public class CasinoService {
@@ -34,21 +36,31 @@ public class CasinoService {
 
     private DBWheelGame getLatestGame() {
         List<DBWheelGame> list = wheelRepository.findAll();
+        if (list.isEmpty()) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return list.get(0);
     }
 
-    public long enter(String username, List<Long> items, long coins) {
+    public long enter(String username, List<Long> items, long coins, Date date) {
+
+        DBWheelGame dbWheelGame = getLatestGame();
+        Date start = dbWheelGame.getCreateTime();
+        long secs = (date.getTime() - start.getTime()) / 1000;
+        if (secs <= 0 || secs > 55) {
+            return -1;
+        }
+
         Optional<DBUser> optionalDBUser = userRepository.findByName(username);
         if (optionalDBUser.isEmpty()) {
             return -1;
         }
         DBUser dbUser = optionalDBUser.get();
         if (dbUser.getCoins() < coins) {
-            return -1;
-        }
-
-        DBWheelGame dbWheelGame = getLatestGame();
-        if (dbWheelGame == null) {
             return -1;
         }
 
@@ -102,6 +114,7 @@ public class CasinoService {
         return value;
     }
 
+    @Transactional
     public WheelWinner spin(Date date, double f) {
         DBWheelGame dbWheelGame = getLatestGame();
         long value = dbWheelGame.getValue();
@@ -130,8 +143,8 @@ public class CasinoService {
                 dbProduct.setDbWheelGameEntry(null);
                 dbUser.getProducts().add(dbProduct);
                 wheelWinner.getList().add(dbProduct);
-                wheelWinner.setCoins(wheelWinner.getCoins() + dbWheelGameEntry.getCoins());
             }
+            wheelWinner.setCoins(wheelWinner.getCoins() + dbWheelGameEntry.getCoins());
             dbWheelGameEntry.setProducts(new ArrayList<>());
             dbWheelGameEntry.setDbUser(null);
             dbUser.setCoins(dbUser.getCoins() + dbWheelGameEntry.getCoins());

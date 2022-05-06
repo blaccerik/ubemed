@@ -4,6 +4,7 @@ import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.model.BidResponse;
 import com.ubemed.app.model.UserResponse;
+import com.ubemed.app.model.WheelEnterBroadcast;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,4 +48,12 @@ public class SchedulerConfig {
 //            template.convertAndSend("/bids", new BidResponse(dbUser.getName(), dbProduct.getId(), 15 + n));
 //        }
 //    }
+
+    @Scheduled(fixedDelay = 1500)
+    private void updateBids() {
+        n += 1;
+        WheelEnterBroadcast wheelEnterBroadcast = new WheelEnterBroadcast("name " + n % 26, n % 15, n);
+        System.out.println(wheelEnterBroadcast.getValue());
+        template.convertAndSend("/casino", wheelEnterBroadcast);
+    }
 }

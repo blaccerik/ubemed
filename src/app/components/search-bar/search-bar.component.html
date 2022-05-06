@@ -18,6 +18,9 @@
     <div class="navbar-item">
       <span class="logo" routerLink="/store">{{ 'search-bar.store' | translate }}</span>
     </div>
+    <div class="navbar-item">
+      <span class="logo" routerLink="/casino">{{ 'search-bar.casino' | translate }}</span>
+    </div>
     <div>
       <form class="search-form" #form="ngForm" (ngSubmit)="onSubmit(form)">
         <input class="search-input"

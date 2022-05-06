@@ -1,11 +1,13 @@
 package com.ubemed.app;
 
+import com.ubemed.app.model.WheelEnterBroadcast;
 import com.ubemed.app.model.WheelWinner;
 import com.ubemed.app.service.CasinoService;
 import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Date;
@@ -15,10 +17,13 @@ import java.util.Random;
 public class AppApplication {
 
     @Autowired
-    StoreService storeService;
+    private StoreService storeService;
 
     @Autowired
-    CasinoService casinoService;
+    private CasinoService casinoService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     public static void main(String[] args) {
         SpringApplication.run(AppApplication.class, args);
@@ -29,10 +34,21 @@ public class AppApplication {
         storeService.endBids(new Date());
     }
 
-    @Scheduled(fixedRate = 1000 * 60)  // every minute from run
+    @Scheduled(fixedRate = 1000 * 5)  // every minute from run
     public void spinWheel() {
-        WheelWinner wheelWinner = casinoService.spin(new Date(), new Random().nextDouble());
-
-        // todo broadcast win
+        Date date = new Date();
+        date.setTime(date.getTime() - 5000);
+        WheelWinner wheelWinner = casinoService.spin(date, new Random().nextDouble());
+        WheelEnterBroadcast wheelEnterBroadcast;
+        if (wheelWinner.getDbUser() != null) {
+            wheelEnterBroadcast = new WheelEnterBroadcast(
+                    wheelWinner.getDbUser().getName(),
+                    -wheelWinner.getCoins(),
+                    -wheelWinner.getValue());
+        } else {
+            wheelEnterBroadcast = new WheelEnterBroadcast(null, 0, 0);
+        }
+        System.out.println(wheelEnterBroadcast.getName() + " " + wheelEnterBroadcast.getValue());
+        template.convertAndSend("/casino", wheelEnterBroadcast);
     }
 }

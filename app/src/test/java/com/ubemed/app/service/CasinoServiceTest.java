@@ -5,7 +5,6 @@ import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBWheelGame;
 import com.ubemed.app.model.WheelWinner;
-import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
@@ -68,9 +67,19 @@ class CasinoServiceTest {
 
         userRepository.save(dbUser);
 
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date d = cal.getTime();
+
         DBWheelGame dbWheelGame = new DBWheelGame();
         dbWheelGame.setValue(10);
-        dbWheelGame.setCreateTime(UserServiceTest.parseDate("2022-05-05"));
+        dbWheelGame.setCreateTime(d);
         wheelRepository.save(dbWheelGame);
 
         DBProduct product = null;
@@ -80,7 +89,16 @@ class CasinoServiceTest {
             }
         }
 
-        assertEquals(casinoService.enter("1", List.of(product.getId()), 6), 26);
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND,1);
+        d = cal.getTime();
+
+        assertEquals(casinoService.enter("1", List.of(product.getId()), 6, d), 26);
         assertEquals(userRepository.findByName("1").get().getCoins(), 4);
         assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);
         assertEquals(userRepository.findByName("1").get().getProducts().get(0).getTitle(), "2");
@@ -93,7 +111,18 @@ class CasinoServiceTest {
         assertEquals(wheelRepository.findAll().get(0).getDbWheelGameEntries().get(0).getCoins(), 6);
         assertEquals(wheelRepository.findAll().get(0).getDbWheelGameEntries().get(0).getValue(), 26);
         assertEquals(wheelRepository.findAll().get(0).getValue(), 36);
-        assertEquals(wheelRepository.findAll().get(0).getCreateTime().getTime(), UserServiceTest.parseDate("2022-05-05").getTime());
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        d = cal.getTime();
+
+        assertEquals(wheelRepository.findAll().get(0).getCreateTime().getTime(), d.getTime());
     }
 
     @Test
@@ -155,6 +184,7 @@ class CasinoServiceTest {
         cal.set(Calendar.DAY_OF_MONTH, 6);
         cal.set(Calendar.HOUR_OF_DAY,12);
         cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 0);
         Date d = cal.getTime();
 
         DBWheelGame dbWheelGame = new DBWheelGame();
@@ -162,8 +192,17 @@ class CasinoServiceTest {
         dbWheelGame.setCreateTime(d);
         wheelRepository.save(dbWheelGame);
 
-        assertEquals(casinoService.enter("1", List.of(id1), 5), 25);
-        assertEquals(casinoService.enter("2", List.of(id2), 10), 30);
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 1);
+        d = cal.getTime();
+
+        assertEquals(casinoService.enter("1", List.of(id1), 5, d), 25);
+        assertEquals(casinoService.enter("2", List.of(id2), 10, d), 30);
 
 
         cal.set(Calendar.YEAR, 2022);
@@ -299,4 +338,96 @@ class CasinoServiceTest {
         assertEquals(dbWheelGame.getValue(), 0);
     }
 
+
+    @Test
+    void spinCantEnter() {
+        userRepository.deleteAll();
+        wheelRepository.deleteAll();
+        productRepository.deleteAll();
+
+        CasinoService casinoService = new CasinoService(userRepository, wheelRepository, productStateRepository);
+
+        DBUser dbUser = new DBUser();
+        dbUser.setName("1");
+        dbUser.setCoins(100);
+        userRepository.save(dbUser);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date d = cal.getTime();
+
+        DBWheelGame dbWheelGame = new DBWheelGame();
+        dbWheelGame.setValue(0);
+        dbWheelGame.setCreateTime(d);
+        wheelRepository.save(dbWheelGame);
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        d = cal.getTime();
+        assertEquals(casinoService.enter("1", List.of(), 5, d), -1);
+        assertEquals(userRepository.findByName("1").get().getCoins(), 100);
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.MILLISECOND, 0);
+        d = cal.getTime();
+        assertEquals(casinoService.enter("1", List.of(), 5, d), 5);
+        assertEquals(userRepository.findByName("1").get().getCoins(), 95);
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 55);
+        cal.set(Calendar.MILLISECOND, 0);
+        d = cal.getTime();
+        assertEquals(casinoService.enter("1", List.of(), 5, d), 5);
+        assertEquals(userRepository.findByName("1").get().getCoins(), 90);
+
+        cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND, 56);
+        cal.set(Calendar.MILLISECOND, 0);
+        d = cal.getTime();
+        assertEquals(casinoService.enter("1", List.of(), 5, d), -1);
+        assertEquals(userRepository.findByName("1").get().getCoins(), 90);
+
+        cal.set(Calendar.YEAR, 2022);
+        cal.set(Calendar.MONTH, 5);
+        cal.set(Calendar.DAY_OF_MONTH, 6);
+        cal.set(Calendar.HOUR_OF_DAY,12);
+        cal.set(Calendar.MINUTE,31);
+        cal.set(Calendar.SECOND, 35);
+        d = cal.getTime();
+
+        WheelWinner wheelWinner = casinoService.spin(d, 1);
+        assertEquals(wheelWinner.getDbUser().getName(), "1");
+        assertEquals(wheelWinner.getCoins(), 10);
+        assertEquals(wheelWinner.getValue(), 10);
+        assertEquals(wheelWinner.getList().size(), 0);
+        assertEquals(userRepository.findByName("1").get().getCoins(), 100);
+    }
 }
