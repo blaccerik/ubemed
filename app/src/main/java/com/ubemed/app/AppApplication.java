@@ -1,5 +1,6 @@
 package com.ubemed.app;
 
+import com.ubemed.app.model.WheelWinner;
 import com.ubemed.app.service.CasinoService;
 import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.Date;
+import java.util.Random;
 
 @SpringBootApplication
 public class AppApplication {
@@ -27,8 +29,10 @@ public class AppApplication {
         storeService.endBids(new Date());
     }
 
-    @Scheduled(fixedRate = 1000 * 60)  // every hour from run
+    @Scheduled(fixedRate = 1000 * 60)  // every minute from run
     public void spinWheel() {
-        casinoService.spin(new Date());
+        WheelWinner wheelWinner = casinoService.spin(new Date(), new Random().nextDouble());
+
+        // todo broadcast win
     }
 }

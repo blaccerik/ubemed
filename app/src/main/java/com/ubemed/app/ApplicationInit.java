@@ -2,12 +2,15 @@ package com.ubemed.app;
 
 import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBStoreCats;
+import com.ubemed.app.dbmodel.DBWheelGame;
 import com.ubemed.app.repository.CatRepository;
 import com.ubemed.app.repository.ProductStateRepository;
+import com.ubemed.app.repository.WheelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -18,6 +21,9 @@ public class ApplicationInit implements CommandLineRunner {
 
     @Autowired
     private ProductStateRepository productStateRepository;
+
+    @Autowired
+    private WheelRepository wheelRepository;
 
     @Override
     public void run(String... args) {
@@ -41,6 +47,13 @@ public class ApplicationInit implements CommandLineRunner {
                     new DBProductState(DBProductState.states.sale, "Sale")
             );
             productStateRepository.saveAll(productStates);
+        }
+        List<DBWheelGame> wheelGames = wheelRepository.findAll();
+        if (wheelGames.isEmpty()) {
+            DBWheelGame dbWheelGame = new DBWheelGame();
+            dbWheelGame.setCreateTime(new Date());
+            dbWheelGame.setValue(0);
+            wheelRepository.save(dbWheelGame);
         }
     }
 

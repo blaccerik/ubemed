@@ -5,6 +5,7 @@ import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBWheelGame;
 import com.ubemed.app.dbmodel.DBWheelGameEntry;
+import com.ubemed.app.model.WheelWinner;
 import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
 import com.ubemed.app.repository.WheelRepository;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @org.springframework.stereotype.Service
 public class CasinoService {
@@ -32,9 +34,6 @@ public class CasinoService {
 
     private DBWheelGame getLatestGame() {
         List<DBWheelGame> list = wheelRepository.findAll();
-        if (list.isEmpty()) {
-            return null;
-        }
         return list.get(0);
     }
 
@@ -103,17 +102,52 @@ public class CasinoService {
         return value;
     }
 
-    public void spin(Date date) {
+    public WheelWinner spin(Date date, double f) {
         DBWheelGame dbWheelGame = getLatestGame();
+        long value = dbWheelGame.getValue();
+        List<DBWheelGameEntry> list = dbWheelGame.getDbWheelGameEntries();
 
-        // if no game then create new
-        if (dbWheelGame == null) {
-            dbWheelGame = new DBWheelGame();
-            dbWheelGame.setCreateTime(date);
-            dbWheelGame.setValue(0);
-        } else {
-            long value = dbWheelGame.getValue();
-            List<DBWheelGameEntry> list = dbWheelGame.getDbWheelGameEntries();
+        double value2 = 0;
+        DBUser dbUser = null;
+        for (DBWheelGameEntry dbWheelGameEntry : list) {
+            value2 += (double) dbWheelGameEntry.getValue() / (double) value;
+            if (value2 >= f) {
+                dbUser = dbWheelGameEntry.getDbUser();
+                break;
+            }
         }
+        WheelWinner wheelWinner = new WheelWinner();
+        wheelWinner.setDbUser(dbUser);
+        wheelWinner.setList(new ArrayList<>());
+
+        DBProductState inv = productStateRepository.findByState(DBProductState.states.inventory);
+
+        for (DBWheelGameEntry dbWheelGameEntry : list) {
+            for (DBProduct dbProduct : dbWheelGameEntry.getProducts()) {
+
+                dbProduct.setDbUser(dbUser);
+                dbProduct.setDbProductState(inv);
+                dbProduct.setDbWheelGameEntry(null);
+                dbUser.getProducts().add(dbProduct);
+                wheelWinner.getList().add(dbProduct);
+                wheelWinner.setCoins(wheelWinner.getCoins() + dbWheelGameEntry.getCoins());
+            }
+            dbWheelGameEntry.setProducts(new ArrayList<>());
+            dbWheelGameEntry.setDbUser(null);
+            dbUser.setCoins(dbUser.getCoins() + dbWheelGameEntry.getCoins());
+        }
+        wheelWinner.setValue(dbWheelGame.getValue());
+
+        if (dbUser != null) {
+            userRepository.save(dbUser);
+        }
+        wheelRepository.delete(dbWheelGame);
+
+        DBWheelGame dbWheelGame1 = new DBWheelGame();
+        dbWheelGame1.setCreateTime(date);
+        dbWheelGame1.setValue(0);
+        dbWheelGame1.setDbWheelGameEntries(new ArrayList<>());
+        wheelRepository.save(dbWheelGame1);
+        return wheelWinner;
     }
 }
