@@ -11,6 +11,7 @@ import com.ubemed.app.repository.WheelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,10 +44,15 @@ public class CasinoService {
             return -1;
         }
         DBUser dbUser = optionalDBUser.get();
-
         if (dbUser.getCoins() < coins) {
             return -1;
         }
+
+        DBWheelGame dbWheelGame = getLatestGame();
+        if (dbWheelGame == null) {
+            return -1;
+        }
+
         List<DBProduct> products = dbUser.getProducts();
         List<DBProduct> remove = new ArrayList<>();
         boolean missing;
@@ -75,10 +81,6 @@ public class CasinoService {
         if (value == 0) {
             return -1;
         }
-        DBWheelGame dbWheelGame = getLatestGame();
-        if (dbWheelGame == null) {
-            return -1;
-        }
 
         DBWheelGameEntry dbWheelGameEntry = new DBWheelGameEntry();
         dbWheelGameEntry.setProducts(remove);
@@ -99,5 +101,19 @@ public class CasinoService {
         wheelRepository.save(dbWheelGame);
         userRepository.save(dbUser);
         return value;
+    }
+
+    public void spin(Date date) {
+        DBWheelGame dbWheelGame = getLatestGame();
+
+        // if no game then create new
+        if (dbWheelGame == null) {
+            dbWheelGame = new DBWheelGame();
+            dbWheelGame.setCreateTime(date);
+            dbWheelGame.setValue(0);
+        } else {
+            long value = dbWheelGame.getValue();
+            List<DBWheelGameEntry> list = dbWheelGame.getDbWheelGameEntries();
+        }
     }
 }

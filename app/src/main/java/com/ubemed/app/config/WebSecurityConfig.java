@@ -80,6 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/forum/**",
                         "/store/**",
                         "/users/**",
+                        "/websocket/**",
                         "/**"
                 )
                 .permitAll()

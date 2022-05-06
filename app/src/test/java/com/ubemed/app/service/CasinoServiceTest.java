@@ -77,8 +77,6 @@ class CasinoServiceTest {
             }
         }
 
-        System.out.println(productStateRepository.findAll());
-
         assertEquals(casinoService.enter("1", List.of(product.getId()), 6), 26);
         assertEquals(userRepository.findByName("1").get().getCoins(), 4);
         assertEquals(userRepository.findByName("1").get().getProducts().size(), 1);

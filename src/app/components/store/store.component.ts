@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from "../services/auth.service";
 import {StoreService} from "../services/store.service";
-import {Stomp} from "@stomp/stompjs";
 import * as SockJS from 'sockjs-client';
 import {Product} from "../model/Product";
 import {Router} from "@angular/router";
@@ -11,6 +10,8 @@ import {FormBuilder, FormControl, NgForm, Validators} from "@angular/forms";
 import {BidResponse} from "../model/BidResponse";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {InventoryService} from "../services/inventory.service";
+import {Stomp} from "@stomp/stompjs";
+// import SockJS = require("sockjs-client");
 
 interface Event {
   value: string;
@@ -192,12 +193,17 @@ export class StoreComponent implements OnInit {
 
   connect() {
     const socket = new SockJS('api/websocket');
+    // console.log(socket.url);
+    // console.log("test")
     this.stompClient = Stomp.over(socket);
     this.stompClient.debug = () => {};
 
+    // this.stompClient.connect({}, function(frame: any) {
+    //   console.log("1", frame)
+    // })
     const headers = {}
     this.stompClient.connect(
-      headers,
+        headers,
       (next: any) => {
         this.stompClient.subscribe('/bids', (res: any) => {
           const value = JSON.parse(res.body)
