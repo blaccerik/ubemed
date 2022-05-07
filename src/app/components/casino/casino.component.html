@@ -1,7 +1,41 @@
-<p>casino works!</p>
+<div class="container">
 
+    {{value}}
+    {{seconds}}
+    <div *ngIf="seconds == 0 && winner">
+        winner: {{winner.name}} {{winner.value}}
+    </div>
+    <div *ngIf="seconds <= 5 && seconds > 0">
+        spin {{seconds}}
+    </div>
+
+    <div class="wheel">
+        <div class="wheel-item" *ngFor="let o of get()">
+            {{o.name}} {{o.value}} {{percent(o.value)}}%
+        </div>
+    </div>
+</div>
 <div class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
         <span class="sr-only" id="loading"></span>
+    </div>
+</div>
+
+<div class="marquee">
+    <div class="marquee--inner">
+    <span>
+      <div class="orb"></div>
+        <div class="orb red"></div>
+        <div class="orb yellow"></div>
+        <div class="orb blue"></div>
+        <div class="orb orange"></div>
+        <div class="orb purple"></div>
+        <div class="orb green"></div>
+        <div class="orb"></div>
+    </span>
+<!--        <span>-->
+<!--      <div class="orb"></div><div class="orb red"></div><div class="orb yellow"></div><div class="orb blue"></div><div class="orb orange"></div><div class="orb purple"></div><div class="orb green"></div><div class="orb"></div>-->
+<!--    </span>-->
+
     </div>
 </div>

@@ -34,21 +34,24 @@ public class AppApplication {
         storeService.endBids(new Date());
     }
 
-    @Scheduled(fixedRate = 1000 * 5)  // every minute from run
+    @Scheduled(fixedRate = 1000 * 60)  // every minute from run
     public void spinWheel() {
         Date date = new Date();
-        date.setTime(date.getTime() - 5000);
+        date.setTime(date.getTime());
         WheelWinner wheelWinner = casinoService.spin(date, new Random().nextDouble());
+        casinoService.reset();
+
         WheelEnterBroadcast wheelEnterBroadcast;
         if (wheelWinner.getDbUser() != null) {
             wheelEnterBroadcast = new WheelEnterBroadcast(
+                    0,
                     wheelWinner.getDbUser().getName(),
                     -wheelWinner.getCoins(),
                     -wheelWinner.getValue());
         } else {
-            wheelEnterBroadcast = new WheelEnterBroadcast(null, 0, 0);
+            wheelEnterBroadcast = new WheelEnterBroadcast(0,null, 0, 0);
         }
-        System.out.println(wheelEnterBroadcast.getName() + " " + wheelEnterBroadcast.getValue());
+        System.out.println(wheelEnterBroadcast.getName() + " won " + wheelEnterBroadcast.getValue());
         template.convertAndSend("/casino", wheelEnterBroadcast);
     }
 }

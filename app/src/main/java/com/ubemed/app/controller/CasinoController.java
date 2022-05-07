@@ -2,6 +2,7 @@ package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
 import com.ubemed.app.model.BidResponse;
+import com.ubemed.app.model.WheelData;
 import com.ubemed.app.model.WheelEnter;
 import com.ubemed.app.model.WheelEnterBroadcast;
 import com.ubemed.app.service.CasinoService;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RequestMapping("/casino")
 @RestController
@@ -26,8 +30,10 @@ public class CasinoController {
     @Autowired
     private CasinoService casinoService;
 
-    @Autowired
-    private SimpMessagingTemplate template;
+    @GetMapping("/data")
+    public WheelData getData() {
+        return casinoService.getData();
+    }
 
     /**
      * -1 = error
@@ -35,22 +41,23 @@ public class CasinoController {
      */
     @PostMapping("/wheel")
     public long enter(
-        @RequestHeader(name="Authorization") String token,
-        @RequestBody WheelEnter wheelEnter
+            HttpServletRequest httpRequest,
+            @RequestHeader(name="Authorization") String token,
+            @RequestBody WheelEnter wheelEnter
     ) {
         String username = jwtTokenUtil.getUsernameFromToken(token.substring(7));
 
         if (wheelEnter.getCoins() < 0) {
             return -1;
         }
-        long value = casinoService.enter(username, wheelEnter.getItems(), wheelEnter.getCoins(), new Date());
-        if (value > 0) {
-            update(username, wheelEnter.getCoins(), value);
+        // sync if multiple requests
+        String tranID = httpRequest.getParameter("tranID");
+        synchronized (String.valueOf(tranID).intern()) {
+            long value = casinoService.enter(username, wheelEnter.getItems(), wheelEnter.getCoins(), new Date());
+            if (value > 0) {
+                casinoService.update(username, wheelEnter.getCoins(), value);
+            }
+            return value;
         }
-        return value;
-    }
-
-    private void update(String username, long coins, long value) {
-        template.convertAndSend("/casino", new WheelEnterBroadcast(username, coins, value));
     }
 }

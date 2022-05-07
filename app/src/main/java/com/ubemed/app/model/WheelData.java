@@ -5,13 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WheelEnterBroadcast {
-    private long mid;
-    private String name;
-    private long coins;
+public class WheelData {
+
+    private Date date;
     private long value;
+    private List<WheelEnterBroadcast> list;
 }

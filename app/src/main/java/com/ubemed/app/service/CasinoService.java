@@ -5,11 +5,14 @@ import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBWheelGame;
 import com.ubemed.app.dbmodel.DBWheelGameEntry;
+import com.ubemed.app.model.WheelData;
+import com.ubemed.app.model.WheelEnterBroadcast;
 import com.ubemed.app.model.WheelWinner;
 import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
 import com.ubemed.app.repository.WheelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -24,8 +27,13 @@ public class CasinoService {
 
     private final UserRepository userRepository;
     private final WheelRepository wheelRepository;
-
     private final ProductStateRepository productStateRepository;
+
+    private static long mid = 0;
+    private static List<WheelEnterBroadcast> list = new ArrayList<>();
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Autowired
     public CasinoService(UserRepository userRepository, WheelRepository wheelRepository, ProductStateRepository productStateRepository) {
@@ -46,12 +54,13 @@ public class CasinoService {
         return list.get(0);
     }
 
+    @Transactional
     public long enter(String username, List<Long> items, long coins, Date date) {
 
         DBWheelGame dbWheelGame = getLatestGame();
         Date start = dbWheelGame.getCreateTime();
         long secs = (date.getTime() - start.getTime()) / 1000;
-        if (secs <= 0 || secs > 55) {
+        if (secs < 5 || secs > 55) {
             return -1;
         }
 
@@ -147,6 +156,7 @@ public class CasinoService {
             wheelWinner.setCoins(wheelWinner.getCoins() + dbWheelGameEntry.getCoins());
             dbWheelGameEntry.setProducts(new ArrayList<>());
             dbWheelGameEntry.setDbUser(null);
+            dbWheelGameEntry.setDbWheelGame(null);
             dbUser.setCoins(dbUser.getCoins() + dbWheelGameEntry.getCoins());
         }
         wheelWinner.setValue(dbWheelGame.getValue());
@@ -162,5 +172,27 @@ public class CasinoService {
         dbWheelGame1.setDbWheelGameEntries(new ArrayList<>());
         wheelRepository.save(dbWheelGame1);
         return wheelWinner;
+    }
+
+
+    public WheelData getData() {
+        DBWheelGame dbWheelGame = getLatestGame();
+        WheelData wheelData = new WheelData();
+        wheelData.setDate(dbWheelGame.getCreateTime());
+        wheelData.setValue(dbWheelGame.getValue());
+        wheelData.setList(list);
+        return wheelData;
+    }
+
+    public void reset() {
+        mid = 0;
+        list.clear();
+    }
+
+    public void update(String username, long coins, long value) {
+        mid += 1;
+        WheelEnterBroadcast wheelEnterBroadcast = new WheelEnterBroadcast(mid, username, coins, value);
+        list.add(wheelEnterBroadcast);
+        template.convertAndSend("/casino", wheelEnterBroadcast);
     }
 }
