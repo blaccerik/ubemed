@@ -22,6 +22,9 @@ export class CasinoComponent implements OnInit {
   winner: WheelEnterBroadcast;
   map: Map<number, WheelEnterBroadcast>;
   players: Map<string, WheelEnterBroadcast>;
+
+  randomList: WheelEnterBroadcast[];
+
   list: WheelEnterBroadcast[];
   list2: WheelEnterBroadcast[];
   list3: WheelEnterBroadcast[];
@@ -41,6 +44,7 @@ export class CasinoComponent implements OnInit {
     //
     this.value = 0;
     this.seconds = -1;
+    this.randomList = [];
     this.list = [];
     this.list2 = [];
     this.list3 = [];
@@ -53,14 +57,55 @@ export class CasinoComponent implements OnInit {
 
   }
 
-  calculate(list: WheelEnterBroadcast[]) {
+  calculate() {
+      let list: WheelEnterBroadcast[] = []
+      let players = this.get()
+      if (players.length > 0) {
+          for (let i = 0; i < players.length; i++) {
+              let player = players[i];
+              let percent = Math.round(player.value / this.value * 20);
+              for (let j = 0; j < percent; j++) {
+                  if (list.length < 20) {
+                      list.push(player);
+                  }
+              }
+          }
+          while (list.length != 20) {
+              const random = players[Math.floor(Math.random() * players.length)];
+              list.push(random);
+          }
 
+          for (let i = list.length - 1; i > 0; i--) {
+              let j = Math.floor(Math.random() * (i + 1));
+              let temp = list[i];
+              list[i] = list[j];
+              list[j] = temp;
+          }
+      }
+      this.randomList = list;
   }
 
   time() {
     if (this.date !== undefined) {
       let date: Date = new Date();
-      let sec = Math.floor((date.getTime() - this.date.getTime()) / 1000)
+      let sec = Math.floor((date.getTime() - this.date.getTime()) / 1000);
+
+
+      let elements = document.getElementsByClassName('test')
+      console.log(elements)
+      for (let i = 0; i < elements.length; i++) {
+        let el = elements[i]
+        // console.log(el.style.left)
+        // @ts-ignore
+        el.style.left = '5px'
+        // console.log(el.style.left)
+        break
+        // el.style.left = parseFloat(el.style.left || 0) - 5 + 'px';
+      }
+
+      if (sec % 1 == 0) {
+          this.calculate();
+      }
       if (sec <= 60) {
         this.seconds = 60 - sec;
       }
