@@ -34,14 +34,6 @@
     </div>
 </div>
 
-<div class="test" *ngFor="let o of randomList">
-    {{o.name}}
-</div>
+<input type="button" value="spin" (click)="spin()" style="float: left;" />
+<canvas id="wheelcanvas" width="500" height="500"></canvas>
 
-<!--<div class="wheel2">-->
-<!--    <div class="wheel2-container">-->
-<!--        <div class="wheel2-item" *ngFor="let o of randomList">-->
-<!--            {{o.name}}-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
