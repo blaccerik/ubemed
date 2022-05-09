@@ -2,31 +2,30 @@
 
     {{value}}
     {{seconds}}
-    <div *ngIf="seconds == 0 && winner">
-        winner: {{winner.name}} {{winner.value}}
-    </div>
-    <div *ngIf="seconds <= 5 && seconds > 0">
-        spin {{seconds}}
-    </div>
+<!--    <div *ngIf="seconds == 0 && winner">-->
+<!--        winner: {{winner.name}} {{winner.value}}-->
+<!--    </div>-->
+<!--    <div *ngIf="seconds <= 5 && seconds > 0">-->
+<!--    spin {{seconds}}-->
+<!--    </div>-->
 
 <!--    <div class="wheel">-->
 <!--        <div class="wheel-item" *ngFor="let o of get()">-->
 <!--            {{o.name}} {{o.value}} {{percent(o.value)}}%-->
 <!--        </div>-->
 <!--    </div>-->
-
-    <div class="wheel">
-        <div class="marquee">
-            <div class="marquee--inner">
-                <div class="orb" *ngFor="let o of randomList">
-                    {{o.name}}
-                </div>
-                <div class="orb" *ngFor="let o of randomList">
-                    {{o.name}}
-                </div>
-            </div>
-        </div>
-    </div>
+<!--    <div class="wheel">-->
+<!--        <div class="marquee">-->
+<!--            <div class="marquee&#45;&#45;inner">-->
+<!--                <div class="orb" *ngFor="let o of randomList">-->
+<!--                    {{o.name}}-->
+<!--                </div>-->
+<!--                <div class="orb" *ngFor="let o of randomList">-->
+<!--                    {{o.name}}-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
 </div>
 <div class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
@@ -34,6 +33,6 @@
     </div>
 </div>
 
-<input type="button" value="spin" (click)="spin()" style="float: left;" />
+<input type="button" value="spin" (click)="startSpin(get()[3], get())" style="float: left;" />
 <canvas id="wheelcanvas" width="500" height="500"></canvas>
 
