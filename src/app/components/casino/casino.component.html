@@ -1,11 +1,17 @@
 <div class="container">
 
 
-    {{value}}
+    {{totalValue}}
     {{seconds}}
+    <input type="button" value="spin" (click)="startSpin()" style="float: left;"/>
+    <input type="button" value="spin" (click)="endSpin()" style="float: left;"/>
     <div class="spinner">
         <div class="spinner-item" *ngFor="let o of playerList">
-            {{o.name}}
+            <div class="spinner-item-image">
+            </div>
+            <div class="spinner-item-text">
+                {{o.name}}
+            </div>
         </div>
     </div>
 <!--    <canvas id="wheel" width="300" height="200"></canvas>-->

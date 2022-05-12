@@ -26,7 +26,7 @@ export class CasinoComponent implements OnInit {
   stompClient: any;
   // wheelEnterBroadcasts: WheelEnterBroadcast[];
   date: Date;
-  value: number;
+  totalValue: number;
   seconds: number;
   // winner: WheelEnterBroadcast;
   map: Map<number, WheelEnterBroadcast>;
@@ -35,6 +35,7 @@ export class CasinoComponent implements OnInit {
 
   playerList: player[];
   playerNumber = 6;
+  moveID: number;
 
   // randomList: WheelEnterBroadcast[];
   // list: WheelEnterBroadcast[];
@@ -54,7 +55,7 @@ export class CasinoComponent implements OnInit {
     // todo get prev values
     //  get time
     //
-    this.value = 0;
+    this.totalValue = 0;
     this.seconds = -1;
     // this.randomList = [];
     // this.list = [];
@@ -72,8 +73,8 @@ export class CasinoComponent implements OnInit {
     // this.drawRouletteWheel(this.get());
 
     this.playerList = [];
-    setInterval(() => {
-        this.move();
+    this.moveID = setInterval(() => {
+        this.move(1);
       },
       15
     );
@@ -82,12 +83,23 @@ export class CasinoComponent implements OnInit {
     }
   }
 
-  nr = 1;
   generatePlayer(): player {
     if (this.players.size == 0) {
       return {name: 'demo'}
     }
     let players: WheelEnterBroadcast[] = Array.from(this.players.values());
+    let base = 0;
+    let nr = Math.random();
+    
+    for (let i = 0; i < players.length; i++) {
+      let player = players[i];
+      let percent = player.value / this.totalValue;
+      console.log(percent)
+      base += percent;
+      if (base >= nr) {
+        break;
+      }
+    }
     let player: WheelEnterBroadcast = players[Math.floor(Math.random() * players.length)];
     return {name: player.name}
 
@@ -95,7 +107,7 @@ export class CasinoComponent implements OnInit {
 
   els: any;
   cap = 10;
-  move() {
+  move(speed: number) {
     if (this.els === undefined) {
       let coords = Array.from({length: this.playerNumber}, (_, i) => i * (this.cap + 100))
       this.els = Array.from(document.getElementsByClassName('spinner-item') as HTMLCollectionOf<HTMLElement>)
@@ -104,18 +116,22 @@ export class CasinoComponent implements OnInit {
         el.style.left = coords[i] + 'px'
       }
     }
+    let prev = 0;
     for (let i = 0; i < this.els.length; i++) {
       let el = this.els[i];
       let left = el.offsetLeft
-      if (left == -100) {
+      console.log(Math.abs(left));
+      if (left <= -100) {
         // new block
-        el.style.left = (this.playerNumber) * (100 + this.cap) - 100 + 'px';
+        el.style.left = (this.playerNumber) * (100 + this.cap) - 100 - 1 + 'px';
         let playerBlock = this.playerList[i];
         playerBlock.name = this.generatePlayer().name;
       } else  {
-        el.style.left = left - 1 + 'px';
+        el.style.left = left - speed + 'px';
       }
+      prev = left;
     }
+    console.log("---")
   }
 
   time() {
@@ -131,6 +147,32 @@ export class CasinoComponent implements OnInit {
       //   this.startSpin();
       // }
     }
+  }
+
+  startSpin() {
+    clearInterval(this.moveID);
+    // speed up
+    let values = [
+      1,2,3,4,5,6,7,8,9,10
+    ]
+    this.moveID = setInterval(() => {
+        this.move(10);
+      },
+      15
+    );
+  }
+
+  endSpin() {
+    clearInterval(this.moveID);
+    // speed up
+    let values = [
+      1,2,3,4,5,6,7,8,9,10
+    ]
+    this.moveID = setInterval(() => {
+        this.move(1);
+      },
+      15
+    );
   }
 
   hideLoader() {
@@ -174,11 +216,11 @@ export class CasinoComponent implements OnInit {
             // this.stopRotateWheel();
             this.map.clear();
             this.players.clear();
-            this.value = 0;
+            this.totalValue = 0;
             // this.wheelEnterBroadcasts = [];
             this.reset();
           } else {
-            this.value += w.value;
+            this.totalValue += w.value;
             this.updatePlayers(w);
             // if (this.prevNumber != this.get().length) {
             //   this.prevNumber = this.get().length;
@@ -215,7 +257,7 @@ export class CasinoComponent implements OnInit {
         for (let i = 0; i < next.list.length; i++) {
           let w = next.list[i];
           if (!this.map.has(w.mid)) {
-            this.value += w.value;
+            this.totalValue += w.value;
             this.updatePlayers(w);
           }
         }
@@ -230,7 +272,7 @@ export class CasinoComponent implements OnInit {
   }
 
   percent(nr: number) {
-    return Math.floor(nr / this.value * 100);
+    return Math.floor(nr / this.totalValue * 100);
   }
 
   get() {

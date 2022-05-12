@@ -90,6 +90,7 @@
 //}
 
 .spinner {
+  border-radius: 15px;
   background-color: teal;
   //padding: 5px;
   position: relative;
@@ -97,7 +98,7 @@
   min-width: 300px;
   width: min(95%, 500px);
   height: 100px;
-  overflow: hidden;
+  //overflow: hidden;
 
   &-item {
     width: 100px;
@@ -106,5 +107,22 @@
     //top: 15px;
     //left: 120px;
     background-color: maroon;
+    border-radius: 50px;
+    overflow: hidden;
+
+    &-image {
+      width: 100px;
+      height: 100px;
+      background-color: #d0baba;
+    }
+
+    &-text {
+      height: 10px;
+      width: 100px;
+      position: absolute;
+      top: 45px;
+      //background: yellow;
+      text-align: center;
+    }
   }
 }
