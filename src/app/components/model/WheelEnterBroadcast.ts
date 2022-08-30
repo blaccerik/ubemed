@@ -1,6 +1,10 @@
+import {User} from "./User";
+import {CasinoWheelPlayer} from "./CasinoWheelPlayer";
+
 export class WheelEnterBroadcast {
     mid: number;
-    name: string;
-    coins: number;
     value: number;
+    players: CasinoWheelPlayer[]
+    user: User;
+    isNormalBroadcast: boolean
 }

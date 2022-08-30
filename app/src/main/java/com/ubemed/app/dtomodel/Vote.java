@@ -1,4 +1,4 @@
-package com.ubemed.app.model;
+package com.ubemed.app.dtomodel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Bid {
-    long amount;
+@NoArgsConstructor
+public class Vote {
+
+    private boolean upvote;
 }

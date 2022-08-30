@@ -5,9 +5,12 @@ import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBWheelGame;
 import com.ubemed.app.dbmodel.DBWheelGameEntry;
-import com.ubemed.app.model.WheelData;
-import com.ubemed.app.model.WheelEnterBroadcast;
-import com.ubemed.app.model.WheelWinner;
+import com.ubemed.app.dtomodel.DTOUser;
+import com.ubemed.app.dtomodel.WheelData;
+import com.ubemed.app.dtomodel.WheelEnterBroadcast;
+import com.ubemed.app.dtomodel.WheelWinner;
+import com.ubemed.app.model.CasinoWheelPlayer;
+import com.ubemed.app.model.SpinnerPlayer;
 import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
 import com.ubemed.app.repository.WheelRepository;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -31,6 +35,11 @@ public class CasinoService {
 
     private static long mid = 0;
     private static List<WheelEnterBroadcast> list = new ArrayList<>();
+
+    private final static int spinnerLength = 25;
+    private final static int roundLength = 10;
+    private final static int delayStart = 5;
+    private final static int delayEnd = 3;
 
     @Autowired
     private SimpMessagingTemplate template;
@@ -60,7 +69,7 @@ public class CasinoService {
         DBWheelGame dbWheelGame = getLatestGame();
         Date start = dbWheelGame.getCreateTime();
         long secs = (date.getTime() - start.getTime()) / 1000;
-        if (secs < 5 || secs > 55) {
+        if (secs < delayStart || secs > roundLength - delayEnd) {
             return -1;
         }
 
@@ -126,43 +135,73 @@ public class CasinoService {
     @Transactional
     public WheelWinner spin(Date date, double f) {
         DBWheelGame dbWheelGame = getLatestGame();
-        long value = dbWheelGame.getValue();
+        double value = (double) dbWheelGame.getValue();
         List<DBWheelGameEntry> list = dbWheelGame.getDbWheelGameEntries();
 
         double value2 = 0;
-        DBUser dbUser = null;
+        DBUser winnerUser = null;
+        HashMap<Long, SpinnerPlayer> map = new HashMap<>();
         for (DBWheelGameEntry dbWheelGameEntry : list) {
-            value2 += (double) dbWheelGameEntry.getValue() / (double) value;
-            if (value2 >= f) {
-                dbUser = dbWheelGameEntry.getDbUser();
-                break;
+
+            // find unique players
+            SpinnerPlayer spinnerPlayer = map.get(dbWheelGameEntry.getDbUser().getId());
+            if (spinnerPlayer != null) {
+                spinnerPlayer.setValue(spinnerPlayer.getValue() + dbWheelGameEntry.getValue());
+            } else {
+                DTOUser dtoUser = new DTOUser(dbWheelGameEntry.getDbUser().getName());
+                spinnerPlayer = new SpinnerPlayer(dtoUser, dbWheelGameEntry.getValue());
+            }
+            map.put(dbWheelGameEntry.getDbUser().getId(), spinnerPlayer);
+
+            // find winner
+            value2 += (double) dbWheelGameEntry.getValue() / value;
+            if (winnerUser == null && value2 >= f) {
+                winnerUser = dbWheelGameEntry.getDbUser();
             }
         }
+
+        // if has entries but no winner
+        if (winnerUser == null && !list.isEmpty()) {
+            winnerUser = list.get(list.size() - 1).getDbUser();
+        }
+
+        // find spinner
+        List<CasinoWheelPlayer> casinoWheelPlayerList = new ArrayList<>();
+        if (winnerUser != null) {
+            for (int i = 0; i < spinnerLength; i++) {
+                CasinoWheelPlayer casinoWheelPlayer = getWheelPlayer(new ArrayList<>(map.values()), new Random().nextDouble(), value);
+                casinoWheelPlayerList.add(casinoWheelPlayer);
+            }
+            casinoWheelPlayerList.get(spinnerLength - 3).setWinner(true);
+            casinoWheelPlayerList.get(spinnerLength - 3).setUser(new DTOUser(winnerUser.getName()));
+        }
+
         WheelWinner wheelWinner = new WheelWinner();
-        wheelWinner.setDbUser(dbUser);
+        wheelWinner.setDbUser(winnerUser);
         wheelWinner.setList(new ArrayList<>());
+        wheelWinner.setPlayers(casinoWheelPlayerList);
 
+        // update items
         DBProductState inv = productStateRepository.findByState(DBProductState.states.inventory);
-
         for (DBWheelGameEntry dbWheelGameEntry : list) {
             for (DBProduct dbProduct : dbWheelGameEntry.getProducts()) {
 
-                dbProduct.setDbUser(dbUser);
+                dbProduct.setDbUser(winnerUser);
                 dbProduct.setDbProductState(inv);
                 dbProduct.setDbWheelGameEntry(null);
-                dbUser.getProducts().add(dbProduct);
+                winnerUser.getProducts().add(dbProduct);
                 wheelWinner.getList().add(dbProduct);
             }
             wheelWinner.setCoins(wheelWinner.getCoins() + dbWheelGameEntry.getCoins());
             dbWheelGameEntry.setProducts(new ArrayList<>());
             dbWheelGameEntry.setDbUser(null);
             dbWheelGameEntry.setDbWheelGame(null);
-            dbUser.setCoins(dbUser.getCoins() + dbWheelGameEntry.getCoins());
+            winnerUser.setCoins(winnerUser.getCoins() + dbWheelGameEntry.getCoins());
         }
         wheelWinner.setValue(dbWheelGame.getValue());
 
-        if (dbUser != null) {
-            userRepository.save(dbUser);
+        if (winnerUser != null) {
+            userRepository.save(winnerUser);
         }
         wheelRepository.delete(dbWheelGame);
 
@@ -172,6 +211,23 @@ public class CasinoService {
         dbWheelGame1.setDbWheelGameEntries(new ArrayList<>());
         wheelRepository.save(dbWheelGame1);
         return wheelWinner;
+    }
+
+    public static CasinoWheelPlayer getWheelPlayer(List<SpinnerPlayer> list, double f, double total) {
+        double value = 0;
+        CasinoWheelPlayer casinoWheelPlayer = new CasinoWheelPlayer();
+        for (SpinnerPlayer spinnerPlayer : list) {
+            double v = (double) spinnerPlayer.getValue() / total;
+            value += v;
+            if (value >= f) {
+                casinoWheelPlayer.setWinner(false);
+                casinoWheelPlayer.setUser(spinnerPlayer.getDtoUser());
+                return casinoWheelPlayer;
+            }
+        }
+        casinoWheelPlayer.setWinner(false);
+        casinoWheelPlayer.setUser(list.get(list.size() - 1).getDtoUser());
+        return casinoWheelPlayer;
     }
 
 
@@ -189,10 +245,18 @@ public class CasinoService {
         list.clear();
     }
 
-    public void update(String username, long coins, long value) {
-        mid += 1;
-        WheelEnterBroadcast wheelEnterBroadcast = new WheelEnterBroadcast(mid, username, coins, value);
-        list.add(wheelEnterBroadcast);
-        template.convertAndSend("/casino", wheelEnterBroadcast);
+    public void update(String username, long value) {
+
+        Optional<DBUser> optionalDBUser = userRepository.findByName(username);
+        if (optionalDBUser.isPresent()) {
+            DBUser dbUser = optionalDBUser.get();
+
+            // todo add picture id
+            DTOUser DTOUser = new DTOUser(dbUser.getName());
+            mid += 1;
+            WheelEnterBroadcast wheelEnterBroadcast = new WheelEnterBroadcast(true, mid, DTOUser, value, new ArrayList<>());
+            list.add(wheelEnterBroadcast);
+            template.convertAndSend("/casino", wheelEnterBroadcast);
+        }
     }
 }

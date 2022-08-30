@@ -1,4 +1,4 @@
-package com.ubemed.app.model;
+package com.ubemed.app.dtomodel;
 
 import lombok.Getter;
 import lombok.Setter;

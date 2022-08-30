@@ -1,4 +1,4 @@
-package com.ubemed.app.model;
+package com.ubemed.app.dtomodel;
 
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBStoreCats;

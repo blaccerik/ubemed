@@ -3,13 +3,12 @@ package com.ubemed.app.service;
 import com.ubemed.app.dbmodel.DBPost;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBVote;
-import com.ubemed.app.model.Post;
+import com.ubemed.app.dtomodel.Post;
 import com.ubemed.app.repository.ForumRepository;
 import com.ubemed.app.repository.UserRepository;
 import com.ubemed.app.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

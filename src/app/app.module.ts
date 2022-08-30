@@ -37,6 +37,7 @@ import {InventoryComponent} from "./components/inventory/inventory.component";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import { CasinoComponent } from './components/casino/casino.component';
+import { CasinoPopupComponent } from './components/casino/casino-popup/casino-popup.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { CasinoComponent } from './components/casino/casino.component';
     StoreNewComponent,
     StoreOfferComponent,
     InventoryComponent,
-    CasinoComponent
+    CasinoComponent,
+    CasinoPopupComponent
   ],
     imports: [
         BrowserModule,

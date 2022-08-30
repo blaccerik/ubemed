@@ -1,7 +1,7 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBUser;
-import com.ubemed.app.model.UserData;
+import com.ubemed.app.dtomodel.UserData;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

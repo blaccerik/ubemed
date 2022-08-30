@@ -1,20 +1,16 @@
 package com.ubemed.app.model;
 
+import com.ubemed.app.dtomodel.DTOUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WheelData {
-
-    private Date date;
-    private long value;
-    private List<WheelEnterBroadcast> list;
+public class CasinoWheelPlayer {
+    private DTOUser user;
+    private boolean isWinner;
 }

@@ -1,10 +1,9 @@
 package com.ubemed.app.service;
 
 import com.ubemed.app.dbmodel.DBStoreImage;
-import com.ubemed.app.model.ProductImage;
+import com.ubemed.app.dtomodel.ProductImage;
 import com.ubemed.app.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 

@@ -1,51 +1,45 @@
 <div class="container">
-
-
-    {{totalValue}}
-    {{seconds}}
-    <input type="button" value="spin" (click)="startSpin()" style="float: left;"/>
-    <input type="button" value="spin" (click)="endSpin()" style="float: left;"/>
-    <div class="spinner">
-        <div class="spinner-item" *ngFor="let o of playerList">
-            <div class="spinner-item-image">
-            </div>
-            <div class="spinner-item-text">
-                {{o.name}}
+    <div class="info">
+        <div class="info-time">
+            Time: {{seconds}}s
+        </div>
+        <div class="info-stats">
+            Total: {{totalValue}}
+        </div>
+        <div class="info-top">
+            Top:
+            <div *ngIf="topPlayer" style="display: inline">
+                {{topPlayer.user.name}} {{topPlayer.value}}
             </div>
         </div>
     </div>
-<!--    <canvas id="wheel" width="300" height="200"></canvas>-->
-<!--    <div *ngIf="seconds == 0 && winner">-->
-<!--        winner: {{winner.name}} {{winner.value}}-->
-<!--    </div>-->
-<!--    <div *ngIf="seconds <= 5 && seconds > 0">-->
-<!--    spin {{seconds}}-->
-<!--    </div>-->
-
-<!--    <div class="wheel">-->
-<!--        <div class="wheel-item" *ngFor="let o of get()">-->
-<!--            {{o.name}} {{o.value}} {{percent(o.value)}}%-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="wheel">-->
-<!--        <div class="marquee">-->
-<!--            <div class="marquee--inner">-->
-<!--                <div class="orb" *ngFor="let o of randomList">-->
-<!--                    {{o.name}}-->
-<!--                </div>-->
-<!--                <div class="orb" *ngFor="let o of randomList">-->
-<!--                    {{o.name}}-->
-<!--                </div>-->
+    <div class="spinner">
+        <div class="spinner-knob"></div>
+        <div *ngIf="spinner.length > 0" id="spinner-container" class="spinner-container">
+            <div class="spinner-item" *ngFor="let o of spinner">
+                <div class="spinner-item-text">
+                    {{o.user.name}}
+                </div>
+            </div>
+        </div>
+<!--        <div class="spinner-item" *ngFor="let o of playerList">-->
+<!--            <div class="spinner-item-image">-->
+<!--            </div>-->
+<!--            <div class="spinner-item-text">-->
+<!--                {{o.name}}-->
 <!--            </div>-->
 <!--        </div>-->
-<!--    </div>-->
+    </div>
+    <div class="players">
+        <div *ngFor="let o of getPlayers()">
+            <div>{{o.user.name}} {{o.value}}</div>
+        </div>
+    </div>
+
 </div>
 <div class="d-flex justify-content-center">
     <div class="spinner-border" role="status">
         <span class="sr-only" id="loading"></span>
     </div>
 </div>
-
-<!--<input type="button" value="spin" (click)="startSpin(get()[3], get())" style="float: left;" />-->
-<!--<canvas id="wheelcanvas" width="500" height="500"></canvas>-->
 

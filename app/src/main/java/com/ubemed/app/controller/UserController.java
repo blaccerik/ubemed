@@ -1,9 +1,9 @@
 package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
-import com.ubemed.app.model.JwtRequest;
-import com.ubemed.app.model.JwtResponse;
-import com.ubemed.app.model.UserData;
+import com.ubemed.app.dtomodel.JwtRequest;
+import com.ubemed.app.dtomodel.JwtResponse;
+import com.ubemed.app.dtomodel.UserData;
 import com.ubemed.app.service.JwtUserDetailsService;
 import com.ubemed.app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

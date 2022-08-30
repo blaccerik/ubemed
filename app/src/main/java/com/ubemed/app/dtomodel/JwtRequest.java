@@ -1,4 +1,4 @@
-package com.ubemed.app.model;
+package com.ubemed.app.dtomodel;
 
 import java.io.Serializable;
 

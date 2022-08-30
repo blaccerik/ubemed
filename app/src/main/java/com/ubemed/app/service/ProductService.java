@@ -3,8 +3,7 @@ package com.ubemed.app.service;
 import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
-import com.ubemed.app.model.Product;
-import com.ubemed.app.repository.CatRepository;
+import com.ubemed.app.dtomodel.Product;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class ProductService {

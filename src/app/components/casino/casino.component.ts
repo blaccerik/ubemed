@@ -6,6 +6,10 @@ import {FormControl, Validators} from "@angular/forms";
 import {WheelEnterBroadcast} from "../model/WheelEnterBroadcast";
 import {CasinoService} from "../services/casino.service";
 import {interval} from "rxjs";
+import {CasinoWheelPlayer} from "../model/CasinoWheelPlayer";
+import {StoreOfferComponent} from "../store/store-offer/store-offer.component";
+import {MatDialog} from "@angular/material/dialog";
+import {CasinoPopupComponent} from "./casino-popup/casino-popup.component";
 
 interface region {
   name: string;
@@ -24,26 +28,19 @@ interface player {
 export class CasinoComponent implements OnInit {
 
   stompClient: any;
-  // wheelEnterBroadcasts: WheelEnterBroadcast[];
   date: Date;
   totalValue: number;
   seconds: number;
-  // winner: WheelEnterBroadcast;
+  spinner: CasinoWheelPlayer[];
+
   map: Map<number, WheelEnterBroadcast>;
   players: Map<string, WheelEnterBroadcast>;
-  // prevNumber: number;
-
-  playerList: player[];
-  playerNumber = 6;
-  moveID: number;
-
-  // randomList: WheelEnterBroadcast[];
-  // list: WheelEnterBroadcast[];
-  // list2: WheelEnterBroadcast[];
-  // list3: WheelEnterBroadcast[];
+  winner: CasinoWheelPlayer | undefined;
+  topPlayer: WheelEnterBroadcast | undefined;
 
   constructor(
-      private casinoService: CasinoService
+    private casinoService: CasinoService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -52,127 +49,27 @@ export class CasinoComponent implements OnInit {
     // @ts-ignore
     document.getElementById('loading').style.display = "";
 
-    // todo get prev values
-    //  get time
-    //
     this.totalValue = 0;
     this.seconds = -1;
-    // this.randomList = [];
-    // this.list = [];
-    // this.list2 = [];
-    // this.list3 = [];
 
     this.map = new Map();
     this.players = new Map();
-    // this.prevNumber = 0;
-    // this.spinning = false;
-    // this.startAngle = 0
+    this.spinner = [];
+    this.winner = undefined;
+
     this.connect()
     const source = interval(1000);
     source.subscribe(() => this.time());
-    // this.drawRouletteWheel(this.get());
-
-    this.playerList = [];
-    this.moveID = setInterval(() => {
-        this.move(1);
-      },
-      15
-    );
-    for (let i = 0; i < this.playerNumber; i++) {
-      this.playerList.push(this.generatePlayer())
-    }
-  }
-
-  generatePlayer(): player {
-    if (this.players.size == 0) {
-      return {name: 'demo'}
-    }
-    let players: WheelEnterBroadcast[] = Array.from(this.players.values());
-    let base = 0;
-    let nr = Math.random();
-    
-    for (let i = 0; i < players.length; i++) {
-      let player = players[i];
-      let percent = player.value / this.totalValue;
-      console.log(percent)
-      base += percent;
-      if (base >= nr) {
-        break;
-      }
-    }
-    let player: WheelEnterBroadcast = players[Math.floor(Math.random() * players.length)];
-    return {name: player.name}
-
-  }
-
-  els: any;
-  cap = 10;
-  move(speed: number) {
-    if (this.els === undefined) {
-      let coords = Array.from({length: this.playerNumber}, (_, i) => i * (this.cap + 100))
-      this.els = Array.from(document.getElementsByClassName('spinner-item') as HTMLCollectionOf<HTMLElement>)
-      for (let i = 0; i < this.els.length; i++) {
-        let el = this.els[i];
-        el.style.left = coords[i] + 'px'
-      }
-    }
-    let prev = 0;
-    for (let i = 0; i < this.els.length; i++) {
-      let el = this.els[i];
-      let left = el.offsetLeft
-      console.log(Math.abs(left));
-      if (left <= -100) {
-        // new block
-        el.style.left = (this.playerNumber) * (100 + this.cap) - 100 - 1 + 'px';
-        let playerBlock = this.playerList[i];
-        playerBlock.name = this.generatePlayer().name;
-      } else  {
-        el.style.left = left - speed + 'px';
-      }
-      prev = left;
-    }
-    console.log("---")
   }
 
   time() {
     if (this.date !== undefined) {
       let date: Date = new Date();
       let sec = Math.floor((date.getTime() - this.date.getTime()) / 1000);
-      // this.calculate();
-      if (sec <= 60) {
-        this.seconds = 60 - sec;
+      if (sec <= 10) {
+        this.seconds = 10 - sec;
       }
-      // this.renderer.appendChild(test.nativeElement, div);
-      // if (sec == 60) {
-      //   this.startSpin();
-      // }
     }
-  }
-
-  startSpin() {
-    clearInterval(this.moveID);
-    // speed up
-    let values = [
-      1,2,3,4,5,6,7,8,9,10
-    ]
-    this.moveID = setInterval(() => {
-        this.move(10);
-      },
-      15
-    );
-  }
-
-  endSpin() {
-    clearInterval(this.moveID);
-    // speed up
-    let values = [
-      1,2,3,4,5,6,7,8,9,10
-    ]
-    this.moveID = setInterval(() => {
-        this.move(1);
-      },
-      15
-    );
   }
 
   hideLoader() {
@@ -183,14 +80,8 @@ export class CasinoComponent implements OnInit {
 
   connect() {
     const socket = new SockJS('api/websocket');
-    // console.log(socket.url);
-    // console.log("test")
     this.stompClient = Stomp.over(socket);
     this.stompClient.debug = () => {};
-
-    // this.stompClient.connect({}, function(frame: any) {
-    //   console.log("1", frame)
-    // })
     const headers = {};
     this.stompClient.connect(
       headers,
@@ -200,34 +91,38 @@ export class CasinoComponent implements OnInit {
           const res2 = JSON.parse(res.body);
           const w = new WheelEnterBroadcast();
           w.value = res2.value;
-          w.coins = res2.coins;
-          w.name = res2.name;
           w.mid = res2.mid;
+          w.players = res2.players
+          w.isNormalBroadcast = res2.normalBroadcast
+          w.user = res2.user
 
           // winning broadcast
-          if (w.coins <= 0 && w.value <= 0) {
-            w.value = -w.value;
-            w.coins = -w.coins;
-            // this.winner = w;
-            // this.spinning = true;
-            // let list = this.get().slice();
-            // this.startSpin(w, list);
-
-            // this.stopRotateWheel();
-            this.map.clear();
-            this.players.clear();
-            this.totalValue = 0;
-            // this.wheelEnterBroadcasts = [];
+          if (!w.isNormalBroadcast) {
             this.reset();
+            this.spinner = w.players;  // auto spins the players
+            let winner = this.spinner[22];
+
+            // set delay to show winner
+            setTimeout(() =>{
+              this.winner = winner;
+
+              // open popup
+              const dialogRef = this.dialog.open(CasinoPopupComponent, {
+                data: {winner : this.winner}
+              });
+
+              // close popup after some time
+              dialogRef.afterOpened().subscribe(_ => {
+                setTimeout(() => {
+                  dialogRef.close();
+                }, 1000)
+              })
+            }, 3000);
+
           } else {
-            this.totalValue += w.value;
+            this.spinner = []
+            this.winner = undefined;
             this.updatePlayers(w);
-            // if (this.prevNumber != this.get().length) {
-            //   this.prevNumber = this.get().length;
-            //   if (!this.spinning) {
-            //     this.drawRouletteWheel(this.get());
-            //   }
-            // }
           }
         })
         this.reset();
@@ -237,30 +132,41 @@ export class CasinoComponent implements OnInit {
 
   updatePlayers(w: WheelEnterBroadcast) {
     if (!this.map.has(w.mid)) {
-      // console.log("e")
       this.map.set(w.mid, w)
-      let coins = this.players.get(w.name);
+      let coins = this.players.get(w.user.name);
       if (coins) {
         w.value += coins.value
-        this.players.set(w.name, w);
+        this.players.set(w.user.name, w);
       } else {
-        this.players.set(w.name, w);
+        this.players.set(w.user.name, w);
+      }
+
+      // check if top
+      if (this.topPlayer === undefined || w.value > this.topPlayer.value) {
+        this.topPlayer = w;
       }
     }
+    let value = 0;
+    for (let o of this.players.values()){
+      value += o.value
+    }
+    this.totalValue = value
   }
-  
+
+
   reset() {
+    this.map.clear();
+    this.players.clear();
+    this.topPlayer = undefined;
+    this.totalValue = 0;
     this.casinoService.getData().subscribe(
       next => {
         this.date = new Date(next.date)
-        // this.value += next.value
         for (let i = 0; i < next.list.length; i++) {
           let w = next.list[i];
-          if (!this.map.has(w.mid)) {
-            this.totalValue += w.value;
-            this.updatePlayers(w);
-          }
+          this.updatePlayers(w);
         }
+
       }
     )
   }
@@ -271,11 +177,7 @@ export class CasinoComponent implements OnInit {
     }
   }
 
-  percent(nr: number) {
-    return Math.floor(nr / this.totalValue * 100);
-  }
-
-  get() {
+  getPlayers() {
     return Array.from(this.players.values());
   }
 }

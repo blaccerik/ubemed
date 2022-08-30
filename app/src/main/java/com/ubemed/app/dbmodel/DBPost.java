@@ -1,6 +1,5 @@
 package com.ubemed.app.dbmodel;
 
-import com.ubemed.app.model.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

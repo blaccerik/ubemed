@@ -1,13 +1,10 @@
 package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
-import com.ubemed.app.model.BidResponse;
-import com.ubemed.app.model.WheelData;
-import com.ubemed.app.model.WheelEnter;
-import com.ubemed.app.model.WheelEnterBroadcast;
+import com.ubemed.app.dtomodel.WheelData;
+import com.ubemed.app.dtomodel.WheelEnter;
 import com.ubemed.app.service.CasinoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @RequestMapping("/casino")
 @RestController
@@ -55,7 +50,7 @@ public class CasinoController {
         synchronized (String.valueOf(tranID).intern()) {
             long value = casinoService.enter(username, wheelEnter.getItems(), wheelEnter.getCoins(), new Date());
             if (value > 0) {
-                casinoService.update(username, wheelEnter.getCoins(), value);
+                casinoService.update(username, value);
             }
             return value;
         }

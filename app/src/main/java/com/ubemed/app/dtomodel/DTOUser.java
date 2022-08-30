@@ -1,4 +1,4 @@
-package com.ubemed.app.model;
+package com.ubemed.app.dtomodel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Vote {
+@AllArgsConstructor
+public class DTOUser {
 
-    private boolean upvote;
+    private String name;
+//    private
 }

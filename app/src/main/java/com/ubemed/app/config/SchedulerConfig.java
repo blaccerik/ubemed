@@ -1,10 +1,5 @@
 package com.ubemed.app.config;
 
-import com.ubemed.app.dbmodel.DBProduct;
-import com.ubemed.app.dbmodel.DBUser;
-import com.ubemed.app.model.BidResponse;
-import com.ubemed.app.model.UserResponse;
-import com.ubemed.app.model.WheelEnterBroadcast;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.UserRepository;
 import com.ubemed.app.service.CasinoService;
@@ -13,9 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,7 +63,7 @@ public class SchedulerConfig {
 //        System.out.println(list.get(n % 2) + " " + val);
 
         if (val > 0) {
-            casinoService.update(name, n % 25, n % 25);
+            casinoService.update(name, n % 25);
         }
 
         n += 1;

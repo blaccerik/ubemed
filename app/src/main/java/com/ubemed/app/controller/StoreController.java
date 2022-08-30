@@ -1,25 +1,18 @@
 package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
-import com.ubemed.app.model.Bid;
-import com.ubemed.app.model.BidResponse;
-import com.ubemed.app.model.Product;
-import com.ubemed.app.model.ProductImage;
-import com.ubemed.app.model.User;
-import com.ubemed.app.model.UserResponse;
+import com.ubemed.app.dtomodel.Bid;
+import com.ubemed.app.dtomodel.BidResponse;
+import com.ubemed.app.dtomodel.Product;
+import com.ubemed.app.dtomodel.ProductImage;
 import com.ubemed.app.service.ImageService;
 import com.ubemed.app.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;

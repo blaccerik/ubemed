@@ -1,8 +1,8 @@
 package com.ubemed.app.controller;
 
 import com.ubemed.app.config.JwtTokenUtil;
-import com.ubemed.app.model.Post;
-import com.ubemed.app.model.Vote;
+import com.ubemed.app.dtomodel.Post;
+import com.ubemed.app.dtomodel.Vote;
 import com.ubemed.app.service.ForumService;
 import com.ubemed.app.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;

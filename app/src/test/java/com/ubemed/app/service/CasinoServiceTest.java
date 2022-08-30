@@ -4,7 +4,10 @@ import com.ubemed.app.dbmodel.DBProduct;
 import com.ubemed.app.dbmodel.DBProductState;
 import com.ubemed.app.dbmodel.DBUser;
 import com.ubemed.app.dbmodel.DBWheelGame;
-import com.ubemed.app.model.WheelWinner;
+import com.ubemed.app.dtomodel.DTOUser;
+import com.ubemed.app.dtomodel.WheelWinner;
+import com.ubemed.app.model.CasinoWheelPlayer;
+import com.ubemed.app.model.SpinnerPlayer;
 import com.ubemed.app.repository.ProductRepository;
 import com.ubemed.app.repository.ProductStateRepository;
 import com.ubemed.app.repository.UserRepository;
@@ -95,7 +98,7 @@ class CasinoServiceTest {
         cal.set(Calendar.DAY_OF_MONTH, 6);
         cal.set(Calendar.HOUR_OF_DAY,12);
         cal.set(Calendar.MINUTE,30);
-        cal.set(Calendar.SECOND,1);
+        cal.set(Calendar.SECOND,5);
         d = cal.getTime();
 
         assertEquals(casinoService.enter("1", List.of(product.getId()), 6, d), 26);
@@ -198,7 +201,7 @@ class CasinoServiceTest {
         cal.set(Calendar.DAY_OF_MONTH, 6);
         cal.set(Calendar.HOUR_OF_DAY,12);
         cal.set(Calendar.MINUTE,30);
-        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.SECOND, 5);
         d = cal.getTime();
 
         assertEquals(casinoService.enter("1", List.of(id1), 5, d), 25);
@@ -219,7 +222,12 @@ class CasinoServiceTest {
         assertEquals(wheelWinner.getList().size(), 2);
         assertEquals(wheelWinner.getList().stream().anyMatch(o -> o.getTitle().equals("11")), true);
         assertEquals(wheelWinner.getList().stream().anyMatch(o -> o.getTitle().equals("13")), true);
-
+        assertEquals(wheelWinner.getPlayers().size(), 50);
+        for (int i = 0; i < 49; i++) {
+            assertEquals(wheelWinner.getPlayers().get(i).isWinner(), false);
+        }
+        assertEquals(wheelWinner.getPlayers().get(49).isWinner(), true);
+        assertEquals(wheelWinner.getPlayers().get(49).getUser().getName(), "1");
 
         DBUser dbUser1 = userRepository.findByName("1").get();
         assertEquals(dbUser1.getProducts().size(), 3);
@@ -313,6 +321,7 @@ class CasinoServiceTest {
         assertEquals(wheelWinner.getCoins(), 0);
         assertEquals(wheelWinner.getValue(), 0);
         assertEquals(wheelWinner.getList().size(), 0);
+        assertEquals(wheelWinner.getPlayers().size(), 0);
 
 
         DBUser dbUser1 = userRepository.findByName("1").get();
@@ -385,7 +394,7 @@ class CasinoServiceTest {
         cal.set(Calendar.DAY_OF_MONTH, 6);
         cal.set(Calendar.HOUR_OF_DAY,12);
         cal.set(Calendar.MINUTE,30);
-        cal.set(Calendar.SECOND, 1);
+        cal.set(Calendar.SECOND, 5);
         cal.set(Calendar.MILLISECOND, 0);
         d = cal.getTime();
         assertEquals(casinoService.enter("1", List.of(), 5, d), 5);
@@ -428,6 +437,23 @@ class CasinoServiceTest {
         assertEquals(wheelWinner.getCoins(), 10);
         assertEquals(wheelWinner.getValue(), 10);
         assertEquals(wheelWinner.getList().size(), 0);
+        assertEquals(wheelWinner.getPlayers().size(), 50);
         assertEquals(userRepository.findByName("1").get().getCoins(), 100);
+    }
+
+    @Test
+    void getWheelPlayer() {
+
+        List<SpinnerPlayer> list = List.of(
+                new SpinnerPlayer(new DTOUser("a"), 10),
+                new SpinnerPlayer(new DTOUser("b"), 20)
+        );
+
+        CasinoWheelPlayer casinoWheelPlayer = CasinoService.getWheelPlayer(list, 0.6, 30);
+        assertEquals(casinoWheelPlayer.isWinner(), false);
+        assertEquals(casinoWheelPlayer.getUser().getName(), "b");
+
+        casinoWheelPlayer = CasinoService.getWheelPlayer(list, 0.3, 30);
+        assertEquals(casinoWheelPlayer.getUser().getName(), "a");
     }
 }
